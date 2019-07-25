@@ -38,6 +38,11 @@ namespace Theraot.ECS
             return entity;
         }
 
+        public IEnumerable<TEntity> Query(QueryId query)
+        {
+            return _entitiesByQueryId[query];
+        }
+
         public QueryId RegisterQuery(Query query)
         {
             var queryId = _queryId;
