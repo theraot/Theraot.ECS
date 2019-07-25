@@ -80,7 +80,8 @@ namespace Theraot.ECS
             }
             foreach (var entity in _componentsByEntity.Keys)
             {
-                if (_strategy.QueryCheck(new HashSet<TComponentType>(_componentsByEntity[entity].Values.Select(GetComponentType)), query) == QueryCheckResult.Add)
+                var components = _componentsByEntity[entity];
+                if (_strategy.QueryCheck(new AdHocSet<TComponentType>(components.Keys, () => components.Count, components.ContainsKey), query) == QueryCheckResult.Add)
                 {
                     set.Add(entity);
                 }
@@ -133,9 +134,8 @@ namespace Theraot.ECS
             return set;
         }
 
-        private void UpdateEntitiesByQueryOnAddedComponent(TEntity entity, Dictionary<TComponentType, Component> allComponents, TComponentType addedComponentType)
+        private void UpdateEntitiesByQueryOnAddedComponent(TEntity entity, ISet<TComponentType> allComponentsTypes, TComponentType addedComponentType)
         {
-            var allComponentsTypes = new HashSet<TComponentType>(allComponents.Values.Select(GetComponentType));
             foreach (var queryId in GetQueriesByComponentType(addedComponentType))
             {
                 var set = _entitiesByQueryId[queryId];
@@ -153,10 +153,9 @@ namespace Theraot.ECS
             }
         }
 
-        private void UpdateEntitiesByQueryOnAddedComponents(TEntity entity, Dictionary<TComponentType, Component> allComponents, Component[] addedComponents)
+        private void UpdateEntitiesByQueryOnAddedComponents(TEntity entity, ISet<TComponentType> allComponentsTypes, Component[] addedComponents)
         {
             var addedComponentTypes = addedComponents.Select(GetComponentType).ToArray();
-            var allComponentsTypes = new HashSet<TComponentType>(allComponents.Values.Select(GetComponentType));
             foreach (var queryId in GetQueriesByComponentTypes(addedComponentTypes))
             {
                 var set = _entitiesByQueryId[queryId];

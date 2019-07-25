@@ -1,7 +1,6 @@
 ﻿// ReSharper disable UnusedTypeParameter
 
 using System;
-using System.Collections.Generic;
 using QueryId = System.Int32;
 
 namespace Theraot.ECS
@@ -56,15 +55,12 @@ namespace Theraot.ECS
 
             var query = _strategy.CreateQuery
             (
-                new HashSet<TComponentType>
-                (
-                    new[]
-                    {
-                        GetComponentType<TComponent>()
-                    }
-                ),
-                new HashSet<TComponentType>(),
-                new HashSet<TComponentType>()
+                new[]
+                {
+                    GetComponentType<TComponent>()
+                },
+                Array.Empty<TComponentType>(),
+                Array.Empty<TComponentType>()
             );
             var queryId = RegisterQuery(query);
             foreach (var entity in GetEntities(queryId))
@@ -82,16 +78,13 @@ namespace Theraot.ECS
 
             var query = _strategy.CreateQuery
             (
-                new HashSet<TComponentType>
-                (
-                    new[]
-                    {
-                        GetComponentType<TComponent1>(),
-                        GetComponentType<TComponent2>()
-                    }
-                ),
-                new HashSet<TComponentType>(),
-                new HashSet<TComponentType>()
+                new[]
+                {
+                    GetComponentType<TComponent1>(),
+                    GetComponentType<TComponent2>()
+                },
+                Array.Empty<TComponentType>(),
+                Array.Empty<TComponentType>()
             );
             var queryId = RegisterQuery(query);
             foreach (var entity in GetEntities(queryId))
@@ -109,17 +102,14 @@ namespace Theraot.ECS
 
             var query = _strategy.CreateQuery
             (
-                new HashSet<TComponentType>
-                (
-                    new[]
-                    {
-                        GetComponentType<TComponent1>(),
-                        GetComponentType<TComponent2>(),
-                        GetComponentType<TComponent3>()
-                    }
-                ),
-                new HashSet<TComponentType>(),
-                new HashSet<TComponentType>()
+                new[]
+                {
+                    GetComponentType<TComponent1>(),
+                    GetComponentType<TComponent2>(),
+                    GetComponentType<TComponent3>()
+                },
+                Array.Empty<TComponentType>(),
+                Array.Empty<TComponentType>()
             );
             var queryId = RegisterQuery(query);
             foreach (var entity in GetEntities(queryId))

@@ -5,7 +5,7 @@ namespace Theraot.ECS
 {
     public class TypeHashSetStrategy : IComponentQueryStrategy<Type, TypeHashSetQuery>
     {
-        public TypeHashSetQuery CreateQuery(HashSet<Type> all, HashSet<Type> any, HashSet<Type> none)
+        public TypeHashSetQuery CreateQuery(Type[] all, Type[] any, Type[] none)
         {
             return new TypeHashSetQuery(all, any, none);
         }
@@ -31,7 +31,7 @@ namespace Theraot.ECS
             return type;
         }
 
-        public QueryCheckResult QueryCheck(HashSet<Type> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
+        public QueryCheckResult QueryCheck(ISet<Type> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
         {
             if
             (
@@ -55,7 +55,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponent(Type addedComponentType, HashSet<Type> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
+        public QueryCheckResult QueryCheckOnAddedComponent(Type addedComponentType, ISet<Type> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
         {
             if (typeHashSetQuery.None.Count != 0 && typeHashSetQuery.None.Contains(addedComponentType))
             {
@@ -75,7 +75,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponents(Type[] addedComponentTypes, HashSet<Type> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
+        public QueryCheckResult QueryCheckOnAddedComponents(Type[] addedComponentTypes, ISet<Type> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
         {
             if (typeHashSetQuery.None.Count != 0 && typeHashSetQuery.None.ContainsAny(addedComponentTypes))
             {

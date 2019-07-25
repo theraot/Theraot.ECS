@@ -16,7 +16,8 @@ namespace Theraot.ECS
                 return;
             }
 
-            UpdateEntitiesByQueryOnAddedComponent(entity, allComponents, addedComponentType);
+            var allComponentsTypes = new AdHocSet<TComponentType>(allComponents.Keys, () => allComponents.Count, allComponents.ContainsKey);
+            UpdateEntitiesByQueryOnAddedComponent(entity, allComponentsTypes, addedComponentType);
         }
 
         public void SetComponent<TComponent1, TComponent2>(TEntity entity, TComponent1 component1, TComponent2 component2)
@@ -32,7 +33,8 @@ namespace Theraot.ECS
                 return;
             }
 
-            UpdateEntitiesByQueryOnAddedComponents(entity, allComponents, addedComponents);
+            var allComponentsTypes = new AdHocSet<TComponentType>(allComponents.Keys, () => allComponents.Count, allComponents.ContainsKey);
+            UpdateEntitiesByQueryOnAddedComponents(entity, allComponentsTypes, addedComponents);
         }
 
         public void SetComponent<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponent1 component1, TComponent2 component2, TComponent3 component3)
@@ -48,7 +50,8 @@ namespace Theraot.ECS
                 return;
             }
 
-            UpdateEntitiesByQueryOnAddedComponents(entity, allComponents, addedComponents);
+            var allComponentsTypes = new AdHocSet<TComponentType>(allComponents.Keys, () => allComponents.Count, allComponents.ContainsKey);
+            UpdateEntitiesByQueryOnAddedComponents(entity, allComponentsTypes, addedComponents);
         }
 
         public void SetComponent<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponent1 component1, TComponent2 component2, TComponent3 component3, TComponent4 component4)
@@ -64,7 +67,8 @@ namespace Theraot.ECS
                 return;
             }
 
-            UpdateEntitiesByQueryOnAddedComponents(entity, allComponents, addedComponents);
+            var allComponentsTypes = new AdHocSet<TComponentType>(allComponents.Keys, () => allComponents.Count, allComponents.ContainsKey);
+            UpdateEntitiesByQueryOnAddedComponents(entity, allComponentsTypes, addedComponents);
         }
 
         public void SetComponent(TEntity entity, params Component[] components)
@@ -76,7 +80,8 @@ namespace Theraot.ECS
                 return;
             }
 
-            UpdateEntitiesByQueryOnAddedComponents(entity, allComponents, addedComponents);
+            var allComponentsTypes = new AdHocSet<TComponentType>(allComponents.Keys, () => allComponents.Count, allComponents.ContainsKey);
+            UpdateEntitiesByQueryOnAddedComponents(entity, allComponentsTypes, addedComponents);
         }
     }
 }

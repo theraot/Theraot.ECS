@@ -11,11 +11,11 @@ namespace Theraot.ECS
 
         public HashSet<ComponentType> None { get; }
 
-        public TypeHashSetQuery(HashSet<ComponentType> all, HashSet<ComponentType> any, HashSet<ComponentType> none)
+        public TypeHashSetQuery(ComponentType[] all, ComponentType[] any, ComponentType[] none)
         {
-            All = all;
-            Any = any;
-            None = none;
+            All = new HashSet<ComponentType>(all);
+            Any = new HashSet<ComponentType>(any);
+            None = new HashSet<ComponentType>(none);
         }
     }
 }

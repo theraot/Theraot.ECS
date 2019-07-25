@@ -2,9 +2,9 @@
 
 namespace Theraot.ECS
 {
-    internal static class HashSetExtensions
+    internal static class ISetExtensions
     {
-        public static bool ContainsAll<T>(this HashSet<T> hashSet, IEnumerable<T> items)
+        public static bool ContainsAll<T>(this ISet<T> hashSet, IEnumerable<T> items)
         {
             foreach (var item in items)
             {
@@ -17,7 +17,7 @@ namespace Theraot.ECS
             return true;
         }
 
-        public static bool ContainsAny<T>(this HashSet<T> hashSet, IEnumerable<T> items)
+        public static bool ContainsAny<T>(this ISet<T> hashSet, IEnumerable<T> items)
         {
             foreach (var item in items)
             {
