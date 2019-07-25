@@ -41,9 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TypeHashSetStrategy.cs" />
     <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="HashSetExtensions.cs" />
-    <Compile Include="Query.cs" />
+    <Compile Include="IComponentQueryStrategy.cs" />
+    <Compile Include="TypeHashSetQuery.cs" />
     <Compile Include="QueryCheckResult.cs" />
     <Compile Include="Scope.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

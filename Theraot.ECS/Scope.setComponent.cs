@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿// ReSharper disable UnusedTypeParameter
+
+using System.Linq;
 using Component = System.Object;
 
 namespace Theraot.ECS
 {
-    public partial class Scope<TEntity>
+    public partial class Scope<TEntity, TComponentType, TQuery>
     {
         public void SetComponent<TComponent>(TEntity entity, TComponent component)
         {
