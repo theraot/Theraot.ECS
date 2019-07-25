@@ -100,7 +100,66 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return this.IsSubsetOf(other, true);
+            if (!(other is BitSet bitSet))
+            {
+                return this.IsSubsetOf(other, true);
+            }
+
+            var a = _wrapped;
+            var b = bitSet._wrapped;
+            /*
+             * +--------------+
+             * |              |
+             * | a ___  ___ b |
+             * |  /   /\   \  |
+             * | |   |  |   | |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             *
+             * b.Not()
+             * +--------------+
+             * |##############|
+             * |###___##___###|
+             * |##/###/\   \##|
+             * |#|###|  |   |#|
+             * |##\___\/___/##|
+             * |##############|
+             * +--------------+
+             *
+             * a.And(b.Not())
+             * +--------------+
+             * |              |
+             * |   ___  ___   |
+             * |  /###/\   \  |
+             * | |###|  |   | |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             * If this is empty, it means a is a subset of b
+             *
+             * a.Not()
+             * +--------------+
+             * |##############|
+             * |###___##___###|
+             * |##/   /\###\##|
+             * |#|   |  |###|#|
+             * |##\___\/___/##|
+             * |##############|
+             * +--------------+
+             *
+             * b.And(a.Not())
+             * +--------------+
+             * |              |
+             * |   ___  ___   |
+             * |  /   /\###\  |
+             * | |   |  |###| |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             * If also this is not empty, it means a is a proper subset of b
+             */
+            return IsEmpty(a.And(b.Not())) && !IsEmpty(b.And(a.Not()));
         }
 
         public bool IsProperSupersetOf(IEnumerable<int> other)
@@ -110,7 +169,66 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return this.IsSupersetOf(other, true);
+            if (!(other is BitSet bitSet))
+            {
+                return this.IsSupersetOf(other, true);
+            }
+
+            var a = _wrapped;
+            var b = bitSet._wrapped;
+            /*
+             * +--------------+
+             * |              |
+             * | a ___  ___ b |
+             * |  /   /\   \  |
+             * | |   |  |   | |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             *
+             * a.Not()
+             * +--------------+
+             * |##############|
+             * |###___##___###|
+             * |##/   /\###\##|
+             * |#|   |  |###|#|
+             * |##\___\/___/##|
+             * |##############|
+             * +--------------+
+             *
+             * b.And(a.Not())
+             * +--------------+
+             * |              |
+             * |   ___  ___   |
+             * |  /   /\###\  |
+             * | |   |  |###| |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             * If this is empty, it means a is superset of b
+             *
+             * b.Not()
+             * +--------------+
+             * |##############|
+             * |###___##___###|
+             * |##/###/\   \##|
+             * |#|###|  |   |#|
+             * |##\___\/___/##|
+             * |##############|
+             * +--------------+
+             *
+             * a.And(b.Not())
+             * +--------------+
+             * |              |
+             * |   ___  ___   |
+             * |  /###/\   \  |
+             * | |###|  |   | |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             * If also this is not empty, it means a is a proper superset of b
+             */
+            return IsEmpty(b.And(a.Not())) && !IsEmpty(a.And(b.Not()));
         }
 
         public bool IsSubsetOf(IEnumerable<int> other)
@@ -120,7 +238,45 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return this.IsSubsetOf(other, false);
+            if (!(other is BitSet bitSet))
+            {
+                return this.IsSubsetOf(other, false);
+            }
+
+            var a = _wrapped;
+            var b = bitSet._wrapped;
+            /*
+             * +--------------+
+             * |              |
+             * | a ___  ___ b |
+             * |  /   /\   \  |
+             * | |   |  |   | |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             *
+             * b.Not()
+             * +--------------+
+             * |##############|
+             * |###___##___###|
+             * |##/###/\   \##|
+             * |#|###|  |   |#|
+             * |##\___\/___/##|
+             * |##############|
+             * +--------------+
+             *
+             * a.And(b.Not())
+             * +--------------+
+             * |              |
+             * |   ___  ___   |
+             * |  /###/\   \  |
+             * | |###|  |   | |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             * If this is empty, it means a is a subset of b
+             */
+            return IsEmpty(a.And(b.Not()));
         }
 
         public bool IsSupersetOf(IEnumerable<int> other)
@@ -130,7 +286,45 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return this.IsSupersetOf(other, false);
+            if (!(other is BitSet bitSet))
+            {
+                return this.IsSupersetOf(other, false);
+            }
+
+            var a = _wrapped;
+            var b = bitSet._wrapped;
+            /*
+             * +--------------+
+             * |              |
+             * | a ___  ___ b |
+             * |  /   /\   \  |
+             * | |   |  |   | |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             *
+             * a.Not()
+             * +--------------+
+             * |##############|
+             * |###___##___###|
+             * |##/   /\###\##|
+             * |#|   |  |###|#|
+             * |##\___\/___/##|
+             * |##############|
+             * +--------------+
+             *
+             * b.And(a.Not())
+             * +--------------+
+             * |              |
+             * |   ___  ___   |
+             * |  /   /\###\  |
+             * | |   |  |###| |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             * If this is empty, it means a is superset of b
+             */
+            return IsEmpty(b.And(a.Not()));
         }
 
         public bool Overlaps(IEnumerable<int> other)
@@ -139,7 +333,34 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(other));
             }
-            return other.Any(Contains);
+
+            if (!(other is BitSet bitSet))
+            {
+                return other.Any(Contains);
+            }
+            var a = _wrapped;
+            var b = bitSet._wrapped;
+            /*
+             * +--------------+
+             * |              |
+             * | a ___  ___ b |
+             * |  /   /\   \  |
+             * | |   |  |   | |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             *
+             * a.And(b)
+             * +--------------+
+             * |              |
+             * |   ___  ___   |
+             * |  /   /\   \  |
+             * | |   |##|   | |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             */
+            return IsEmpty(a.And(b));
         }
 
         public bool Remove(int item)
@@ -176,8 +397,65 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(other));
             }
-            var otherAsICollection = other is ICollection<int> otherCollection ? otherCollection : other.ToArray();
-            return otherAsICollection.All(Contains) && this.All(input => otherAsICollection.Contains(input));
+            if (!(other is BitSet bitSet))
+            {
+                var otherAsICollection = other is ICollection<int> otherCollection ? otherCollection : other.ToArray();
+                return otherAsICollection.All(Contains) && this.All(input => otherAsICollection.Contains(input));
+            }
+            var a = _wrapped;
+            var b = bitSet._wrapped;
+            /*
+             * +--------------+
+             * |              |
+             * | a ___  ___ b |
+             * |  /   /\   \  |
+             * | |   |  |   | |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             *
+             * a.Or(b)
+             * +--------------+
+             * |              |
+             * |   ___  ___   |
+             * |  /###/\###\  |
+             * | |###|##|###| |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             *
+             * a.And(b)
+             * +--------------+
+             * |              |
+             * |   ___  ___   |
+             * |  /   /\   \  |
+             * | |   |##|   | |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             *
+             * a.And(b).Not()
+             * +--------------+
+             * |##############|
+             * |###___##___###|
+             * |##/###/\###\##|
+             * |#|###|  |###|#|
+             * |##\___\/___/##|
+             * |##############|
+             * +--------------+
+             *
+             * a.Or(b).And(a.And(b).Not())
+             * +--------------+
+             * |              |
+             * |   ___  ___   |
+             * |  /###/\###\  |
+             * | |###|  |###| |
+             * |  \___\/___/  |
+             * |              |
+             * +--------------+
+             * If this is empty, the sets are equal
+             */
+            return IsEmpty(a.Or(b).And(a.And(b).Not()));
         }
 
         public void SymmetricExceptWith(IEnumerable<int> other)
@@ -191,6 +469,21 @@ namespace Theraot.ECS
             {
                 Add(index);
             }
+        }
+
+        private static bool IsEmpty(BitArray result)
+        {
+            var integers = new int[(result.Count >> 5) + 1];
+            result.CopyTo(integers, 0);
+            foreach (var integer in integers)
+            {
+                if (integer != 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
