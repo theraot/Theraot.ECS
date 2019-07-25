@@ -41,10 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitSet.cs" />
+    <Compile Include="BitArrayExtensions.cs" />
     <Compile Include="DictionaryKeySet.cs" />
-    <Compile Include="BitSetStrategy.cs" />
-    <Compile Include="BitSetQuery.cs" />
+    <Compile Include="BitArrayStrategy.cs" />
+    <Compile Include="BitArrayQuery.cs" />
     <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="TypeHashSetStrategy.cs" />
     <Compile Include="DictionaryExtensions.cs" />

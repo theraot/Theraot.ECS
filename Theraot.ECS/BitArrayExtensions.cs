@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Theraot.ECS
 {
@@ -264,6 +265,24 @@ namespace Theraot.ECS
              * +--------------+
              */
             return a.And(b).IsEmpty();
+        }
+
+        public static bool Overlaps(this BitArray bitArray, IEnumerable<int> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            foreach (var index in other)
+            {
+                if (bitArray[index])
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static bool SetEquals(this BitArray bitArray, BitArray other)

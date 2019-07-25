@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using Component = System.Object;
 using ComponentType = System.Int32;
-using ComponentTypeSet = Theraot.ECS.BitSet;
+using ComponentTypeSet = System.Collections.BitArray;
 
 namespace Theraot.ECS
 {
-    public class BitSetStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet, BitSetQuery>
+    public class BitArrayStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet, BitArrayQuery>
     {
         private readonly int _capacity;
         private readonly Dictionary<Type, ComponentType> _componentTypeByType;
         private ComponentType _componentType;
 
-        public BitSetStrategy(int capacity)
+        public BitArrayStrategy(int capacity)
         {
             _capacity = capacity;
             _componentTypeByType = new Dictionary<Type, ComponentType>();
@@ -23,21 +23,21 @@ namespace Theraot.ECS
             var set = new ComponentTypeSet(_capacity);
             foreach (var pair in dictionary)
             {
-                set.Add(pair.Key);
+                set[pair.Key] = true;
             }
             return set;
         }
 
-        public BitSetQuery CreateQuery(ComponentType[] all, ComponentType[] any, ComponentType[] none)
+        public BitArrayQuery CreateQuery(ComponentType[] all, ComponentType[] any, ComponentType[] none)
         {
-            return new BitSetQuery(_capacity, all, any, none);
+            return new BitArrayQuery(_capacity, all, any, none);
         }
 
-        public IEnumerable<ComponentType> GetRelevantComponentTypes(BitSetQuery query)
+        public IEnumerable<ComponentType> GetRelevantComponentTypes(BitArrayQuery query)
         {
             for (var index = 0; index < _capacity; index++)
             {
-                if (query.All.Contains(index) || query.Any.Contains(index) || query.None.Contains(index))
+                if (query.All[index] || query.Any[index] || query.None[index])
                 {
                     yield return index;
                 }
@@ -57,7 +57,7 @@ namespace Theraot.ECS
             return componentType;
         }
 
-        public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, BitSetQuery query)
+        public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, BitArrayQuery query)
         {
             if
             (
@@ -81,9 +81,9 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ComponentTypeSet allComponentsTypes, BitSetQuery query)
+        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ComponentTypeSet allComponentsTypes, BitArrayQuery query)
         {
-            if (query.None.Count != 0 && query.None.Contains(addedComponentType))
+            if (query.None.Count != 0 && query.None[addedComponentType])
             {
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
@@ -101,7 +101,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponents(ComponentType[] addedComponentTypes, ComponentTypeSet allComponentsTypes, BitSetQuery query)
+        public QueryCheckResult QueryCheckOnAddedComponents(ComponentType[] addedComponentTypes, ComponentTypeSet allComponentsTypes, BitArrayQuery query)
         {
             if (query.None.Count != 0 && query.None.Overlaps(addedComponentTypes))
             {
@@ -123,7 +123,7 @@ namespace Theraot.ECS
 
         public void SetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
-            componentTypeSet.Add(componentType);
+            componentTypeSet[componentType] = true;
         }
     }
 }
