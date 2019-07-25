@@ -77,22 +77,52 @@ namespace Theraot.ECS
             {
                 return;
             }
-            var allComponentsTypes = new HashSet<ComponentType>(allComponents.Select(GetComponentType));
-            foreach (var queryId in GetQueriesByComponentType(addedComponentType))
+            UpdateEntitiesByQueryOnComponentAdded(entity, allComponents, addedComponentType);
+        }
+
+        public void SetComponent<TComponent1, TComponent2>(TEntity entity, TComponent1 component1, TComponent2 component2)
+        {
+            var allComponents = _componentsByEntity[entity];
+            var addedComponents = allComponents.SetAll
+            (
+                new Component[] { component1, component2 },
+                new[] { GetComponentType(component1), GetComponentType(component2) }
+            ).ToArray();
+            if (addedComponents.Length == 0)
             {
-                var set = _entitiesByQueryId[queryId];
-                switch (QueryCheck(addedComponentType, allComponentsTypes, queryId))
-                {
-                    case Remove:
-                        set.Remove(entity);
-                        break;
-                    case Add:
-                        set.Add(entity);
-                        break;
-                    default:
-                        break;
-                }
+                return;
             }
+            UpdateEntitiesByQueryOnComponentsAdded(entity, allComponents, addedComponents);
+        }
+
+        public void SetComponent<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponent1 component1, TComponent2 component2, TComponent3 component3)
+        {
+            var allComponents = _componentsByEntity[entity];
+            var addedComponents = allComponents.SetAll
+            (
+                new Component[] { component1, component2, component3 },
+                new[] { GetComponentType(component1), GetComponentType(component2), GetComponentType(component3) }
+            ).ToArray();
+            if (addedComponents.Length == 0)
+            {
+                return;
+            }
+            UpdateEntitiesByQueryOnComponentsAdded(entity, allComponents, addedComponents);
+        }
+
+        public void SetComponent<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponent1 component1, TComponent2 component2, TComponent3 component3, TComponent4 component4)
+        {
+            var allComponents = _componentsByEntity[entity];
+            var addedComponents = allComponents.SetAll
+            (
+                new Component[] { component1, component2, component3, component4 },
+                new[] { GetComponentType(component1), GetComponentType(component2), GetComponentType(component3), GetComponentType(component4) }
+            ).ToArray();
+            if (addedComponents.Length == 0)
+            {
+                return;
+            }
+            UpdateEntitiesByQueryOnComponentsAdded(entity, allComponents, addedComponents);
         }
 
         public void SetComponent(TEntity entity, params Component[] components)
@@ -103,28 +133,13 @@ namespace Theraot.ECS
             {
                 return;
             }
-            var addedComponentTypes = addedComponents.Select(GetComponentType).ToArray();
-            var allComponentsTypes = new HashSet<ComponentType>(allComponents.Select(GetComponentType));
-            foreach (var queryId in GetQueriesByComponentTypes(addedComponentTypes))
-            {
-                var set = _entitiesByQueryId[queryId];
-                switch (QueryCheck(addedComponentTypes, allComponentsTypes, queryId))
-                {
-                    case Remove:
-                        set.Remove(entity);
-                        break;
-                    case Add:
-                        set.Add(entity);
-                        break;
-                    default:
-                        break;
-                }
-            }
+            UpdateEntitiesByQueryOnComponentsAdded(entity, allComponents, addedComponents);
         }
 
         private static ComponentType GetComponentType<TComponent>(TComponent component)
         {
-            return component.GetType();
+            var _ = component;
+            return typeof(TComponent);
         }
 
         private IEnumerable<QueryId> GetQueriesByComponentType(ComponentType componentType)
@@ -189,6 +204,47 @@ namespace Theraot.ECS
                 return Add;
             }
             return Noop;
+        }
+
+        private void UpdateEntitiesByQueryOnComponentAdded(TEntity entity, Dictionary<ComponentType, object> allComponents, ComponentType addedComponentType)
+        {
+            var allComponentsTypes = new HashSet<ComponentType>(allComponents.Select(GetComponentType));
+            foreach (var queryId in GetQueriesByComponentType(addedComponentType))
+            {
+                var set = _entitiesByQueryId[queryId];
+                switch (QueryCheck(addedComponentType, allComponentsTypes, queryId))
+                {
+                    case Remove:
+                        set.Remove(entity);
+                        break;
+                    case Add:
+                        set.Add(entity);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void UpdateEntitiesByQueryOnComponentsAdded(TEntity entity, Dictionary<ComponentType, object> allComponents, object[] addedComponents)
+        {
+            var addedComponentTypes = addedComponents.Select(GetComponentType).ToArray();
+            var allComponentsTypes = new HashSet<ComponentType>(allComponents.Select(GetComponentType));
+            foreach (var queryId in GetQueriesByComponentTypes(addedComponentTypes))
+            {
+                var set = _entitiesByQueryId[queryId];
+                switch (QueryCheck(addedComponentTypes, allComponentsTypes, queryId))
+                {
+                    case Remove:
+                        set.Remove(entity);
+                        break;
+                    case Add:
+                        set.Add(entity);
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 }

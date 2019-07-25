@@ -13,13 +13,26 @@ namespace Theraot.ECS
             return isNew;
         }
 
-        public static IEnumerable<TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue[] items, Func<TValue, TKey> keySelector)
+        public static IEnumerable<TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue[] values, Func<TValue, TKey> keySelector)
         {
-            foreach (var item in items)
+            foreach (var value in values)
             {
-                if (dictionary.Set(keySelector(item), item))
+                if (dictionary.Set(keySelector(value), value))
                 {
-                    yield return item;
+                    yield return value;
+                }
+            }
+        }
+
+        public static IEnumerable<TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue[] values, TKey[] keys)
+        {
+            for (var index = 0; index < values.Length; index++)
+            {
+                var value = values[index];
+                var key = keys[index];
+                if (dictionary.Set(key, value))
+                {
+                    yield return value;
                 }
             }
         }
