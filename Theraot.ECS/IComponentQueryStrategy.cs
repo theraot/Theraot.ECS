@@ -11,7 +11,7 @@ namespace Theraot.ECS
 
         QueryCheckResult QueryCheck(ISet<TComponentType> allComponentsTypes, TQuery query);
 
-        QueryCheckResult QueryCheckOnAddedComponent(TComponentType addedComponentType, ISet<TComponentType> allComponentsTypes, TQuery queryId);
+        QueryCheckResult QueryCheckOnAddedComponent(TComponentType addedComponentType, ISet<TComponentType> allComponentsTypes, TQuery query);
 
         QueryCheckResult QueryCheckOnAddedComponents(TComponentType[] addedComponentTypes, ISet<TComponentType> allComponentsTypes, TQuery query);
 

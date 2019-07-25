@@ -11,17 +11,17 @@ namespace Theraot.ECS
             return new TypeHashSetQuery(all, any, none);
         }
 
-        public IEnumerable<ComponentType> GetRelevantComponentTypes(TypeHashSetQuery typeHashSetQuery)
+        public IEnumerable<ComponentType> GetRelevantComponentTypes(TypeHashSetQuery query)
         {
-            foreach (var componentType in typeHashSetQuery.All)
+            foreach (var componentType in query.All)
             {
                 yield return componentType;
             }
-            foreach (var componentType in typeHashSetQuery.Any)
+            foreach (var componentType in query.Any)
             {
                 yield return componentType;
             }
-            foreach (var componentType in typeHashSetQuery.None)
+            foreach (var componentType in query.None)
             {
                 yield return componentType;
             }
@@ -32,12 +32,12 @@ namespace Theraot.ECS
             return type;
         }
 
-        public QueryCheckResult QueryCheck(ISet<ComponentType> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
+        public QueryCheckResult QueryCheck(ISet<ComponentType> allComponentsTypes, TypeHashSetQuery query)
         {
             if
             (
-                typeHashSetQuery.None.Count != 0
-                && (typeHashSetQuery.None.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(typeHashSetQuery.None) : typeHashSetQuery.None.ContainsAny(allComponentsTypes))
+                query.None.Count != 0
+                && (query.None.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(query.None) : query.None.ContainsAny(allComponentsTypes))
             )
             {
                 // The entity has one of the components it should not have for this queryId
@@ -45,28 +45,8 @@ namespace Theraot.ECS
             }
             if
             (
-                allComponentsTypes.ContainsAll(typeHashSetQuery.All)
-                && (typeHashSetQuery.Any.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(typeHashSetQuery.Any) : typeHashSetQuery.Any.Count == 0 || typeHashSetQuery.Any.ContainsAny(allComponentsTypes))
-            )
-            {
-                // The entity has all the required components for this queryId
-                // and at least one of the optional components (if any) for this queryId
-                return QueryCheckResult.Add;
-            }
-            return QueryCheckResult.Noop;
-        }
-
-        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ISet<ComponentType> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
-        {
-            if (typeHashSetQuery.None.Count != 0 && typeHashSetQuery.None.Contains(addedComponentType))
-            {
-                // The entity has one of the components it should not have for this queryId
-                return QueryCheckResult.Remove;
-            }
-            if
-            (
-                allComponentsTypes.ContainsAll(typeHashSetQuery.All)
-                && (typeHashSetQuery.Any.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(typeHashSetQuery.Any) : typeHashSetQuery.Any.Count == 0 || typeHashSetQuery.Any.ContainsAny(allComponentsTypes))
+                allComponentsTypes.ContainsAll(query.All)
+                && (query.Any.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(query.Any) : query.Any.Count == 0 || query.Any.ContainsAny(allComponentsTypes))
             )
             {
                 // The entity has all the required components for this queryId
@@ -76,17 +56,37 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponents(ComponentType[] addedComponentTypes, ISet<ComponentType> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
+        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ISet<ComponentType> allComponentsTypes, TypeHashSetQuery query)
         {
-            if (typeHashSetQuery.None.Count != 0 && typeHashSetQuery.None.ContainsAny(addedComponentTypes))
+            if (query.None.Count != 0 && query.None.Contains(addedComponentType))
             {
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
             if
             (
-                allComponentsTypes.ContainsAll(typeHashSetQuery.All)
-                && (typeHashSetQuery.Any.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(typeHashSetQuery.Any) : typeHashSetQuery.Any.Count == 0 || typeHashSetQuery.Any.ContainsAny(allComponentsTypes))
+                allComponentsTypes.ContainsAll(query.All)
+                && (query.Any.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(query.Any) : query.Any.Count == 0 || query.Any.ContainsAny(allComponentsTypes))
+            )
+            {
+                // The entity has all the required components for this queryId
+                // and at least one of the optional components (if any) for this queryId
+                return QueryCheckResult.Add;
+            }
+            return QueryCheckResult.Noop;
+        }
+
+        public QueryCheckResult QueryCheckOnAddedComponents(ComponentType[] addedComponentTypes, ISet<ComponentType> allComponentsTypes, TypeHashSetQuery query)
+        {
+            if (query.None.Count != 0 && query.None.ContainsAny(addedComponentTypes))
+            {
+                // The entity has one of the components it should not have for this queryId
+                return QueryCheckResult.Remove;
+            }
+            if
+            (
+                allComponentsTypes.ContainsAll(query.All)
+                && (query.Any.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(query.Any) : query.Any.Count == 0 || query.Any.ContainsAny(allComponentsTypes))
             )
             {
                 // The entity has all the required components for this queryId
