@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using Component = System.Object;
 using ComponentType = System.Type;
+using ComponentTypeSet = Theraot.ECS.DictionaryKeySet<System.Type>;
 
 namespace Theraot.ECS
 {
-    public class TypeHashSetStrategy : IComponentQueryStrategy<ComponentType, TypeHashSetQuery>
+    public class TypeHashSetStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet, TypeHashSetQuery>
     {
+        public ComponentTypeSet CreateComponentTypeSet(Dictionary<ComponentType, Component> dictionary)
+        {
+            return ComponentTypeSet.CreateFrom(dictionary);
+        }
+
         public TypeHashSetQuery CreateQuery(ComponentType[] all, ComponentType[] any, ComponentType[] none)
         {
             return new TypeHashSetQuery(all, any, none);
@@ -32,7 +39,7 @@ namespace Theraot.ECS
             return type;
         }
 
-        public QueryCheckResult QueryCheck(ISet<ComponentType> allComponentsTypes, TypeHashSetQuery query)
+        public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
         {
             if
             (
@@ -56,7 +63,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ISet<ComponentType> allComponentsTypes, TypeHashSetQuery query)
+        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
         {
             if (query.None.Count != 0 && query.None.Contains(addedComponentType))
             {
@@ -76,7 +83,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponents(ComponentType[] addedComponentTypes, ISet<ComponentType> allComponentsTypes, TypeHashSetQuery query)
+        public QueryCheckResult QueryCheckOnAddedComponents(ComponentType[] addedComponentTypes, ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
         {
             if (query.None.Count != 0 && query.None.Overlaps(addedComponentTypes))
             {
@@ -94,6 +101,11 @@ namespace Theraot.ECS
                 return QueryCheckResult.Add;
             }
             return QueryCheckResult.Noop;
+        }
+
+        public void SetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
+        {
+            var _ = componentTypeSet;
         }
     }
 }

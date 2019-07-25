@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Component = System.Object;
 using ComponentType = System.Int32;
+using ComponentTypeSet = Theraot.ECS.BitSet;
 
 namespace Theraot.ECS
 {
-    public class BitSetStrategy : IComponentQueryStrategy<ComponentType, BitSetQuery>
+    public class BitSetStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet, BitSetQuery>
     {
         private readonly int _capacity;
         private readonly Dictionary<Type, ComponentType> _componentTypeByType;
@@ -14,6 +16,16 @@ namespace Theraot.ECS
         {
             _capacity = capacity;
             _componentTypeByType = new Dictionary<Type, ComponentType>();
+        }
+
+        public ComponentTypeSet CreateComponentTypeSet(Dictionary<ComponentType, Component> dictionary)
+        {
+            var set = new ComponentTypeSet(_capacity);
+            foreach (var pair in dictionary)
+            {
+                set.Add(pair.Key);
+            }
+            return set;
         }
 
         public BitSetQuery CreateQuery(ComponentType[] all, ComponentType[] any, ComponentType[] none)
@@ -45,7 +57,7 @@ namespace Theraot.ECS
             return componentType;
         }
 
-        public QueryCheckResult QueryCheck(ISet<ComponentType> allComponentsTypes, BitSetQuery query)
+        public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, BitSetQuery query)
         {
             if
             (
@@ -69,7 +81,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ISet<ComponentType> allComponentsTypes, BitSetQuery query)
+        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ComponentTypeSet allComponentsTypes, BitSetQuery query)
         {
             if (query.None.Count != 0 && query.None.Contains(addedComponentType))
             {
@@ -89,7 +101,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponents(ComponentType[] addedComponentTypes, ISet<ComponentType> allComponentsTypes, BitSetQuery query)
+        public QueryCheckResult QueryCheckOnAddedComponents(ComponentType[] addedComponentTypes, ComponentTypeSet allComponentsTypes, BitSetQuery query)
         {
             if (query.None.Count != 0 && query.None.Overlaps(addedComponentTypes))
             {
@@ -107,6 +119,11 @@ namespace Theraot.ECS
                 return QueryCheckResult.Add;
             }
             return QueryCheckResult.Noop;
+        }
+
+        public void SetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
+        {
+            componentTypeSet.Add(componentType);
         }
     }
 }

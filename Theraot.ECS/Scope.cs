@@ -6,24 +6,24 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    public partial class Scope<TEntity, TComponentType, TQuery>
+    public partial class Scope<TEntity, TComponentType, TComponentTypeSet, TQuery>
     {
         private readonly Dictionary<TEntity, Dictionary<TComponentType, Component>> _componentsByEntity;
-        private readonly Dictionary<TEntity, DictionaryKeySet<TComponentType>> _componentTypesByEntity;
+        private readonly Dictionary<TEntity, TComponentTypeSet> _componentTypesByEntity;
         private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
         private readonly Func<TEntity> _entityFactory;
         private readonly Dictionary<QueryId, TQuery> _queryByQueryId;
         private readonly Dictionary<TQuery, QueryId> _queryIdByQuery;
         private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
-        private readonly IComponentQueryStrategy<TComponentType, TQuery> _strategy;
+        private readonly IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> _strategy;
         private int _queryId;
 
-        public Scope(Func<TEntity> entityFactory, IComponentQueryStrategy<TComponentType, TQuery> strategy)
+        public Scope(Func<TEntity> entityFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> strategy)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _strategy = strategy ?? throw  new ArgumentNullException(nameof(strategy));
             _componentsByEntity = new Dictionary<TEntity, Dictionary<TComponentType, Component>>();
-            _componentTypesByEntity = new Dictionary<TEntity, DictionaryKeySet<TComponentType>>();
+            _componentTypesByEntity = new Dictionary<TEntity, TComponentTypeSet>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>();
             _queryByQueryId = new Dictionary<QueryId, TQuery>();
@@ -35,7 +35,7 @@ namespace Theraot.ECS
             var entity = _entityFactory();
             var dictionary = new Dictionary<TComponentType, Component>();
             _componentsByEntity[entity] = dictionary;
-            _componentTypesByEntity[entity] = DictionaryKeySet<TComponentType>.CreateFrom(dictionary);
+            _componentTypesByEntity[entity] = _strategy.CreateComponentTypeSet(dictionary);
             return entity;
         }
 
@@ -138,7 +138,7 @@ namespace Theraot.ECS
             return set;
         }
 
-        private void UpdateEntitiesByQueryOnAddedComponent(TEntity entity, ISet<TComponentType> allComponentsTypes, TComponentType addedComponentType)
+        private void UpdateEntitiesByQueryOnAddedComponent(TEntity entity, TComponentTypeSet allComponentsTypes, TComponentType addedComponentType)
         {
             foreach (var queryId in GetQueriesByComponentType(addedComponentType))
             {
@@ -157,7 +157,7 @@ namespace Theraot.ECS
             }
         }
 
-        private void UpdateEntitiesByQueryOnAddedComponents(TEntity entity, ISet<TComponentType> allComponentsTypes, Component[] addedComponents)
+        private void UpdateEntitiesByQueryOnAddedComponents(TEntity entity, TComponentTypeSet allComponentsTypes, Component[] addedComponents)
         {
             var addedComponentTypes = addedComponents.Select(GetComponentType).ToArray();
             foreach (var queryId in GetQueriesByComponentTypes(addedComponentTypes))

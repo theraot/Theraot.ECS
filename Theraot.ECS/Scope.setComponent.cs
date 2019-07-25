@@ -5,7 +5,7 @@ using Component = System.Object;
 
 namespace Theraot.ECS
 {
-    public partial class Scope<TEntity, TComponentType, TQuery>
+    public partial class Scope<TEntity, TComponentType, TComponentTypeSet, TQuery>
     {
         public void SetComponent<TComponent>(TEntity entity, TComponent component)
         {
@@ -17,6 +17,7 @@ namespace Theraot.ECS
             }
 
             var allComponentsTypes = _componentTypesByEntity[entity];
+            _strategy.SetComponentType(allComponentsTypes, addedComponentType);
             UpdateEntitiesByQueryOnAddedComponent(entity, allComponentsTypes, addedComponentType);
         }
 

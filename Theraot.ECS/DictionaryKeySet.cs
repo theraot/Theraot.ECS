@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Theraot.ECS
 {
-    internal sealed class DictionaryKeySet<T> : ISet<T>
+    public sealed class DictionaryKeySet<T> : ISet<T>
     {
         private readonly Func<T, bool> _containsKey;
         private readonly Func<int> _count;
