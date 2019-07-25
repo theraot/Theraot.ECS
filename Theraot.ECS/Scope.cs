@@ -12,17 +12,19 @@ namespace Theraot.ECS
         private readonly Dictionary<TEntity, HashSet<Component>> _componentsByEntity;
         private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQuery;
         private readonly Func<TEntity> _entityFactory;
-        private readonly Dictionary<QueryId, Query> _queries;
         private readonly Dictionary<ComponentType, HashSet<QueryId>> _queriesByComponentType;
+        private readonly Dictionary<QueryId, Query> _queryByQueryId;
+        private readonly Dictionary<Query, QueryId> _queryIdByQuery;
         private int _queryId;
 
         public Scope(Func<TEntity> entityFactory)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
-            _queries = new Dictionary<int, Query>();
-            _queriesByComponentType = new Dictionary<Type, HashSet<int>>();
-            _entitiesByQuery = new Dictionary<int, HashSet<TEntity>>();
             _componentsByEntity = new Dictionary<TEntity, HashSet<object>>();
+            _entitiesByQuery = new Dictionary<int, HashSet<TEntity>>();
+            _queriesByComponentType = new Dictionary<Type, HashSet<int>>();
+            _queryByQueryId = new Dictionary<int, Query>();
+            _queryIdByQuery = new Dictionary<Query, int>();
         }
 
         public TEntity CreateEntity()
@@ -32,15 +34,16 @@ namespace Theraot.ECS
             return entity;
         }
 
-        public void RegisterQuery(Query query)
+        public QueryId RegisterQuery(Query query)
         {
-            var queryId = _queryId++; // set and increment afterwards
-            _queries.Add(queryId, query);
-            if (!_entitiesByQuery.TryAdd(queryId, new HashSet<TEntity>()))
+            var queryId = _queryId;
+            if (!_queryIdByQuery.TryAdd(query, queryId))
             {
-                return;
+                return _queryIdByQuery[query];
             }
-
+            _queryId++;
+            _queryByQueryId[queryId] = query;
+            _entitiesByQuery[queryId] = new HashSet<TEntity>();
             foreach (var componentTypes in new[] { query.All, query.Any, query.None })
             {
                 foreach (var componentType in componentTypes)
@@ -54,6 +57,7 @@ namespace Theraot.ECS
                     set.Add(queryId);
                 }
             }
+            return queryId;
         }
 
         public void SetComponent<TComponent>(TEntity entity, TComponent component)
@@ -136,9 +140,9 @@ namespace Theraot.ECS
             }
         }
 
-        private int QueryCheck(ComponentType[] addedComponentTypes, HashSet<ComponentType> allComponentsTypes, int queryId)
+        private int QueryCheck(ComponentType[] addedComponentTypes, HashSet<ComponentType> allComponentsTypes, QueryId queryId)
         {
-            var query = _queries[queryId];
+            var query = _queryByQueryId[queryId];
             if (query.None.Count != 0 && query.None.ContainsAny(addedComponentTypes))
             {
                 // The entity has one of the components it should not have for this query
@@ -159,7 +163,7 @@ namespace Theraot.ECS
 
         private int QueryCheck(ComponentType addedComponentType, HashSet<ComponentType> allComponentsTypes, int queryId)
         {
-            var query = _queries[queryId];
+            var query = _queryByQueryId[queryId];
             if (query.None.Count != 0 && query.None.Contains(addedComponentType))
             {
                 // The entity has one of the components it should not have for this query
