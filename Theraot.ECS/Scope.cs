@@ -9,6 +9,7 @@ namespace Theraot.ECS
     public partial class Scope<TEntity, TComponentType, TQuery>
     {
         private readonly Dictionary<TEntity, Dictionary<TComponentType, Component>> _componentsByEntity;
+        private readonly Dictionary<TEntity, AdHocSet<TComponentType>> _componentTypesByEntity;
         private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
         private readonly Func<TEntity> _entityFactory;
         private readonly Dictionary<QueryId, TQuery> _queryByQueryId;
@@ -22,6 +23,7 @@ namespace Theraot.ECS
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _strategy = strategy ?? throw  new ArgumentNullException(nameof(strategy));
             _componentsByEntity = new Dictionary<TEntity, Dictionary<TComponentType, Component>>();
+            _componentTypesByEntity = new Dictionary<TEntity, AdHocSet<TComponentType>>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>();
             _queryByQueryId = new Dictionary<QueryId, TQuery>();
@@ -31,7 +33,9 @@ namespace Theraot.ECS
         public TEntity CreateEntity()
         {
             var entity = _entityFactory();
-            _componentsByEntity[entity] = new Dictionary<TComponentType, Component>();
+            var dictionary = new Dictionary<TComponentType, Component>();
+            _componentsByEntity[entity] = dictionary;
+            _componentTypesByEntity[entity] = new AdHocSet<TComponentType>(dictionary.Keys, () => dictionary.Count, dictionary.ContainsKey);
             return entity;
         }
 
@@ -74,14 +78,14 @@ namespace Theraot.ECS
                 queryIds.Add(queryId);
             }
 
-            if (_componentsByEntity.Count == 0)
+            if (_componentTypesByEntity.Count == 0)
             {
                 return queryId;
             }
-            foreach (var entity in _componentsByEntity.Keys)
+            foreach (var entity in _componentTypesByEntity.Keys)
             {
-                var components = _componentsByEntity[entity];
-                if (_strategy.QueryCheck(new AdHocSet<TComponentType>(components.Keys, () => components.Count, components.ContainsKey), query) == QueryCheckResult.Add)
+                var componentTypes = _componentTypesByEntity[entity];
+                if (_strategy.QueryCheck(componentTypes, query) == QueryCheckResult.Add)
                 {
                     set.Add(entity);
                 }

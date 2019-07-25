@@ -16,7 +16,7 @@ namespace Theraot.ECS
                 return;
             }
 
-            var allComponentsTypes = new AdHocSet<TComponentType>(allComponents.Keys, () => allComponents.Count, allComponents.ContainsKey);
+            var allComponentsTypes = _componentTypesByEntity[entity];
             UpdateEntitiesByQueryOnAddedComponent(entity, allComponentsTypes, addedComponentType);
         }
 
@@ -33,7 +33,7 @@ namespace Theraot.ECS
                 return;
             }
 
-            var allComponentsTypes = new AdHocSet<TComponentType>(allComponents.Keys, () => allComponents.Count, allComponents.ContainsKey);
+            var allComponentsTypes = _componentTypesByEntity[entity];
             UpdateEntitiesByQueryOnAddedComponents(entity, allComponentsTypes, addedComponents);
         }
 
@@ -50,7 +50,7 @@ namespace Theraot.ECS
                 return;
             }
 
-            var allComponentsTypes = new AdHocSet<TComponentType>(allComponents.Keys, () => allComponents.Count, allComponents.ContainsKey);
+            var allComponentsTypes = _componentTypesByEntity[entity];
             UpdateEntitiesByQueryOnAddedComponents(entity, allComponentsTypes, addedComponents);
         }
 
@@ -67,7 +67,7 @@ namespace Theraot.ECS
                 return;
             }
 
-            var allComponentsTypes = new AdHocSet<TComponentType>(allComponents.Keys, () => allComponents.Count, allComponents.ContainsKey);
+            var allComponentsTypes = _componentTypesByEntity[entity];
             UpdateEntitiesByQueryOnAddedComponents(entity, allComponentsTypes, addedComponents);
         }
 
@@ -80,7 +80,7 @@ namespace Theraot.ECS
                 return;
             }
 
-            var allComponentsTypes = new AdHocSet<TComponentType>(allComponents.Keys, () => allComponents.Count, allComponents.ContainsKey);
+            var allComponentsTypes = _componentTypesByEntity[entity];
             UpdateEntitiesByQueryOnAddedComponents(entity, allComponentsTypes, addedComponents);
         }
     }
