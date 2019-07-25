@@ -38,9 +38,50 @@ namespace Theraot.ECS
             return entity;
         }
 
-        public IEnumerable<TEntity> Query(QueryId query)
+        public TComponent GetComponent<TComponent>(TEntity entity)
+        {
+            return (TComponent)_componentsByEntity[entity][GetComponentType<TComponent>()];
+        }
+
+        public IEnumerable<TEntity> GetEntities(QueryId query)
         {
             return _entitiesByQueryId[query];
+        }
+
+        public void Query<TComponent>(QueryId query, Action<TEntity, TComponent> callback)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+            foreach (var entity in GetEntities(query))
+            {
+                callback(entity, GetComponent<TComponent>(entity));
+            }
+        }
+
+        public void Query<TComponent1, TComponent2>(QueryId query, Action<TEntity, TComponent1, TComponent2> callback)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+            foreach (var entity in GetEntities(query))
+            {
+                callback(entity, GetComponent<TComponent1>(entity), GetComponent<TComponent2>(entity));
+            }
+        }
+
+        public void Query<TComponent1, TComponent2, TComponent3>(QueryId query, Action<TEntity, TComponent1, TComponent2, TComponent3> callback)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+            foreach (var entity in GetEntities(query))
+            {
+                callback(entity, GetComponent<TComponent1>(entity), GetComponent<TComponent2>(entity), GetComponent<TComponent3>(entity));
+            }
         }
 
         public QueryId RegisterQuery(Query query)
@@ -139,6 +180,11 @@ namespace Theraot.ECS
         private static ComponentType GetComponentType<TComponent>(TComponent component)
         {
             var _ = component;
+            return typeof(TComponent);
+        }
+
+        private static ComponentType GetComponentType<TComponent>()
+        {
             return typeof(TComponent);
         }
 
