@@ -49,7 +49,11 @@ namespace Theraot.ECS
 
         public IEnumerable<TEntity> GetEntities(QueryId query)
         {
-            return _entitiesByQueryId[query];
+            if (_entitiesByQueryId.TryGetValue(query, out var result))
+            {
+                return result;
+            }
+            return Array.Empty<TEntity>();
         }
 
         public void Query<TComponent>(QueryId query, Action<TEntity, TComponent> callback)
