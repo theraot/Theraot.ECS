@@ -9,7 +9,7 @@ namespace Theraot.ECS
     public partial class Scope<TEntity, TComponentType, TQuery>
     {
         private readonly Dictionary<TEntity, Dictionary<TComponentType, Component>> _componentsByEntity;
-        private readonly Dictionary<TEntity, AdHocSet<TComponentType>> _componentTypesByEntity;
+        private readonly Dictionary<TEntity, DictionaryKeySet<TComponentType>> _componentTypesByEntity;
         private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
         private readonly Func<TEntity> _entityFactory;
         private readonly Dictionary<QueryId, TQuery> _queryByQueryId;
@@ -23,7 +23,7 @@ namespace Theraot.ECS
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _strategy = strategy ?? throw  new ArgumentNullException(nameof(strategy));
             _componentsByEntity = new Dictionary<TEntity, Dictionary<TComponentType, Component>>();
-            _componentTypesByEntity = new Dictionary<TEntity, AdHocSet<TComponentType>>();
+            _componentTypesByEntity = new Dictionary<TEntity, DictionaryKeySet<TComponentType>>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>();
             _queryByQueryId = new Dictionary<QueryId, TQuery>();
@@ -35,7 +35,7 @@ namespace Theraot.ECS
             var entity = _entityFactory();
             var dictionary = new Dictionary<TComponentType, Component>();
             _componentsByEntity[entity] = dictionary;
-            _componentTypesByEntity[entity] = new AdHocSet<TComponentType>(dictionary.Keys, () => dictionary.Count, dictionary.ContainsKey);
+            _componentTypesByEntity[entity] = DictionaryKeySet<TComponentType>.CreateFrom(dictionary);
             return entity;
         }
 
