@@ -24,7 +24,7 @@ namespace Theraot.ECS
         public Scope(Func<TEntity> entityFactory)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
-            _componentsByEntity = new Dictionary<TEntity, HashSet<object>>();
+            _componentsByEntity = new Dictionary<TEntity, HashSet<Component>>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<ComponentType, HashSet<QueryId>>();
             _queryByQueryId = new Dictionary<QueryId, Query>();
@@ -34,7 +34,7 @@ namespace Theraot.ECS
         public TEntity CreateEntity()
         {
             var entity = _entityFactory();
-            _componentsByEntity[entity] = new HashSet<object>();
+            _componentsByEntity[entity] = new HashSet<Component>();
             return entity;
         }
 
