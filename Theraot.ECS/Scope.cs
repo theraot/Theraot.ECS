@@ -93,18 +93,34 @@ namespace Theraot.ECS
             }
             _queryId++;
             _queryByQueryId[queryId] = query;
-            _entitiesByQueryId[queryId] = new HashSet<TEntity>();
+            var set = _entitiesByQueryId[queryId] = new HashSet<TEntity>();
             foreach (var componentTypes in new[] { query.All, query.Any, query.None })
             {
                 foreach (var componentType in componentTypes)
                 {
-                    if (!_queryIdsByComponentType.TryGetValue(componentType, out var set))
+                    if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
                     {
-                        set = new HashSet<QueryId>();
-                        _queryIdsByComponentType.TryAdd(componentType, set);
+                        queryIds = new HashSet<QueryId>();
+                        _queryIdsByComponentType.TryAdd(componentType, queryIds);
                     }
 
-                    set.Add(queryId);
+                    queryIds.Add(queryId);
+                }
+            }
+
+            if (_componentsByEntity.Count == 0)
+            {
+                return queryId;
+            }
+            foreach (var entity in _componentsByEntity.Keys)
+            {
+                switch (QueryCheck(new HashSet<ComponentType>(_componentsByEntity[entity].Select(GetComponentType)), queryId))
+                {
+                    case Add:
+                        set.Add(entity);
+                        break;
+                    default:
+                        break;
                 }
             }
             return queryId;
@@ -118,7 +134,7 @@ namespace Theraot.ECS
             {
                 return;
             }
-            UpdateEntitiesByQueryOnComponentAdded(entity, allComponents, addedComponentType);
+            UpdateEntitiesByQueryOnAddedComponent(entity, allComponents, addedComponentType);
         }
 
         public void SetComponent<TComponent1, TComponent2>(TEntity entity, TComponent1 component1, TComponent2 component2)
@@ -133,7 +149,7 @@ namespace Theraot.ECS
             {
                 return;
             }
-            UpdateEntitiesByQueryOnComponentsAdded(entity, allComponents, addedComponents);
+            UpdateEntitiesByQueryOnAddedComponents(entity, allComponents, addedComponents);
         }
 
         public void SetComponent<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponent1 component1, TComponent2 component2, TComponent3 component3)
@@ -148,7 +164,7 @@ namespace Theraot.ECS
             {
                 return;
             }
-            UpdateEntitiesByQueryOnComponentsAdded(entity, allComponents, addedComponents);
+            UpdateEntitiesByQueryOnAddedComponents(entity, allComponents, addedComponents);
         }
 
         public void SetComponent<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponent1 component1, TComponent2 component2, TComponent3 component3, TComponent4 component4)
@@ -163,7 +179,7 @@ namespace Theraot.ECS
             {
                 return;
             }
-            UpdateEntitiesByQueryOnComponentsAdded(entity, allComponents, addedComponents);
+            UpdateEntitiesByQueryOnAddedComponents(entity, allComponents, addedComponents);
         }
 
         public void SetComponent(TEntity entity, params Component[] components)
@@ -174,7 +190,7 @@ namespace Theraot.ECS
             {
                 return;
             }
-            UpdateEntitiesByQueryOnComponentsAdded(entity, allComponents, addedComponents);
+            UpdateEntitiesByQueryOnAddedComponents(entity, allComponents, addedComponents);
         }
 
         private static ComponentType GetComponentType<TComponent>(TComponent component)
@@ -210,10 +226,14 @@ namespace Theraot.ECS
             }
         }
 
-        private int QueryCheck(ComponentType[] addedComponentTypes, HashSet<ComponentType> allComponentsTypes, QueryId queryId)
+        private int QueryCheck(HashSet<ComponentType> allComponentsTypes, QueryId queryId)
         {
             var query = _queryByQueryId[queryId];
-            if (query.None.Count != 0 && query.None.ContainsAny(addedComponentTypes))
+            if
+            (
+                query.None.Count != 0
+                && (query.None.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(query.None) : query.None.ContainsAny(allComponentsTypes))
+            )
             {
                 // The entity has one of the components it should not have for this query
                 return Remove;
@@ -231,7 +251,7 @@ namespace Theraot.ECS
             return Noop;
         }
 
-        private int QueryCheck(ComponentType addedComponentType, HashSet<ComponentType> allComponentsTypes, QueryId queryId)
+        private int QueryCheckOnAddedComponent(ComponentType addedComponentType, HashSet<ComponentType> allComponentsTypes, QueryId queryId)
         {
             var query = _queryByQueryId[queryId];
             if (query.None.Count != 0 && query.None.Contains(addedComponentType))
@@ -252,13 +272,34 @@ namespace Theraot.ECS
             return Noop;
         }
 
-        private void UpdateEntitiesByQueryOnComponentAdded(TEntity entity, Dictionary<ComponentType, object> allComponents, ComponentType addedComponentType)
+        private int QueryCheckOnAddedComponents(ComponentType[] addedComponentTypes, HashSet<ComponentType> allComponentsTypes, QueryId queryId)
+        {
+            var query = _queryByQueryId[queryId];
+            if (query.None.Count != 0 && query.None.ContainsAny(addedComponentTypes))
+            {
+                // The entity has one of the components it should not have for this query
+                return Remove;
+            }
+            if
+            (
+                allComponentsTypes.ContainsAll(query.All)
+                && (query.Any.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(query.Any) : query.Any.Count == 0 || query.Any.ContainsAny(allComponentsTypes))
+            )
+            {
+                // The entity has all the required components for this query
+                // and at least one of the optional components (if any) for this query
+                return Add;
+            }
+            return Noop;
+        }
+
+        private void UpdateEntitiesByQueryOnAddedComponent(TEntity entity, Dictionary<ComponentType, object> allComponents, ComponentType addedComponentType)
         {
             var allComponentsTypes = new HashSet<ComponentType>(allComponents.Select(GetComponentType));
             foreach (var queryId in GetQueriesByComponentType(addedComponentType))
             {
                 var set = _entitiesByQueryId[queryId];
-                switch (QueryCheck(addedComponentType, allComponentsTypes, queryId))
+                switch (QueryCheckOnAddedComponent(addedComponentType, allComponentsTypes, queryId))
                 {
                     case Remove:
                         set.Remove(entity);
@@ -272,14 +313,14 @@ namespace Theraot.ECS
             }
         }
 
-        private void UpdateEntitiesByQueryOnComponentsAdded(TEntity entity, Dictionary<ComponentType, object> allComponents, object[] addedComponents)
+        private void UpdateEntitiesByQueryOnAddedComponents(TEntity entity, Dictionary<ComponentType, object> allComponents, object[] addedComponents)
         {
             var addedComponentTypes = addedComponents.Select(GetComponentType).ToArray();
             var allComponentsTypes = new HashSet<ComponentType>(allComponents.Select(GetComponentType));
             foreach (var queryId in GetQueriesByComponentTypes(addedComponentTypes))
             {
                 var set = _entitiesByQueryId[queryId];
-                switch (QueryCheck(addedComponentTypes, allComponentsTypes, queryId))
+                switch (QueryCheckOnAddedComponents(addedComponentTypes, allComponentsTypes, queryId))
                 {
                     case Remove:
                         set.Remove(entity);
