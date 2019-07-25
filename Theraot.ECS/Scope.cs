@@ -9,22 +9,26 @@ namespace Theraot.ECS
 {
     public class Scope<TEntity>
     {
+        private const int Add = 1;
+        private const int Noop = 0;
+        private const int Remove = -1;
+
         private readonly Dictionary<TEntity, HashSet<Component>> _componentsByEntity;
-        private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQuery;
+        private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
         private readonly Func<TEntity> _entityFactory;
-        private readonly Dictionary<ComponentType, HashSet<QueryId>> _queriesByComponentType;
         private readonly Dictionary<QueryId, Query> _queryByQueryId;
         private readonly Dictionary<Query, QueryId> _queryIdByQuery;
+        private readonly Dictionary<ComponentType, HashSet<QueryId>> _queryIdsByComponentType;
         private int _queryId;
 
         public Scope(Func<TEntity> entityFactory)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _componentsByEntity = new Dictionary<TEntity, HashSet<object>>();
-            _entitiesByQuery = new Dictionary<int, HashSet<TEntity>>();
-            _queriesByComponentType = new Dictionary<Type, HashSet<int>>();
-            _queryByQueryId = new Dictionary<int, Query>();
-            _queryIdByQuery = new Dictionary<Query, int>();
+            _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
+            _queryIdsByComponentType = new Dictionary<ComponentType, HashSet<QueryId>>();
+            _queryByQueryId = new Dictionary<QueryId, Query>();
+            _queryIdByQuery = new Dictionary<Query, QueryId>();
         }
 
         public TEntity CreateEntity()
@@ -43,15 +47,15 @@ namespace Theraot.ECS
             }
             _queryId++;
             _queryByQueryId[queryId] = query;
-            _entitiesByQuery[queryId] = new HashSet<TEntity>();
+            _entitiesByQueryId[queryId] = new HashSet<TEntity>();
             foreach (var componentTypes in new[] { query.All, query.Any, query.None })
             {
                 foreach (var componentType in componentTypes)
                 {
-                    if (!_queriesByComponentType.TryGetValue(componentType, out var set))
+                    if (!_queryIdsByComponentType.TryGetValue(componentType, out var set))
                     {
                         set = new HashSet<QueryId>();
-                        _queriesByComponentType.TryAdd(componentType, set);
+                        _queryIdsByComponentType.TryAdd(componentType, set);
                     }
 
                     set.Add(queryId);
@@ -71,13 +75,13 @@ namespace Theraot.ECS
             var allComponentsTypes = new HashSet<ComponentType>(allComponents.Select(GetComponentType));
             foreach (var queryId in GetQueriesByComponentType(addedComponentType))
             {
-                var set = _entitiesByQuery[queryId];
+                var set = _entitiesByQueryId[queryId];
                 switch (QueryCheck(addedComponentType, allComponentsTypes, queryId))
                 {
-                    case -1:
+                    case Remove:
                         set.Remove(entity);
                         break;
-                    case 1:
+                    case Add:
                         set.Add(entity);
                         break;
                     default:
@@ -98,13 +102,13 @@ namespace Theraot.ECS
             var allComponentsTypes = new HashSet<ComponentType>(allComponents.Select(GetComponentType));
             foreach (var queryId in GetQueriesByComponentTypes(addedComponentTypes))
             {
-                var set = _entitiesByQuery[queryId];
+                var set = _entitiesByQueryId[queryId];
                 switch (QueryCheck(addedComponentTypes, allComponentsTypes, queryId))
                 {
-                    case -1:
+                    case Remove:
                         set.Remove(entity);
                         break;
-                    case 1:
+                    case Add:
                         set.Add(entity);
                         break;
                     default:
@@ -120,7 +124,7 @@ namespace Theraot.ECS
 
         private IEnumerable<QueryId> GetQueriesByComponentType(ComponentType componentType)
         {
-            if (!_queriesByComponentType.TryGetValue(componentType, out var queryIds))
+            if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
             {
                 return Array.Empty<QueryId>();
             }
@@ -146,7 +150,7 @@ namespace Theraot.ECS
             if (query.None.Count != 0 && query.None.ContainsAny(addedComponentTypes))
             {
                 // The entity has one of the components it should not have for this query
-                return -1;
+                return Remove;
             }
             if
             (
@@ -156,18 +160,18 @@ namespace Theraot.ECS
             {
                 // The entity has all the required components for this query
                 // and at least one of the optional components (if any) for this query
-                return 1;
+                return Add;
             }
-            return 0;
+            return Noop;
         }
 
-        private int QueryCheck(ComponentType addedComponentType, HashSet<ComponentType> allComponentsTypes, int queryId)
+        private int QueryCheck(ComponentType addedComponentType, HashSet<ComponentType> allComponentsTypes, QueryId queryId)
         {
             var query = _queryByQueryId[queryId];
             if (query.None.Count != 0 && query.None.Contains(addedComponentType))
             {
                 // The entity has one of the components it should not have for this query
-                return -1;
+                return Remove;
             }
             if
             (
@@ -177,9 +181,9 @@ namespace Theraot.ECS
             {
                 // The entity has all the required components for this query
                 // and at least one of the optional components (if any) for this query
-                return 1;
+                return Add;
             }
-            return 0;
+            return Noop;
         }
     }
 }
