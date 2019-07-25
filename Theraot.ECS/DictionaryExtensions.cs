@@ -6,6 +6,24 @@ namespace Theraot.ECS
 {
     internal static class DictionaryExtensions
     {
+        public static bool Set<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            var isNew = dictionary.ContainsKey(key);
+            dictionary[key] = value;
+            return isNew;
+        }
+
+        public static IEnumerable<TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue[] items, Func<TValue, TKey> keySelector)
+        {
+            foreach (var item in items)
+            {
+                if (dictionary.Set(keySelector(item), item))
+                {
+                    yield return item;
+                }
+            }
+        }
+
         public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             if (dictionary is ConcurrentDictionary<TKey, TValue> concurrentDictionary)

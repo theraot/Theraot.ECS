@@ -13,7 +13,7 @@ namespace Theraot.ECS
         private const int Noop = 0;
         private const int Remove = -1;
 
-        private readonly Dictionary<TEntity, HashSet<Component>> _componentsByEntity;
+        private readonly Dictionary<TEntity, Dictionary<ComponentType, Component>> _componentsByEntity;
         private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
         private readonly Func<TEntity> _entityFactory;
         private readonly Dictionary<QueryId, Query> _queryByQueryId;
@@ -24,7 +24,7 @@ namespace Theraot.ECS
         public Scope(Func<TEntity> entityFactory)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
-            _componentsByEntity = new Dictionary<TEntity, HashSet<Component>>();
+            _componentsByEntity = new Dictionary<TEntity, Dictionary<ComponentType, Component>>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<ComponentType, HashSet<QueryId>>();
             _queryByQueryId = new Dictionary<QueryId, Query>();
@@ -34,7 +34,7 @@ namespace Theraot.ECS
         public TEntity CreateEntity()
         {
             var entity = _entityFactory();
-            _componentsByEntity[entity] = new HashSet<Component>();
+            _componentsByEntity[entity] = new Dictionary<ComponentType, Component>();
             return entity;
         }
 
@@ -72,11 +72,11 @@ namespace Theraot.ECS
         public void SetComponent<TComponent>(TEntity entity, TComponent component)
         {
             var allComponents = _componentsByEntity[entity];
-            if (!allComponents.Add(entity))
+            var addedComponentType = GetComponentType(component);
+            if (!allComponents.Set(addedComponentType, component))
             {
                 return;
             }
-            var addedComponentType = GetComponentType(component);
             var allComponentsTypes = new HashSet<ComponentType>(allComponents.Select(GetComponentType));
             foreach (var queryId in GetQueriesByComponentType(addedComponentType))
             {
@@ -98,7 +98,7 @@ namespace Theraot.ECS
         public void SetComponent(TEntity entity, params Component[] components)
         {
             var allComponents = _componentsByEntity[entity];
-            var addedComponents = allComponents.AddAll(components).ToArray();
+            var addedComponents = allComponents.SetAll(components, GetComponentType).ToArray();
             if (addedComponents.Length == 0)
             {
                 return;
