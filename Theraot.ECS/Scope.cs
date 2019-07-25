@@ -127,15 +127,16 @@ namespace Theraot.ECS
 
         private IEnumerable<QueryId> GetQueriesByComponentTypes(IEnumerable<ComponentType> componentTypes)
         {
-            return Enumerable().SelectMany(query => query).Distinct();
-
-            IEnumerable<IEnumerable<QueryId>> Enumerable()
+            var set = new HashSet<int>();
+            foreach (var componentType in componentTypes)
             {
-                foreach (var componentType in componentTypes)
+                foreach (var queryId in GetQueriesByComponentType(componentType))
                 {
-                    yield return GetQueriesByComponentType(componentType);
+                    set.Add(queryId);
                 }
             }
+
+            return set;
         }
 
         private int QueryCheck(HashSet<ComponentType> allComponentsTypes, QueryId queryId)
