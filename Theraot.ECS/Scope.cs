@@ -40,9 +40,9 @@ namespace Theraot.ECS
 
         public TComponent GetComponent<TComponent>(TEntity entity)
         {
-            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(GetComponentType<TComponent>(), out var component))
+            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(GetComponentType<TComponent>(), out var result))
             {
-                return (TComponent) component;
+                return (TComponent) result;
             }
             return default;
         }
@@ -195,6 +195,17 @@ namespace Theraot.ECS
                 return;
             }
             UpdateEntitiesByQueryOnAddedComponents(entity, allComponents, addedComponents);
+        }
+
+        public bool TryGetComponent<TComponent>(TEntity entity, out TComponent component)
+        {
+            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(GetComponentType<TComponent>(), out var result))
+            {
+                component = (TComponent) result;
+                return true;
+            }
+            component = default;
+            return false;
         }
 
         private static ComponentType GetComponentType<TComponent>(TComponent component)
