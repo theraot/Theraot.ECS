@@ -48,7 +48,6 @@
     <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="TypeHashSetStrategy.cs" />
     <Compile Include="DictionaryExtensions.cs" />
-    <Compile Include="ISetExtensions.cs" />
     <Compile Include="IComponentQueryStrategy.cs" />
     <Compile Include="TypeHashSetQuery.cs" />
     <Compile Include="QueryCheckResult.cs" />

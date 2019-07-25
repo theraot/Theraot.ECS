@@ -37,7 +37,7 @@ namespace Theraot.ECS
             if
             (
                 query.None.Count != 0
-                && (query.None.Count > allComponentsTypes.Count ? query.None.ContainsAny(allComponentsTypes) : allComponentsTypes.ContainsAny(query.None))
+                && (query.None.Count > allComponentsTypes.Count ? query.None.Overlaps(allComponentsTypes) : allComponentsTypes.Overlaps(query.None))
             )
             {
                 // The entity has one of the components it should not have for this queryId
@@ -45,8 +45,8 @@ namespace Theraot.ECS
             }
             if
             (
-                allComponentsTypes.ContainsAll(query.All)
-                && (query.Any.Count == 0 || query.Any.Count > allComponentsTypes.Count ? query.Any.ContainsAny(allComponentsTypes) : allComponentsTypes.ContainsAny(query.Any))
+                allComponentsTypes.IsSupersetOf(query.All)
+                && (query.Any.Count == 0 || query.Any.Count > allComponentsTypes.Count ? query.Any.Overlaps(allComponentsTypes) : allComponentsTypes.Overlaps(query.Any))
             )
             {
                 // The entity has all the required components for this queryId
@@ -65,8 +65,8 @@ namespace Theraot.ECS
             }
             if
             (
-                allComponentsTypes.ContainsAll(query.All)
-                && (query.Any.Count == 0 || query.Any.Count > allComponentsTypes.Count ? query.Any.ContainsAny(allComponentsTypes) : allComponentsTypes.ContainsAny(query.Any))
+                allComponentsTypes.IsSupersetOf(query.All)
+                && (query.Any.Count == 0 || query.Any.Count > allComponentsTypes.Count ? query.Any.Overlaps(allComponentsTypes) : allComponentsTypes.Overlaps(query.Any))
             )
             {
                 // The entity has all the required components for this queryId
@@ -78,15 +78,15 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnAddedComponents(ComponentType[] addedComponentTypes, ISet<ComponentType> allComponentsTypes, TypeHashSetQuery query)
         {
-            if (query.None.Count != 0 && query.None.ContainsAny(addedComponentTypes))
+            if (query.None.Count != 0 && query.None.Overlaps(addedComponentTypes))
             {
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
             if
             (
-                allComponentsTypes.ContainsAll(query.All)
-                && (query.Any.Count == 0 || query.Any.Count > allComponentsTypes.Count ? query.Any.ContainsAny(allComponentsTypes) : allComponentsTypes.ContainsAny(query.Any))
+                allComponentsTypes.IsSupersetOf(query.All)
+                && (query.Any.Count == 0 || query.Any.Count > allComponentsTypes.Count ? query.Any.Overlaps(allComponentsTypes) : allComponentsTypes.Overlaps(query.Any))
             )
             {
                 // The entity has all the required components for this queryId
