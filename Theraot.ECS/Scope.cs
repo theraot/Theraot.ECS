@@ -73,7 +73,7 @@ namespace Theraot.ECS
                     if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
                     {
                         queryIds = new HashSet<QueryId>();
-                        _queryIdsByComponentType.TryAdd(componentType, queryIds);
+                        _queryIdsByComponentType[componentType] = queryIds;
                     }
 
                     queryIds.Add(queryId);
@@ -86,13 +86,9 @@ namespace Theraot.ECS
             }
             foreach (var entity in _componentsByEntity.Keys)
             {
-                switch (QueryCheck(new HashSet<ComponentType>(_componentsByEntity[entity].Select(GetComponentType)), queryId))
+                if (QueryCheck(new HashSet<ComponentType>(_componentsByEntity[entity].Select(GetComponentType)), queryId) == Add)
                 {
-                    case Add:
-                        set.Add(entity);
-                        break;
-                    default:
-                        break;
+                    set.Add(entity);
                 }
             }
             return queryId;
