@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using ComponentType = System.Type;
 
 namespace Theraot.ECS
 {
-    public class TypeHashSetStrategy : IComponentQueryStrategy<Type, TypeHashSetQuery>
+    public class TypeHashSetStrategy : IComponentQueryStrategy<ComponentType, TypeHashSetQuery>
     {
-        public TypeHashSetQuery CreateQuery(Type[] all, Type[] any, Type[] none)
+        public TypeHashSetQuery CreateQuery(ComponentType[] all, ComponentType[] any, ComponentType[] none)
         {
             return new TypeHashSetQuery(all, any, none);
         }
 
-        public IEnumerable<Type> GetRelevantComponentTypes(TypeHashSetQuery typeHashSetQuery)
+        public IEnumerable<ComponentType> GetRelevantComponentTypes(TypeHashSetQuery typeHashSetQuery)
         {
             foreach (var componentType in typeHashSetQuery.All)
             {
@@ -26,12 +27,12 @@ namespace Theraot.ECS
             }
         }
 
-        public Type GetType(Type type)
+        public ComponentType GetType(Type type)
         {
             return type;
         }
 
-        public QueryCheckResult QueryCheck(ISet<Type> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
+        public QueryCheckResult QueryCheck(ISet<ComponentType> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
         {
             if
             (
@@ -55,7 +56,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponent(Type addedComponentType, ISet<Type> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
+        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ISet<ComponentType> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
         {
             if (typeHashSetQuery.None.Count != 0 && typeHashSetQuery.None.Contains(addedComponentType))
             {
@@ -75,7 +76,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponents(Type[] addedComponentTypes, ISet<Type> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
+        public QueryCheckResult QueryCheckOnAddedComponents(ComponentType[] addedComponentTypes, ISet<ComponentType> allComponentsTypes, TypeHashSetQuery typeHashSetQuery)
         {
             if (typeHashSetQuery.None.Count != 0 && typeHashSetQuery.None.ContainsAny(addedComponentTypes))
             {
