@@ -56,37 +56,115 @@ namespace Theraot.ECS
             return Array.Empty<TEntity>();
         }
 
-        public void Query<TComponent>(QueryId query, Action<TEntity, TComponent> callback)
+        public void Query<TComponent>(QueryId queryId, Action<TEntity, TComponent> callback)
         {
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
             }
-            foreach (var entity in GetEntities(query))
+            foreach (var entity in GetEntities(queryId))
             {
                 callback(entity, GetComponent<TComponent>(entity));
             }
         }
 
-        public void Query<TComponent1, TComponent2>(QueryId query, Action<TEntity, TComponent1, TComponent2> callback)
+        public void Query<TComponent1, TComponent2>(QueryId queryId, Action<TEntity, TComponent1, TComponent2> callback)
         {
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
             }
-            foreach (var entity in GetEntities(query))
+            foreach (var entity in GetEntities(queryId))
             {
                 callback(entity, GetComponent<TComponent1>(entity), GetComponent<TComponent2>(entity));
             }
         }
 
-        public void Query<TComponent1, TComponent2, TComponent3>(QueryId query, Action<TEntity, TComponent1, TComponent2, TComponent3> callback)
+        public void Query<TComponent1, TComponent2, TComponent3>(QueryId queryId, Action<TEntity, TComponent1, TComponent2, TComponent3> callback)
         {
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
             }
-            foreach (var entity in GetEntities(query))
+            foreach (var entity in GetEntities(queryId))
+            {
+                callback(entity, GetComponent<TComponent1>(entity), GetComponent<TComponent2>(entity), GetComponent<TComponent3>(entity));
+            }
+        }
+
+        public void Query<TComponent>(Action<TEntity, TComponent> callback)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+            var query = new Query
+            (
+                new HashSet<ComponentType>
+                (
+                    new[]
+                    {
+                        GetComponentType<TComponent>()
+                    }
+                ),
+                new HashSet<ComponentType>(),
+                new HashSet<ComponentType>()
+            );
+            var queryId = RegisterQuery(query);
+            foreach (var entity in GetEntities(queryId))
+            {
+                callback(entity, GetComponent<TComponent>(entity));
+            }
+        }
+
+        public void Query<TComponent1, TComponent2>(Action<TEntity, TComponent1, TComponent2> callback)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+            var query = new Query
+            (
+                new HashSet<ComponentType>
+                (
+                    new[]
+                    {
+                        GetComponentType<TComponent1>(),
+                        GetComponentType<TComponent2>()
+                    }
+                ),
+                new HashSet<ComponentType>(),
+                new HashSet<ComponentType>()
+            );
+            var queryId = RegisterQuery(query);
+            foreach (var entity in GetEntities(queryId))
+            {
+                callback(entity, GetComponent<TComponent1>(entity), GetComponent<TComponent2>(entity));
+            }
+        }
+
+        public void Query<TComponent1, TComponent2, TComponent3>(Action<TEntity, TComponent1, TComponent2, TComponent3> callback)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+            var query = new Query
+            (
+                new HashSet<ComponentType>
+                (
+                    new[]
+                    {
+                        GetComponentType<TComponent1>(),
+                        GetComponentType<TComponent2>(),
+                        GetComponentType<TComponent3>()
+                    }
+                ),
+                new HashSet<ComponentType>(),
+                new HashSet<ComponentType>()
+            );
+            var queryId = RegisterQuery(query);
+            foreach (var entity in GetEntities(queryId))
             {
                 callback(entity, GetComponent<TComponent1>(entity), GetComponent<TComponent2>(entity), GetComponent<TComponent3>(entity));
             }
@@ -254,7 +332,7 @@ namespace Theraot.ECS
                 && (query.None.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(query.None) : query.None.ContainsAny(allComponentsTypes))
             )
             {
-                // The entity has one of the components it should not have for this query
+                // The entity has one of the components it should not have for this queryId
                 return Remove;
             }
             if
@@ -263,8 +341,8 @@ namespace Theraot.ECS
                 && (query.Any.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(query.Any) : query.Any.Count == 0 || query.Any.ContainsAny(allComponentsTypes))
             )
             {
-                // The entity has all the required components for this query
-                // and at least one of the optional components (if any) for this query
+                // The entity has all the required components for this queryId
+                // and at least one of the optional components (if any) for this queryId
                 return Add;
             }
             return Noop;
@@ -275,7 +353,7 @@ namespace Theraot.ECS
             var query = _queryByQueryId[queryId];
             if (query.None.Count != 0 && query.None.Contains(addedComponentType))
             {
-                // The entity has one of the components it should not have for this query
+                // The entity has one of the components it should not have for this queryId
                 return Remove;
             }
             if
@@ -284,8 +362,8 @@ namespace Theraot.ECS
                 && (query.Any.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(query.Any) : query.Any.Count == 0 || query.Any.ContainsAny(allComponentsTypes))
             )
             {
-                // The entity has all the required components for this query
-                // and at least one of the optional components (if any) for this query
+                // The entity has all the required components for this queryId
+                // and at least one of the optional components (if any) for this queryId
                 return Add;
             }
             return Noop;
@@ -296,7 +374,7 @@ namespace Theraot.ECS
             var query = _queryByQueryId[queryId];
             if (query.None.Count != 0 && query.None.ContainsAny(addedComponentTypes))
             {
-                // The entity has one of the components it should not have for this query
+                // The entity has one of the components it should not have for this queryId
                 return Remove;
             }
             if
@@ -305,8 +383,8 @@ namespace Theraot.ECS
                 && (query.Any.Count > allComponentsTypes.Count ? allComponentsTypes.ContainsAny(query.Any) : query.Any.Count == 0 || query.Any.ContainsAny(allComponentsTypes))
             )
             {
-                // The entity has all the required components for this query
-                // and at least one of the optional components (if any) for this query
+                // The entity has all the required components for this queryId
+                // and at least one of the optional components (if any) for this queryId
                 return Add;
             }
             return Noop;
