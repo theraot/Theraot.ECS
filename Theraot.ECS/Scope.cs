@@ -95,7 +95,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void SetComponent<TComponent>(TEntity entity, params TComponent[] components)
+        public void SetComponent(TEntity entity, params Component[] components)
         {
             var allComponents = _componentsByEntity[entity];
             var addedComponents = allComponents.AddAll(components).ToArray();
