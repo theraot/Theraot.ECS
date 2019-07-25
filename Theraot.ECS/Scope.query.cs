@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using ComponentType = System.Type;
+using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
     public partial class Scope<TEntity>
     {
-        public void Query<TComponent>(Int32 queryId, Action<TEntity, TComponent> callback)
+        public void Query<TComponent>(QueryId queryId, Action<TEntity, TComponent> callback)
         {
             if (callback == null)
             {
@@ -18,7 +20,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void Query<TComponent1, TComponent2>(Int32 queryId, Action<TEntity, TComponent1, TComponent2> callback)
+        public void Query<TComponent1, TComponent2>(QueryId queryId, Action<TEntity, TComponent1, TComponent2> callback)
         {
             if (callback == null)
             {
@@ -31,7 +33,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void Query<TComponent1, TComponent2, TComponent3>(Int32 queryId, Action<TEntity, TComponent1, TComponent2, TComponent3> callback)
+        public void Query<TComponent1, TComponent2, TComponent3>(QueryId queryId, Action<TEntity, TComponent1, TComponent2, TComponent3> callback)
         {
             if (callback == null)
             {
@@ -53,15 +55,15 @@ namespace Theraot.ECS
 
             var query = new Query
             (
-                new HashSet<Type>
+                new HashSet<ComponentType>
                 (
                     new[]
                     {
                         GetComponentType<TComponent>()
                     }
                 ),
-                new HashSet<Type>(),
-                new HashSet<Type>()
+                new HashSet<ComponentType>(),
+                new HashSet<ComponentType>()
             );
             var queryId = RegisterQuery(query);
             foreach (var entity in GetEntities(queryId))
@@ -79,7 +81,7 @@ namespace Theraot.ECS
 
             var query = new Query
             (
-                new HashSet<Type>
+                new HashSet<ComponentType>
                 (
                     new[]
                     {
@@ -87,8 +89,8 @@ namespace Theraot.ECS
                         GetComponentType<TComponent2>()
                     }
                 ),
-                new HashSet<Type>(),
-                new HashSet<Type>()
+                new HashSet<ComponentType>(),
+                new HashSet<ComponentType>()
             );
             var queryId = RegisterQuery(query);
             foreach (var entity in GetEntities(queryId))
@@ -106,7 +108,7 @@ namespace Theraot.ECS
 
             var query = new Query
             (
-                new HashSet<Type>
+                new HashSet<ComponentType>
                 (
                     new[]
                     {
@@ -115,8 +117,8 @@ namespace Theraot.ECS
                         GetComponentType<TComponent3>()
                     }
                 ),
-                new HashSet<Type>(),
-                new HashSet<Type>()
+                new HashSet<ComponentType>(),
+                new HashSet<ComponentType>()
             );
             var queryId = RegisterQuery(query);
             foreach (var entity in GetEntities(queryId))

@@ -1,5 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using Component = System.Object;
 
 namespace Theraot.ECS
 {
@@ -22,7 +22,7 @@ namespace Theraot.ECS
             var allComponents = _componentsByEntity[entity];
             var addedComponents = allComponents.SetAll
             (
-                new Object[] {component1, component2},
+                new Component[] {component1, component2},
                 new[] {GetComponentType(component1), GetComponentType(component2)}
             ).ToArray();
             if (addedComponents.Length == 0)
@@ -38,7 +38,7 @@ namespace Theraot.ECS
             var allComponents = _componentsByEntity[entity];
             var addedComponents = allComponents.SetAll
             (
-                new Object[] {component1, component2, component3},
+                new Component[] {component1, component2, component3},
                 new[] {GetComponentType(component1), GetComponentType(component2), GetComponentType(component3)}
             ).ToArray();
             if (addedComponents.Length == 0)
@@ -54,7 +54,7 @@ namespace Theraot.ECS
             var allComponents = _componentsByEntity[entity];
             var addedComponents = allComponents.SetAll
             (
-                new Object[] {component1, component2, component3, component4},
+                new Component[] {component1, component2, component3, component4},
                 new[] {GetComponentType(component1), GetComponentType(component2), GetComponentType(component3), GetComponentType(component4)}
             ).ToArray();
             if (addedComponents.Length == 0)
@@ -65,7 +65,7 @@ namespace Theraot.ECS
             UpdateEntitiesByQueryOnAddedComponents(entity, allComponents, addedComponents);
         }
 
-        public void SetComponent(TEntity entity, params Object[] components)
+        public void SetComponent(TEntity entity, params Component[] components)
         {
             var allComponents = _componentsByEntity[entity];
             var addedComponents = allComponents.SetAll(components, GetComponentType).ToArray();
