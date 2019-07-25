@@ -79,7 +79,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return IsSubsetOf(this, other, true);
+            return this.IsSubsetOf( other, true);
         }
 
         public bool IsProperSupersetOf(IEnumerable<T> other)
@@ -89,7 +89,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return IsSupersetOf(this, other, true);
+            return this.IsSupersetOf(other, true);
         }
 
         public bool IsSubsetOf(IEnumerable<T> other)
@@ -99,7 +99,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return IsSubsetOf(this, other, false);
+            return this.IsSubsetOf( other, false);
         }
 
         public bool IsSupersetOf(IEnumerable<T> other)
@@ -109,7 +109,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return IsSupersetOf(this, other, false);
+            return this.IsSupersetOf(other, false);
         }
 
         public bool Overlaps(IEnumerable<T> other)
@@ -144,51 +144,6 @@ namespace Theraot.ECS
         void ISet<T>.UnionWith(IEnumerable<T> other)
         {
             throw new NotSupportedException();
-        }
-
-        private static bool IsSubsetOf(IEnumerable<T> source, IEnumerable<T> other, bool proper)
-        {
-            var @this = source is ISet<T> sourceSet ? sourceSet : new HashSet<T>(source);
-            var that = other is ISet<T> otherSet ? otherSet : new HashSet<T>(other);
-            var elementCount = 0;
-            var matchCount = 0;
-            foreach (var item in that)
-            {
-                elementCount++;
-                if (@this.Contains(item))
-                {
-                    matchCount++;
-                }
-            }
-
-            if (proper)
-            {
-                return matchCount == @this.Count && elementCount > @this.Count;
-            }
-
-            return matchCount == @this.Count;
-        }
-
-        private static bool IsSupersetOf(IEnumerable<T> source, IEnumerable<T> other, bool proper)
-        {
-            var @this = source is ISet<T> sourceSet ? sourceSet : new HashSet<T>(source);
-            var that = other is ISet<T> otherSet ? otherSet : new HashSet<T>(other);
-            var elementCount = 0;
-            foreach (var item in that)
-            {
-                elementCount++;
-                if (!@this.Contains(item))
-                {
-                    return false;
-                }
-            }
-
-            if (proper)
-            {
-                return elementCount < @this.Count;
-            }
-
-            return true;
         }
     }
 }
