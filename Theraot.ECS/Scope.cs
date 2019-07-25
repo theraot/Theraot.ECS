@@ -40,7 +40,11 @@ namespace Theraot.ECS
 
         public TComponent GetComponent<TComponent>(TEntity entity)
         {
-            return (TComponent)_componentsByEntity[entity][GetComponentType<TComponent>()];
+            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(GetComponentType<TComponent>(), out var component))
+            {
+                return (TComponent) component;
+            }
+            return default;
         }
 
         public IEnumerable<TEntity> GetEntities(QueryId query)
