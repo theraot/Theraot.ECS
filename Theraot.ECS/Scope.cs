@@ -6,7 +6,7 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    public partial class Scope<TEntity, TComponentType, TComponentTypeSet, TQuery>
+    public partial class Scope<TEntity, TComponentType, TComponentTypeSet, TQuery> : IScope<TEntity, TQuery>
     {
         private readonly Dictionary<TEntity, Dictionary<TComponentType, Component>> _componentsByEntity;
         private readonly Dictionary<TEntity, TComponentTypeSet> _componentTypesByEntity;
