@@ -6,7 +6,7 @@ using ComponentTypeSet = Theraot.ECS.DictionaryKeySet<System.Type>;
 
 namespace Theraot.ECS
 {
-    public class TypeHashSetStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet, TypeHashSetQuery>
+    public sealed class TypeHashSetStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet, TypeHashSetQuery>
     {
         public ComponentTypeSet CreateComponentTypeSet(Dictionary<ComponentType, Component> dictionary)
         {

@@ -6,7 +6,7 @@ using ComponentTypeSet = System.Collections.BitArray;
 
 namespace Theraot.ECS
 {
-    public class BitArrayStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet, BitArrayQuery>
+    public sealed class BitArrayStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet, BitArrayQuery>
     {
         private readonly int _capacity;
         private ComponentType _componentType;

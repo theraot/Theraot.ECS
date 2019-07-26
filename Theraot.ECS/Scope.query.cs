@@ -6,7 +6,7 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    public partial class Scope<TEntity, TComponentType, TComponentTypeSet, TQuery>
+    public sealed partial class Scope<TEntity, TComponentType, TComponentTypeSet, TQuery>
     {
         public void Query<TComponent>(QueryId queryId, Action<TEntity, TComponent> callback)
         {

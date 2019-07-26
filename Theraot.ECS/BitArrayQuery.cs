@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Theraot.ECS
 {
-    public class BitArrayQuery
+    public sealed class BitArrayQuery
     {
         public BitArrayQuery(int length, IEnumerable<int> all, IEnumerable<int> any, IEnumerable<int> none)
         {

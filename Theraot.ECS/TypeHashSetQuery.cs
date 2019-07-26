@@ -3,7 +3,7 @@ using ComponentType = System.Type;
 
 namespace Theraot.ECS
 {
-    public class TypeHashSetQuery
+    public sealed class TypeHashSetQuery
     {
         public TypeHashSetQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
         {
