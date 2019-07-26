@@ -16,6 +16,10 @@ namespace Theraot.ECS
 
         public static IEnumerable<TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<TValue> values, Func<TValue, TKey> keySelector)
         {
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException(nameof(keySelector));
+            }
             return values.Where(value => dictionary.Set(keySelector(value), value));
         }
 

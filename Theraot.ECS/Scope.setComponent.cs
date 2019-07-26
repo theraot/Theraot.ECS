@@ -1,4 +1,5 @@
-﻿// ReSharper disable UnusedTypeParameter
+﻿#pragma warning disable RECS0096 // Type parameter is never used
+// ReSharper disable UnusedTypeParameter
 
 using System.Linq;
 using Component = System.Object;

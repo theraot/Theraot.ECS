@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -45,7 +47,7 @@
     <Compile Include="DictionaryKeySet.cs" />
     <Compile Include="BitArrayStrategy.cs" />
     <Compile Include="BitArrayQuery.cs" />
-    <Compile Include="IEnumerableExtensions.cs" />
+    <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="IScope.cs" />
     <Compile Include="TypeHashSetStrategy.cs" />
     <Compile Include="DictionaryExtensions.cs" />
