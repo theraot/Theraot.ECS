@@ -22,19 +22,9 @@ namespace Theraot.ECS
 
         bool ICollection<T>.IsReadOnly => true;
 
-        void ICollection<T>.Add(T item)
+        public static DictionaryKeySet<T> CreateFrom<TValue>(Dictionary<T, TValue> dictionary)
         {
-            throw new NotSupportedException();
-        }
-
-        bool ISet<T>.Add(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        void ICollection<T>.Clear()
-        {
-            throw new NotSupportedException();
+            return new DictionaryKeySet<T>(dictionary.Keys, () => dictionary.Count, dictionary.ContainsKey);
         }
 
         public bool Contains(T item)
@@ -47,29 +37,9 @@ namespace Theraot.ECS
             _wrapped.ToArray().CopyTo(array, arrayIndex);
         }
 
-        public static DictionaryKeySet<T> CreateFrom<TValue>(Dictionary<T, TValue> dictionary)
-        {
-            return new  DictionaryKeySet<T>(dictionary.Keys, () => dictionary.Count, dictionary.ContainsKey);
-        }
-
-        void ISet<T>.ExceptWith(IEnumerable<T> other)
-        {
-            throw new NotSupportedException();
-        }
-
         public IEnumerator<T> GetEnumerator()
         {
             return _wrapped.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        void ISet<T>.IntersectWith(IEnumerable<T> other)
-        {
-            throw new NotSupportedException();
         }
 
         public bool IsProperSubsetOf(IEnumerable<T> other)
@@ -79,7 +49,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return this.IsSubsetOf( other, true);
+            return this.IsSubsetOf(other, true);
         }
 
         public bool IsProperSupersetOf(IEnumerable<T> other)
@@ -99,7 +69,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return this.IsSubsetOf( other, false);
+            return this.IsSubsetOf(other, false);
         }
 
         public bool IsSupersetOf(IEnumerable<T> other)
@@ -121,11 +91,6 @@ namespace Theraot.ECS
             return other.Any(Contains);
         }
 
-        bool ICollection<T>.Remove(T item)
-        {
-            throw new NotSupportedException();
-        }
-
         public bool SetEquals(IEnumerable<T> other)
         {
             if (other == null)
@@ -134,6 +99,41 @@ namespace Theraot.ECS
             }
             var otherAsICollection = other is ICollection<T> otherCollection ? otherCollection : other.ToArray();
             return otherAsICollection.All(Contains) && this.All(input => otherAsICollection.Contains(input));
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        bool ISet<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<T>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        void ISet<T>.ExceptWith(IEnumerable<T> other)
+        {
+            throw new NotSupportedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        void ISet<T>.IntersectWith(IEnumerable<T> other)
+        {
+            throw new NotSupportedException();
+        }
+
+        bool ICollection<T>.Remove(T item)
+        {
+            throw new NotSupportedException();
         }
 
         void ISet<T>.SymmetricExceptWith(IEnumerable<T> other)

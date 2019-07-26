@@ -5,18 +5,18 @@ namespace Theraot.ECS
 {
     public class BitArrayQuery
     {
-        public BitArray All { get; }
-
-        public BitArray Any { get; }
-
-        public BitArray None { get; }
-
         public BitArrayQuery(int length, IEnumerable<int> all, IEnumerable<int> any, IEnumerable<int> none)
         {
             All = ToBitArray(all, length);
             Any = ToBitArray(any, length);
             None = ToBitArray(none, length);
         }
+
+        public BitArray All { get; }
+
+        public BitArray Any { get; }
+
+        public BitArray None { get; }
 
         private static BitArray ToBitArray(IEnumerable<int> collection, int length)
         {

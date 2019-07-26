@@ -13,15 +13,15 @@ namespace Theraot.ECS
         private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
         private readonly Func<TEntity> _entityFactory;
         private readonly Dictionary<QueryId, TQuery> _queryByQueryId;
+        private int _queryId;
         private readonly Dictionary<TQuery, QueryId> _queryIdByQuery;
         private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
         private readonly IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> _strategy;
-        private int _queryId;
 
         public Scope(Func<TEntity> entityFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> strategy)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
-            _strategy = strategy ?? throw  new ArgumentNullException(nameof(strategy));
+            _strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
             _componentsByEntity = new Dictionary<TEntity, Dictionary<TComponentType, Component>>();
             _componentTypesByEntity = new Dictionary<TEntity, TComponentTypeSet>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
@@ -43,7 +43,7 @@ namespace Theraot.ECS
         {
             if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(GetComponentType<TComponent>(), out var result))
             {
-                return (TComponent) result;
+                return (TComponent)result;
             }
             return default;
         }
@@ -97,7 +97,7 @@ namespace Theraot.ECS
         {
             if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(GetComponentType<TComponent>(), out var result))
             {
-                component = (TComponent) result;
+                component = (TComponent)result;
                 return true;
             }
             component = default;
