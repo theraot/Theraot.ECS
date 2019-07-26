@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Theraot.ECS
 {
@@ -10,15 +11,7 @@ namespace Theraot.ECS
         {
             var integers = new int[(bitArray.Count >> 5) + 1];
             bitArray.CopyTo(integers, 0);
-            foreach (var integer in integers)
-            {
-                if (integer != 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return integers.All(integer => integer == 0);
         }
 
         public static bool IsProperSubsetOf(this BitArray bitArray, BitArray other)
@@ -274,15 +267,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            foreach (var index in other)
-            {
-                if (bitArray[index])
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return other.Any(index => bitArray[index]);
         }
 
         public static bool SetEquals(this BitArray bitArray, BitArray other)

@@ -13,7 +13,7 @@ namespace Theraot.ECS
             return ComponentTypeSet.CreateFrom(dictionary);
         }
 
-        public TypeHashSetQuery CreateQuery(ComponentType[] all, ComponentType[] any, ComponentType[] none)
+        public TypeHashSetQuery CreateQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
         {
             return new TypeHashSetQuery(all, any, none);
         }
@@ -83,7 +83,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponents(ComponentType[] addedComponentTypes, ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
+        public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
         {
             if (query.None.Count != 0 && query.None.Overlaps(addedComponentTypes))
             {

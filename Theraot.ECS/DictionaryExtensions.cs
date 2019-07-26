@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Theraot.ECS
 {
@@ -13,15 +14,9 @@ namespace Theraot.ECS
             return isNew;
         }
 
-        public static IEnumerable<TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue[] values, Func<TValue, TKey> keySelector)
+        public static IEnumerable<TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<TValue> values, Func<TValue, TKey> keySelector)
         {
-            foreach (var value in values)
-            {
-                if (dictionary.Set(keySelector(value), value))
-                {
-                    yield return value;
-                }
-            }
+            return values.Where(value => dictionary.Set(keySelector(value), value));
         }
 
         public static IEnumerable<TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue[] values, TKey[] keys)

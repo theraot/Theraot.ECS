@@ -11,7 +11,7 @@ namespace Theraot.ECS
 
         public HashSet<ComponentType> None { get; }
 
-        public TypeHashSetQuery(ComponentType[] all, ComponentType[] any, ComponentType[] none)
+        public TypeHashSetQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
         {
             All = new HashSet<ComponentType>(all);
             Any = new HashSet<ComponentType>(any);

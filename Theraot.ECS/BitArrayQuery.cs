@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using ComponentType = System.Int32;
+using System.Collections.Generic;
 
 namespace Theraot.ECS
 {
@@ -11,14 +11,14 @@ namespace Theraot.ECS
 
         public BitArray None { get; }
 
-        public BitArrayQuery(int length, ComponentType[] all, ComponentType[] any, ComponentType[] none)
+        public BitArrayQuery(int length, IEnumerable<int> all, IEnumerable<int> any, IEnumerable<int> none)
         {
             All = ToBitArray(all, length);
             Any = ToBitArray(any, length);
             None = ToBitArray(none, length);
         }
 
-        private static BitArray ToBitArray(ComponentType[] collection, int length)
+        private static BitArray ToBitArray(IEnumerable<int> collection, int length)
         {
             var result = new BitArray(length);
             foreach (var index in collection)

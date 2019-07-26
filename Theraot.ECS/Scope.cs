@@ -151,6 +151,8 @@ namespace Theraot.ECS
                     case QueryCheckResult.Add:
                         set.Add(entity);
                         break;
+                    case QueryCheckResult.Noop:
+                        break;
                     default:
                         break;
                 }
@@ -170,6 +172,8 @@ namespace Theraot.ECS
                         break;
                     case QueryCheckResult.Add:
                         set.Add(entity);
+                        break;
+                    case QueryCheckResult.Noop:
                         break;
                     default:
                         break;

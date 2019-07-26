@@ -2,7 +2,7 @@
 
 namespace Theraot.ECS
 {
-    internal static class IEnumerableExtensions
+    internal static class EnumerableExtensions
     {
         public static bool IsSubsetOf<T>(this IEnumerable<T> source, IEnumerable<T> other, bool proper)
         {

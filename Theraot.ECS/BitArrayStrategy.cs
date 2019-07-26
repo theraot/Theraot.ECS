@@ -28,7 +28,7 @@ namespace Theraot.ECS
             return set;
         }
 
-        public BitArrayQuery CreateQuery(ComponentType[] all, ComponentType[] any, ComponentType[] none)
+        public BitArrayQuery CreateQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
         {
             return new BitArrayQuery(_capacity, all, any, none);
         }
@@ -101,7 +101,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponents(ComponentType[] addedComponentTypes, ComponentTypeSet allComponentsTypes, BitArrayQuery query)
+        public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet allComponentsTypes, BitArrayQuery query)
         {
             if (query.None.Count != 0 && query.None.Overlaps(addedComponentTypes))
             {
