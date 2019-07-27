@@ -8,9 +8,9 @@ namespace Theraot.ECS
 {
     public static class Scope
     {
-        public static IScope<TEntity, TQuery> CreateScope<TEntity, TComponentType, TComponentTypeSet, TQuery>(Func<TEntity> entityFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> strategy)
+        public static IScope<TEntity, TQuery> CreateScope<TEntity, TComponentType, TComponentTypeSet, TQuery>(Func<TEntity> entityIdFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> strategy)
         {
-            return new Scope<TEntity,TComponentType,TComponentTypeSet,TQuery>(entityFactory, strategy);
+            return new Scope<TEntity,TComponentType,TComponentTypeSet,TQuery>(entityIdFactory, strategy);
         }
     }
 
