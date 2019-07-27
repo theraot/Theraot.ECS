@@ -9,7 +9,7 @@ namespace Theraot.ECS
     {
         public static bool Set<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
-            var isNew = dictionary.ContainsKey(key);
+            var isNew = !dictionary.ContainsKey(key);
             dictionary[key] = value;
             return isNew;
         }
