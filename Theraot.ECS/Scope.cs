@@ -6,6 +6,14 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
+    public static class Scope
+    {
+        public static IScope<TEntity, TQuery> CreateScope<TEntity, TComponentType, TComponentTypeSet, TQuery>(Func<TEntity> entityFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> strategy)
+        {
+            return new Scope<TEntity,TComponentType,TComponentTypeSet,TQuery>(entityFactory, strategy);
+        }
+    }
+
     public sealed partial class Scope<TEntity, TComponentType, TComponentTypeSet, TQuery> : IScope<TEntity, TQuery>
     {
         private readonly Dictionary<TEntity, Dictionary<TComponentType, Component>> _componentsByEntity;
@@ -18,7 +26,7 @@ namespace Theraot.ECS
         private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
         private readonly IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> _strategy;
 
-        public Scope(Func<TEntity> entityFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> strategy)
+        internal Scope(Func<TEntity> entityFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> strategy)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
