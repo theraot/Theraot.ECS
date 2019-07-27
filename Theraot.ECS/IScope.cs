@@ -5,9 +5,10 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    public interface IScope<TEntity, in TQuery>
+    public interface IScope<TEntity, in TComponentType>
     {
         TEntity CreateEntity();
+        QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
         TComponent GetComponent<TComponent>(TEntity entity);
         IEnumerable<TEntity> GetEntities(QueryId query);
         void Query<TComponent>(QueryId queryId, Action<TEntity, TComponent> callback);
@@ -16,7 +17,6 @@ namespace Theraot.ECS
         void Query<TComponent>(Action<TEntity, TComponent> callback);
         void Query<TComponent1, TComponent2>(Action<TEntity, TComponent1, TComponent2> callback);
         void Query<TComponent1, TComponent2, TComponent3>(Action<TEntity, TComponent1, TComponent2, TComponent3> callback);
-        QueryId RegisterQuery(TQuery query);
         void SetComponent<TComponent>(TEntity entity, TComponent component);
         void SetComponent<TComponent1, TComponent2>(TEntity entity, TComponent1 component1, TComponent2 component2);
         void SetComponent<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponent1 component1, TComponent2 component2, TComponent3 component3);

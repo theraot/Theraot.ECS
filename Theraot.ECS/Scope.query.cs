@@ -54,7 +54,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            var query = _strategy.CreateQuery
+            var queryId = CreateQuery
             (
                 new[]
                 {
@@ -63,7 +63,6 @@ namespace Theraot.ECS
                 Array.Empty<TComponentType>(),
                 Array.Empty<TComponentType>()
             );
-            var queryId = RegisterQuery(query);
             foreach (var entity in GetEntities(queryId))
             {
                 callback(entity, GetComponent<TComponent>(entity));
@@ -77,7 +76,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            var query = _strategy.CreateQuery
+            var queryId = CreateQuery
             (
                 new[]
                 {
@@ -87,7 +86,6 @@ namespace Theraot.ECS
                 Array.Empty<TComponentType>(),
                 Array.Empty<TComponentType>()
             );
-            var queryId = RegisterQuery(query);
             foreach (var entity in GetEntities(queryId))
             {
                 callback(entity, GetComponent<TComponent1>(entity), GetComponent<TComponent2>(entity));
@@ -101,7 +99,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            var query = _strategy.CreateQuery
+            var queryId = CreateQuery
             (
                 new[]
                 {
@@ -112,7 +110,6 @@ namespace Theraot.ECS
                 Array.Empty<TComponentType>(),
                 Array.Empty<TComponentType>()
             );
-            var queryId = RegisterQuery(query);
             foreach (var entity in GetEntities(queryId))
             {
                 callback(entity, GetComponent<TComponent1>(entity), GetComponent<TComponent2>(entity), GetComponent<TComponent3>(entity));

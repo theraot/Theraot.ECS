@@ -8,13 +8,13 @@ namespace Theraot.ECS
 {
     public static class Scope
     {
-        public static IScope<TEntity, TQuery> CreateScope<TEntity, TComponentType, TComponentTypeSet, TQuery>(Func<TEntity> entityIdFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> strategy)
+        public static IScope<TEntity, TComponentType> CreateScope<TEntity, TComponentType, TComponentTypeSet, TQuery>(Func<TEntity> entityIdFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> strategy)
         {
             return new Scope<TEntity,TComponentType,TComponentTypeSet,TQuery>(entityIdFactory, strategy);
         }
     }
 
-    public sealed partial class Scope<TEntity, TComponentType, TComponentTypeSet, TQuery> : IScope<TEntity, TQuery>
+    public sealed partial class Scope<TEntity, TComponentType, TComponentTypeSet, TQuery> : IScope<TEntity, TComponentType>
     {
         private readonly Dictionary<TEntity, Dictionary<TComponentType, Component>> _componentsByEntity;
         private readonly Dictionary<TEntity, TComponentTypeSet> _componentTypesByEntity;
@@ -47,26 +47,9 @@ namespace Theraot.ECS
             return entity;
         }
 
-        public TComponent GetComponent<TComponent>(TEntity entity)
+        public QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
-            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(GetComponentType<TComponent>(), out var result))
-            {
-                return (TComponent)result;
-            }
-            return default;
-        }
-
-        public IEnumerable<TEntity> GetEntities(QueryId query)
-        {
-            if (_entitiesByQueryId.TryGetValue(query, out var result))
-            {
-                return result;
-            }
-            return Array.Empty<TEntity>();
-        }
-
-        public QueryId RegisterQuery(TQuery query)
-        {
+            var query = _strategy.CreateQuery(all, any, none);
             var queryId = _queryId;
             if (!_queryIdByQuery.TryAdd(query, queryId))
             {
@@ -99,6 +82,24 @@ namespace Theraot.ECS
                 }
             }
             return queryId;
+        }
+
+        public TComponent GetComponent<TComponent>(TEntity entity)
+        {
+            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(GetComponentType<TComponent>(), out var result))
+            {
+                return (TComponent)result;
+            }
+            return default;
+        }
+
+        public IEnumerable<TEntity> GetEntities(QueryId query)
+        {
+            if (_entitiesByQueryId.TryGetValue(query, out var result))
+            {
+                return result;
+            }
+            return Array.Empty<TEntity>();
         }
 
         public bool TryGetComponent<TComponent>(TEntity entity, out TComponent component)
@@ -160,27 +161,6 @@ namespace Theraot.ECS
             return set;
         }
 
-        private void UpdateEntitiesByQueryOnRemoveComponent(TEntity entity, TComponentTypeSet allComponentsTypes, TComponentType addedComponentType)
-        {
-            foreach (var queryId in GetQueriesByComponentType(addedComponentType))
-            {
-                var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnRemovedComponent(addedComponentType, allComponentsTypes, _queryByQueryId[queryId]))
-                {
-                    case QueryCheckResult.Remove:
-                        set.Remove(entity);
-                        break;
-                    case QueryCheckResult.Add:
-                        set.Add(entity);
-                        break;
-                    case QueryCheckResult.Noop:
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
         private void UpdateEntitiesByQueryOnAddedComponent(TEntity entity, TComponentTypeSet allComponentsTypes, TComponentType addedComponentType)
         {
             foreach (var queryId in GetQueriesByComponentType(addedComponentType))
@@ -209,6 +189,27 @@ namespace Theraot.ECS
             {
                 var set = _entitiesByQueryId[queryId];
                 switch (_strategy.QueryCheckOnAddedComponents(addedComponentTypes, allComponentsTypes, _queryByQueryId[queryId]))
+                {
+                    case QueryCheckResult.Remove:
+                        set.Remove(entity);
+                        break;
+                    case QueryCheckResult.Add:
+                        set.Add(entity);
+                        break;
+                    case QueryCheckResult.Noop:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void UpdateEntitiesByQueryOnRemoveComponent(TEntity entity, TComponentTypeSet allComponentsTypes, TComponentType addedComponentType)
+        {
+            foreach (var queryId in GetQueriesByComponentType(addedComponentType))
+            {
+                var set = _entitiesByQueryId[queryId];
+                switch (_strategy.QueryCheckOnRemovedComponent(addedComponentType, allComponentsTypes, _queryByQueryId[queryId]))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entity);
