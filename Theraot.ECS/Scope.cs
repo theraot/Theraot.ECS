@@ -112,6 +112,20 @@ namespace Theraot.ECS
             return false;
         }
 
+        public void UnsetComponent<TComponent>(TEntity entity)
+        {
+            var allComponents = _componentsByEntity[entity];
+            var removedComponentType = GetComponentType<TComponent>();
+            if (!allComponents.Remove(removedComponentType))
+            {
+                return;
+            }
+
+            var allComponentsTypes = _componentTypesByEntity[entity];
+            _strategy.UnsetComponentType(allComponentsTypes, removedComponentType);
+            UpdateEntitiesByQueryOnRemoveComponent(entity, allComponentsTypes, removedComponentType);
+        }
+
         private TComponentType GetComponentType<TComponent>(TComponent component)
         {
             var _ = component;
@@ -144,6 +158,27 @@ namespace Theraot.ECS
             }
 
             return set;
+        }
+
+        private void UpdateEntitiesByQueryOnRemoveComponent(TEntity entity, TComponentTypeSet allComponentsTypes, TComponentType addedComponentType)
+        {
+            foreach (var queryId in GetQueriesByComponentType(addedComponentType))
+            {
+                var set = _entitiesByQueryId[queryId];
+                switch (_strategy.QueryCheckOnRemovedComponent(addedComponentType, allComponentsTypes, _queryByQueryId[queryId]))
+                {
+                    case QueryCheckResult.Remove:
+                        set.Remove(entity);
+                        break;
+                    case QueryCheckResult.Add:
+                        set.Add(entity);
+                        break;
+                    case QueryCheckResult.Noop:
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         private void UpdateEntitiesByQueryOnAddedComponent(TEntity entity, TComponentTypeSet allComponentsTypes, TComponentType addedComponentType)

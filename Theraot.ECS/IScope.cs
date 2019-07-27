@@ -22,5 +22,6 @@ namespace Theraot.ECS
         void SetComponent<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponent1 component1, TComponent2 component2, TComponent3 component3);
         void SetComponent(TEntity entity, params Component[] components);
         bool TryGetComponent<TComponent>(TEntity entity, out TComponent component);
+        void UnsetComponent<TComponent>(TEntity entity);
     }
 }
