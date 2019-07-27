@@ -21,10 +21,10 @@ namespace Theraot.ECS
         private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
         private readonly Func<TEntity> _entityFactory;
         private readonly Dictionary<QueryId, TQuery> _queryByQueryId;
-        private int _queryId;
         private readonly Dictionary<TQuery, QueryId> _queryIdByQuery;
         private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
         private readonly IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> _strategy;
+        private int _queryId;
 
         internal Scope(Func<TEntity> entityFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> strategy)
         {

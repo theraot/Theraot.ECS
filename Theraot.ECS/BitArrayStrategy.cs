@@ -9,8 +9,8 @@ namespace Theraot.ECS
     public sealed class BitArrayStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet, BitArrayQuery>
     {
         private readonly int _capacity;
-        private ComponentType _componentType;
         private readonly Dictionary<Type, ComponentType> _componentTypeByType;
+        private ComponentType _componentType;
 
         public BitArrayStrategy(int capacity)
         {
