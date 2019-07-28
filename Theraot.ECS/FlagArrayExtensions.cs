@@ -41,7 +41,7 @@ namespace Theraot.ECS
              * |##############|
              * +--------------+
              *
-             * a.And(b.Not())
+             * a.And(b.Not()) // a.Minus(b)
              * +--------------+
              * |              |
              * |   ___  ___   |
@@ -62,7 +62,7 @@ namespace Theraot.ECS
              * |##############|
              * +--------------+
              *
-             * b.And(a.Not())
+             * b.And(a.Not()) // b.Minus(a)
              * +--------------+
              * |              |
              * |   ___  ___   |
@@ -73,7 +73,7 @@ namespace Theraot.ECS
              * +--------------+
              * If also this is not empty, it means a is a proper subset of b
              */
-            return a.And(b.Not()).IsEmpty() && !b.And(a.Not()).IsEmpty();
+            return a.Minus(b).IsEmpty() && !b.Minus(a).IsEmpty();
         }
 
         public static bool IsProperSupersetOf(this FlagArray flagArray, FlagArray other)
@@ -105,7 +105,7 @@ namespace Theraot.ECS
              * |##############|
              * +--------------+
              *
-             * b.And(a.Not())
+             * b.And(a.Not()) // b.Minus(a)
              * +--------------+
              * |              |
              * |   ___  ___   |
@@ -126,7 +126,7 @@ namespace Theraot.ECS
              * |##############|
              * +--------------+
              *
-             * a.And(b.Not())
+             * a.And(b.Not()) // a.Minus(b)
              * +--------------+
              * |              |
              * |   ___  ___   |
@@ -137,7 +137,7 @@ namespace Theraot.ECS
              * +--------------+
              * If also this is not empty, it means a is a proper superset of b
              */
-            return b.And(a.Not()).IsEmpty() && !a.And(b.Not()).IsEmpty();
+            return b.Minus(a).IsEmpty() && !a.Minus(b).IsEmpty();
         }
 
         public static bool IsSubsetOf(this FlagArray flagArray, FlagArray other)
@@ -169,7 +169,7 @@ namespace Theraot.ECS
              * |##############|
              * +--------------+
              *
-             * a.And(b.Not())
+             * a.And(b.Not()) // a.Minus(b)
              * +--------------+
              * |              |
              * |   ___  ___   |
@@ -180,7 +180,7 @@ namespace Theraot.ECS
              * +--------------+
              * If this is empty, it means a is a subset of b
              */
-            return a.And(b.Not()).IsEmpty();
+            return a.Minus(b).IsEmpty();
         }
 
         public static bool IsSupersetOf(this FlagArray flagArray, FlagArray other)
@@ -212,7 +212,7 @@ namespace Theraot.ECS
              * |##############|
              * +--------------+
              *
-             * b.And(a.Not())
+             * b.And(a.Not()) // b.Minus(a)
              * +--------------+
              * |              |
              * |   ___  ___   |
@@ -223,7 +223,7 @@ namespace Theraot.ECS
              * +--------------+
              * If this is empty, it means a is superset of b
              */
-            return b.And(a.Not()).IsEmpty();
+            return b.Minus(a).IsEmpty();
         }
 
         public static bool Overlaps(this FlagArray flagArray, FlagArray other)
@@ -318,7 +318,7 @@ namespace Theraot.ECS
              * |##############|
              * +--------------+
              *
-             * a.Or(b).And(a.And(b).Not())
+             * a.Or(b).And(a.And(b).Not()) // a.Or(b).Minus(a.And(b))
              * +--------------+
              * |              |
              * |   ___  ___   |
@@ -329,7 +329,7 @@ namespace Theraot.ECS
              * +--------------+
              * If this is empty, the sets are equal
              */
-            return a.Or(b).And(a.And(b).Not()).IsEmpty();
+            return a.Or(b).Minus(a.And(b)).IsEmpty();
         }
     }
 }

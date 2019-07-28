@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -333,6 +333,33 @@ namespace Theraot.Collections.Specialized
         void IList<bool>.Insert(int index, bool item)
         {
             throw new NotSupportedException();
+        }
+
+        public FlagArray Minus(FlagArray other)
+        {
+            var order = Capacity > other.Capacity;
+            var b = order ? _entries : other._entries;
+            var a = order ? other._entries : _entries;
+            var result = new FlagArray(Capacity);
+            if (order)
+            {
+                for (var index = 0; index < a.Length; index++)
+                {
+                    result._entries[index] = b[index] & ~a[index];
+                }
+                for (var index = a.Length; index < b.Length; index++)
+                {
+                    result._entries[index] = b[index];
+                }
+            }
+            else
+            {
+                for (var index = 0; index < a.Length; index++)
+                {
+                    result._entries[index] = a[index] & ~b[index];
+                }
+            }
+            return result;
         }
 
         public FlagArray Not()
