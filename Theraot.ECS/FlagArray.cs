@@ -362,6 +362,41 @@ namespace Theraot.Collections.Specialized
             return result;
         }
 
+        public bool IsSubsetOf(FlagArray other)
+        {
+            var order = Capacity > other.Capacity;
+            var b = order ? _entries : other._entries;
+            var a = order ? other._entries : _entries;
+            if (order)
+            {
+                for (var index = 0; index < a.Length; index++)
+                {
+                    if ((b[index] & ~a[index]) != 0)
+                    {
+                        return false;
+                    }
+                }
+                for (var index = a.Length; index < b.Length; index++)
+                {
+                    if (b[index] != 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                for (var index = 0; index < a.Length; index++)
+                {
+                    if ((a[index] & ~b[index]) != 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         public FlagArray Not()
         {
             var result = new FlagArray(Capacity);
