@@ -91,7 +91,7 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnRemovedComponent(int removedComponentType, ComponentTypeSet allComponentsTypes, BitArrayQuery query)
         {
-            if (query.All[removedComponentType])
+            if (query.All[removedComponentType] || (!query.Any.IsEmpty() && !allComponentsTypes.Overlaps(query.Any)))
             {
                 // The entity no longer has one of the components it should have for this queryId
                 return QueryCheckResult.Remove;
@@ -111,7 +111,7 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<int> removedComponentTypes, ComponentTypeSet allComponentsTypes, BitArrayQuery query)
         {
-            if (query.All.Overlaps(removedComponentTypes))
+            if (query.All.Overlaps(removedComponentTypes) || (!query.Any.IsEmpty() && !allComponentsTypes.Overlaps(query.Any)))
             {
                 // The entity no longer has one of the components it should have for this queryId
                 return QueryCheckResult.Remove;

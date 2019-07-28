@@ -83,7 +83,7 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnRemovedComponent(string removedComponentType, ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
         {
-            if (query.All.Contains(removedComponentType))
+            if (query.All.Contains(removedComponentType) || (query.Any.Count != 0 && !allComponentsTypes.Overlaps(query.Any)))
             {
                 // The entity no longer has one of the components it should have for this queryId
                 return QueryCheckResult.Remove;
@@ -103,7 +103,7 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<string> removedComponentTypes, ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
         {
-            if (query.All.IsSupersetOf(removedComponentTypes))
+            if (query.All.Overlaps(removedComponentTypes) || (query.Any.Count != 0 && !allComponentsTypes.Overlaps(query.Any)))
             {
                 // The entity no longer has one of the components it should have for this queryId
                 return QueryCheckResult.Remove;
