@@ -17,22 +17,6 @@ namespace Theraot.ECS
             return new TypeHashSetQuery(all, any, none);
         }
 
-        public IEnumerable<ComponentType> GetRelevantComponentTypes(TypeHashSetQuery query)
-        {
-            foreach (var componentType in query.All)
-            {
-                yield return componentType;
-            }
-            foreach (var componentType in query.Any)
-            {
-                yield return componentType;
-            }
-            foreach (var componentType in query.None)
-            {
-                yield return componentType;
-            }
-        }
-
         public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
         {
             if
