@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -145,7 +145,7 @@ namespace Theraot.Collections.Specialized
             var order = Capacity > other.Capacity;
             var b = order ? _entries : other._entries;
             var a = order ? other._entries : _entries;
-            var result = new FlagArray(order ? Capacity : other.Capacity);
+            var result = new FlagArray(order ? other.Capacity : Capacity);
             for (var index = 0; index < a.Length; index++)
             {
                 result._entries[index] = a[index] & b[index];
@@ -342,7 +342,11 @@ namespace Theraot.Collections.Specialized
             {
                 result._entries[index] = ~_entries[index];
             }
-            result._entries[result._entries.Length - 1] &= GetMask(Capacity);
+            var mask = GetMask(Capacity);
+            if (mask != 0)
+            {
+                result._entries[result._entries.Length - 1] &= mask;
+            }
             return result;
         }
 
@@ -380,7 +384,11 @@ namespace Theraot.Collections.Specialized
             {
                 _entries[index] = entryValue;
             }
-            _entries[_entries.Length - 1] &= GetMask(Capacity);
+            var mask = GetMask(Capacity);
+            if (mask != 0)
+            {
+                _entries[_entries.Length - 1] &= mask;
+            }
         }
 
         public FlagArray Xor(FlagArray other)
