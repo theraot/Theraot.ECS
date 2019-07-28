@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using Component = System.Object;
 using ComponentType = System.Int32;
-using ComponentTypeSet = System.Collections.BitArray;
+using ComponentTypeSet = Theraot.Collections.Specialized.FlagArray;
 
 namespace Theraot.ECS
 {
-    public sealed class BitArrayStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet, BitArrayQuery>
+    public sealed class FlagArrayStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet, FlagArrayQuery>
     {
         private readonly int _capacity;
 
-        public BitArrayStrategy(int capacity)
+        public FlagArrayStrategy(int capacity)
         {
             _capacity = capacity;
         }
@@ -24,12 +24,12 @@ namespace Theraot.ECS
             return set;
         }
 
-        public BitArrayQuery CreateQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
+        public FlagArrayQuery CreateQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
         {
-            return new BitArrayQuery(_capacity, all, any, none);
+            return new FlagArrayQuery(_capacity, all, any, none);
         }
 
-        public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, BitArrayQuery query)
+        public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
         {
             if (allComponentsTypes.Overlaps(query.None))
             {
@@ -49,7 +49,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ComponentTypeSet allComponentsTypes, BitArrayQuery query)
+        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
         {
             if (query.None[addedComponentType])
             {
@@ -69,7 +69,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet allComponentsTypes, BitArrayQuery query)
+        public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
         {
             if (query.None.Overlaps(addedComponentTypes))
             {
@@ -89,7 +89,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnRemovedComponent(int removedComponentType, ComponentTypeSet allComponentsTypes, BitArrayQuery query)
+        public QueryCheckResult QueryCheckOnRemovedComponent(int removedComponentType, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
         {
             if (query.All[removedComponentType] || (!query.Any.IsEmpty() && !allComponentsTypes.Overlaps(query.Any)))
             {
@@ -109,7 +109,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<int> removedComponentTypes, ComponentTypeSet allComponentsTypes, BitArrayQuery query)
+        public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<int> removedComponentTypes, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
         {
             if (query.All.Overlaps(removedComponentTypes) || (!query.Any.IsEmpty() && !allComponentsTypes.Overlaps(query.Any)))
             {

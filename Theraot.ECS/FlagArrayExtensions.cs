@@ -1,30 +1,26 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Theraot.Collections.Specialized;
 
 namespace Theraot.ECS
 {
-    public static class BitArrayExtensions
+    public static class FlagArrayExtensions
     {
-        public static bool IsEmpty(this BitArray bitArray)
+        public static bool IsEmpty(this FlagArray flagArray)
         {
-            var integers = new int[(bitArray.Count >> 5) + 1];
-            bitArray.CopyTo(integers, 0);
-            return integers.All(integer => integer == 0);
+            return !flagArray.Contains(true);
         }
 
-        public static bool IsProperSubsetOf(this BitArray bitArray, BitArray other)
+        public static bool IsProperSubsetOf(this FlagArray flagArray, FlagArray other)
         {
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
 
-            var a1 = (BitArray)bitArray.Clone();
-            var b1 = (BitArray)other.Clone();
-            var a2 = (BitArray)bitArray.Clone();
-            var b2 = (BitArray)other.Clone();
+            var a = flagArray;
+            var b = other;
             /*
              * +--------------+
              * |              |
@@ -77,20 +73,18 @@ namespace Theraot.ECS
              * +--------------+
              * If also this is not empty, it means a is a proper subset of b
              */
-            return a1.And(b1.Not()).IsEmpty() && !b2.And(a2.Not()).IsEmpty();
+            return a.And(b.Not()).IsEmpty() && !b.And(a.Not()).IsEmpty();
         }
 
-        public static bool IsProperSupersetOf(this BitArray bitArray, BitArray other)
+        public static bool IsProperSupersetOf(this FlagArray flagArray, FlagArray other)
         {
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
 
-            var a1 = (BitArray)bitArray.Clone();
-            var b1 = (BitArray)other.Clone();
-            var a2 = (BitArray)bitArray.Clone();
-            var b2 = (BitArray)other.Clone();
+            var a = flagArray;
+            var b = other;
             /*
              * +--------------+
              * |              |
@@ -143,18 +137,18 @@ namespace Theraot.ECS
              * +--------------+
              * If also this is not empty, it means a is a proper superset of b
              */
-            return b1.And(a1.Not()).IsEmpty() && !a2.And(b2.Not()).IsEmpty();
+            return b.And(a.Not()).IsEmpty() && !a.And(b.Not()).IsEmpty();
         }
 
-        public static bool IsSubsetOf(this BitArray bitArray, BitArray other)
+        public static bool IsSubsetOf(this FlagArray flagArray, FlagArray other)
         {
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
 
-            var a = (BitArray)bitArray.Clone();
-            var b = (BitArray)other.Clone();
+            var a = flagArray;
+            var b = other;
             /*
              * +--------------+
              * |              |
@@ -189,15 +183,15 @@ namespace Theraot.ECS
             return a.And(b.Not()).IsEmpty();
         }
 
-        public static bool IsSupersetOf(this BitArray bitArray, BitArray other)
+        public static bool IsSupersetOf(this FlagArray flagArray, FlagArray other)
         {
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
 
-            var a = (BitArray)bitArray.Clone();
-            var b = (BitArray)other.Clone();
+            var a = flagArray;
+            var b = other;
             /*
              * +--------------+
              * |              |
@@ -232,15 +226,15 @@ namespace Theraot.ECS
             return b.And(a.Not()).IsEmpty();
         }
 
-        public static bool Overlaps(this BitArray bitArray, BitArray other)
+        public static bool Overlaps(this FlagArray flagArray, FlagArray other)
         {
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
 
-            var a = (BitArray)bitArray.Clone();
-            var b = (BitArray)other.Clone();
+            var a = flagArray;
+            var b = other;
             /*
              * +--------------+
              * |              |
@@ -265,27 +259,25 @@ namespace Theraot.ECS
             return !a.And(b).IsEmpty();
         }
 
-        public static bool Overlaps(this BitArray bitArray, IEnumerable<int> other)
+        public static bool Overlaps(this FlagArray flagArray, IEnumerable<int> other)
         {
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return other.Any(index => bitArray[index]);
+            return other.Any(index => flagArray[index]);
         }
 
-        public static bool SetEquals(this BitArray bitArray, BitArray other)
+        public static bool SetEquals(this FlagArray flagArray, FlagArray other)
         {
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
 
-            var a1 = (BitArray)bitArray.Clone();
-            var b1 = (BitArray)other.Clone();
-            var a2 = (BitArray)bitArray.Clone();
-            var b2 = (BitArray)other.Clone();
+            var a = flagArray;
+            var b = other;
             /*
              * +--------------+
              * |              |
@@ -337,7 +329,7 @@ namespace Theraot.ECS
              * +--------------+
              * If this is empty, the sets are equal
              */
-            return a1.Or(b1).And(a2.And(b2).Not()).IsEmpty();
+            return a.Or(b).And(a.And(b).Not()).IsEmpty();
         }
     }
 }
