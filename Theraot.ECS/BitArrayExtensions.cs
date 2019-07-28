@@ -256,8 +256,9 @@ namespace Theraot.ECS
              * |  \___\/___/  |
              * |              |
              * +--------------+
+             * If this is not empty, the sets overlap
              */
-            return a.And(b).IsEmpty();
+            return !a.And(b).IsEmpty();
         }
 
         public static bool Overlaps(this BitArray bitArray, IEnumerable<int> other)
