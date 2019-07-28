@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+
+    <NoWarn>1701;1702</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,5 +19,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Theraot.ECS\Theraot.ECS.csproj" />
   </ItemGroup>
-
 </Project>
