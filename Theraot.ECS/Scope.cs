@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Component = System.Object;
 using QueryId = System.Int32;
 
@@ -48,7 +49,10 @@ namespace Theraot.ECS
 
         public QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
-            var query = _strategy.CreateQuery(all, any, none);
+            var allArray = all.ToArray();
+            var anyArray = any.ToArray();
+            var noneArray = none.ToArray();
+            var query = _strategy.CreateQuery(allArray, anyArray, noneArray);
             var queryId = _queryId;
             if (!_queryIdByQuery.TryAdd(query, queryId))
             {
@@ -57,7 +61,7 @@ namespace Theraot.ECS
             _queryId++;
             _queryByQueryId[queryId] = query;
             var set = _entitiesByQueryId[queryId] = new HashSet<TEntity>();
-            foreach (var componentType in _strategy.GetRelevantComponentTypes(query))
+            foreach (var componentType in allArray.Concat(anyArray).Concat(noneArray))
             {
                 if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
                 {

@@ -9,8 +9,6 @@ namespace Theraot.ECS
 
         TQuery CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
 
-        IEnumerable<TComponentType> GetRelevantComponentTypes(TQuery query);
-
         QueryCheckResult QueryCheck(TComponentTypeSet allComponentsTypes, TQuery query);
 
         QueryCheckResult QueryCheckOnAddedComponent(TComponentType addedComponentType, TComponentTypeSet allComponentsTypes, TQuery query);
