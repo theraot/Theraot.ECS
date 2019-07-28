@@ -45,11 +45,14 @@ namespace Theraot.ECS
                     case QueryCheckResult.Remove:
                         set.Remove(entity);
                         break;
+
                     case QueryCheckResult.Add:
                         set.Add(entity);
                         break;
+
                     case QueryCheckResult.Noop:
                         break;
+
                     default:
                         break;
                 }
@@ -67,11 +70,14 @@ namespace Theraot.ECS
                     case QueryCheckResult.Remove:
                         set.Remove(entity);
                         break;
+
                     case QueryCheckResult.Add:
                         set.Add(entity);
                         break;
+
                     case QueryCheckResult.Noop:
                         break;
+
                     default:
                         break;
                 }

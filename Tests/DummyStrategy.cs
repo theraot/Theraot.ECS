@@ -42,22 +42,18 @@ namespace Tests
 
         public void SetComponentType(int componentTypeSet, int componentType)
         {
-            
         }
 
         public void SetComponentTypes(int componentTypeSet, IEnumerable<int> componentTypes)
         {
-            
         }
 
         public void UnsetComponentType(int componentTypeSet, int componentType)
         {
-            
         }
 
         public void UnsetComponentTypes(int componentTypeSet, IEnumerable<int> componentTypes)
         {
-            
         }
     }
 }

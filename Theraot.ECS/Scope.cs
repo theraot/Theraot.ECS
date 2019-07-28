@@ -10,20 +10,28 @@ namespace Theraot.ECS
     {
         public static IScope<TEntity, TComponentType> CreateScope<TEntity, TComponentType, TComponentTypeSet, TQuery>(Func<TEntity> entityIdFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> strategy)
         {
-            return new Scope<TEntity,TComponentType,TComponentTypeSet,TQuery>(entityIdFactory, strategy);
+            return new Scope<TEntity, TComponentType, TComponentTypeSet, TQuery>(entityIdFactory, strategy);
         }
     }
 
     public sealed partial class Scope<TEntity, TComponentType, TComponentTypeSet, TQuery> : IScope<TEntity, TComponentType>
     {
         private readonly Dictionary<TEntity, Dictionary<TComponentType, Component>> _componentsByEntity;
+
         private readonly Dictionary<TEntity, TComponentTypeSet> _componentTypesByEntity;
+
         private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
+
         private readonly Func<TEntity> _entityFactory;
+
         private readonly Dictionary<QueryId, TQuery> _queryByQueryId;
+
         private readonly Dictionary<TQuery, QueryId> _queryIdByQuery;
+
         private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
+
         private readonly IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> _strategy;
+
         private int _queryId;
 
         internal Scope(Func<TEntity> entityFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> strategy)
@@ -176,11 +184,14 @@ namespace Theraot.ECS
                     case QueryCheckResult.Remove:
                         set.Remove(entity);
                         break;
+
                     case QueryCheckResult.Add:
                         set.Add(entity);
                         break;
+
                     case QueryCheckResult.Noop:
                         break;
+
                     default:
                         break;
                 }
@@ -197,11 +208,14 @@ namespace Theraot.ECS
                     case QueryCheckResult.Remove:
                         set.Remove(entity);
                         break;
+
                     case QueryCheckResult.Add:
                         set.Add(entity);
                         break;
+
                     case QueryCheckResult.Noop:
                         break;
+
                     default:
                         break;
                 }
