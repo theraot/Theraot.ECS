@@ -21,7 +21,7 @@ namespace Theraot.ECS
             UpdateEntitiesByQueryOnAddedComponent(entity, allComponentsTypes, componentType);
         }
 
-        public void SetComponents(TEntity entity, IDictionary<TComponentType, Component> components)
+        public void SetComponents(TEntity entity, IEnumerable<KeyValuePair<TComponentType, Component>> components)
         {
             var allComponents = _componentsByEntity[entity];
             var addedComponents = allComponents.SetAll(components);

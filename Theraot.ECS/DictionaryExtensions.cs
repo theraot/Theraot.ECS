@@ -32,7 +32,7 @@ namespace Theraot.ECS
             return isNew;
         }
 
-        public static Dictionary<TKey, TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IDictionary<TKey, TValue> source)
+        public static Dictionary<TKey, TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<KeyValuePair<TKey, TValue>> source)
         {
             if (source == null)
             {

@@ -296,7 +296,7 @@ namespace Tests
             var entitiesB = scope.GetEntities(query).ToArray();
             Assert.AreEqual(1, entitiesB.Length);
             Assert.AreEqual(entityA, entitiesB[0]);
-            scope.UnsetComponents(entityA, new[] { typeA, typeB });
+            scope.UnsetComponents(entityA, typeA, typeB);
             var entitiesC = scope.GetEntities(query).ToArray();
             Assert.AreEqual(0, entitiesC.Length);
         }
@@ -374,7 +374,7 @@ namespace Tests
             var entitiesB = scope.GetEntities(query).ToArray();
             Assert.AreEqual(1, entitiesB.Length);
             Assert.AreEqual(entityA, entitiesB[0]);
-            scope.UnsetComponents(entityA, new[] { typeA, typeB });
+            scope.UnsetComponents(entityA, typeA, typeB);
             var entitiesC = scope.GetEntities(query).ToArray();
             Assert.AreEqual(0, entitiesC.Length);
         }
@@ -465,7 +465,7 @@ namespace Tests
             );
             var entitiesB = scope.GetEntities(query).ToArray();
             Assert.AreEqual(0, entitiesB.Length);
-            scope.UnsetComponents(entityA, new[] { typeA, typeB });
+            scope.UnsetComponents(entityA, typeA, typeB);
             var entitiesC = scope.GetEntities(query).ToArray();
             Assert.AreEqual(1, entitiesC.Length);
             Assert.AreEqual(entityA, entitiesC[0]);
@@ -568,28 +568,12 @@ namespace Tests
             Assert.AreEqual(objA, componentA);
             Assert.IsTrue(scope.TryGetComponent<object>(entity, componentTypeB, out var componentB));
             Assert.AreEqual(objB, componentB);
-            scope.UnsetComponents
-            (
-                entity,
-                new[]
-                {
-                    componentTypeA,
-                    componentTypeB
-                }
-            );
+            scope.UnsetComponents(entity, componentTypeA, componentTypeB);
             Assert.IsFalse(scope.TryGetComponent<object>(entity, componentTypeA, out _));
             Assert.IsFalse(scope.TryGetComponent<object>(entity, componentTypeB, out _));
             Assert.IsTrue(scope.TryGetComponent<object>(entity, componentTypeC, out var componentC));
             Assert.AreEqual(objC, componentC);
-            scope.UnsetComponents
-            (
-                entity,
-                new[]
-                {
-                    componentTypeC,
-                    componentTypeB
-                }
-            );
+            scope.UnsetComponents(entity, componentTypeC, componentTypeB);
             Assert.IsFalse(scope.TryGetComponent<object>(entity, componentTypeC, out _));
         }
     }

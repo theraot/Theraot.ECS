@@ -16,12 +16,20 @@ namespace Theraot.ECS
 
         void SetComponent<TComponent>(TEntity entity, TComponentType type, TComponent component);
 
-        void SetComponents(TEntity entity, IDictionary<TComponentType, Component> components);
+        void SetComponents(TEntity entity, IEnumerable<KeyValuePair<TComponentType, Component>> components);
 
         bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component);
 
         void UnsetComponent(TEntity entity, TComponentType componentType);
 
         void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes);
+    }
+
+    public static class ScopeExtensions
+    {
+        public static void UnsetComponents<TEntity, TComponentType>(this IScope<TEntity, TComponentType> scope, TEntity entity, params TComponentType[] componentTypes)
+        {
+            scope.UnsetComponents(entity, componentTypes);
+        }
     }
 }
