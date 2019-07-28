@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Theraot.ECS
 {
@@ -12,18 +11,6 @@ namespace Theraot.ECS
             var isNew = !dictionary.ContainsKey(key);
             dictionary[key] = value;
             return isNew;
-        }
-
-        public static IEnumerable<TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<TValue> values, Func<TValue, TKey> keySelector)
-        {
-            if (keySelector == null)
-            {
-                throw new ArgumentNullException(nameof(keySelector));
-            }
-
-            return from TValue value in values
-                   where dictionary.Set(keySelector(value), value)
-                   select value;
         }
 
         public static Dictionary<TKey, TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IDictionary<TKey, TValue> source)
@@ -45,19 +32,6 @@ namespace Theraot.ECS
             }
 
             return result;
-        }
-
-        public static IEnumerable<TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue[] values, TKey[] keys)
-        {
-            for (var index = 0; index < values.Length; index++)
-            {
-                var value = values[index];
-                var key = keys[index];
-                if (dictionary.Set(key, value))
-                {
-                    yield return value;
-                }
-            }
         }
 
         public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
