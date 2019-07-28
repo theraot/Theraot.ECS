@@ -31,19 +31,15 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, BitArrayQuery query)
         {
-            if
-            (
-                query.None.Count != 0
-                && (query.None.Count > allComponentsTypes.Count ? query.None.Overlaps(allComponentsTypes) : allComponentsTypes.Overlaps(query.None))
-            )
+            if (allComponentsTypes.Overlaps(query.None))
             {
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
             if
             (
-                allComponentsTypes.IsSupersetOf(query.All)
-                && (query.Any.Count == 0 || (query.Any.Count > allComponentsTypes.Count ? query.Any.Overlaps(allComponentsTypes) : allComponentsTypes.Overlaps(query.Any)))
+                (query.All.IsEmpty() || allComponentsTypes.IsSupersetOf(query.All))
+                && (query.Any.IsEmpty() || allComponentsTypes.Overlaps(query.Any))
             )
             {
                 // The entity has all the required components for this queryId
@@ -55,15 +51,15 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ComponentTypeSet allComponentsTypes, BitArrayQuery query)
         {
-            if (query.None.Count != 0 && query.None[addedComponentType])
+            if (query.None[addedComponentType])
             {
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
             if
             (
-                allComponentsTypes.IsSupersetOf(query.All)
-                && (query.Any.Count == 0 || (query.Any.Count > allComponentsTypes.Count ? query.Any.Overlaps(allComponentsTypes) : allComponentsTypes.Overlaps(query.Any)))
+                (query.All.IsEmpty() || allComponentsTypes.IsSupersetOf(query.All))
+                && (query.Any.IsEmpty() || allComponentsTypes.Overlaps(query.Any))
             )
             {
                 // The entity has all the required components for this queryId
@@ -75,15 +71,15 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet allComponentsTypes, BitArrayQuery query)
         {
-            if (query.None.Count != 0 && query.None.Overlaps(addedComponentTypes))
+            if (query.None.Overlaps(addedComponentTypes))
             {
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
             if
             (
-                allComponentsTypes.IsSupersetOf(query.All)
-                && (query.Any.Count == 0 || (query.Any.Count > allComponentsTypes.Count ? query.Any.Overlaps(allComponentsTypes) : allComponentsTypes.Overlaps(query.Any)))
+                (query.All.IsEmpty() || allComponentsTypes.IsSupersetOf(query.All))
+                && (query.Any.IsEmpty() || allComponentsTypes.Overlaps(query.Any))
             )
             {
                 // The entity has all the required components for this queryId
@@ -102,8 +98,8 @@ namespace Theraot.ECS
             }
             if
             (
-                !query.None.Overlaps(allComponentsTypes)
-                && (query.Any.Count == 0 || (query.Any.Count > allComponentsTypes.Count ? query.Any.Overlaps(allComponentsTypes) : allComponentsTypes.Overlaps(query.Any)))
+                (query.None.IsEmpty() || !query.None.Overlaps(allComponentsTypes))
+                && (query.Any.IsEmpty() || allComponentsTypes.Overlaps(query.Any))
             )
             {
                 // The entity has none of the components it should not have for this queryId
@@ -122,8 +118,8 @@ namespace Theraot.ECS
             }
             if
             (
-                !query.None.Overlaps(allComponentsTypes)
-                && (query.Any.Count == 0 || (query.Any.Count > allComponentsTypes.Count ? query.Any.Overlaps(allComponentsTypes) : allComponentsTypes.Overlaps(query.Any)))
+                (query.None.IsEmpty() || !query.None.Overlaps(allComponentsTypes))
+                && (query.Any.IsEmpty() || allComponentsTypes.Overlaps(query.Any))
             )
             {
                 // The entity has none of the components it should not have for this queryId
