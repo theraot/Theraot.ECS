@@ -129,6 +129,20 @@ namespace Theraot.ECS
             UpdateEntitiesByQueryOnRemoveComponent(entity, allComponentsTypes, componentType);
         }
 
+        public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
+        {
+            var allComponents = _componentsByEntity[entity];
+            var removedComponents = allComponents.RemoveAll(componentTypes);
+            if (removedComponents.Count == 0)
+            {
+                return;
+            }
+
+            var allComponentsTypes = _componentTypesByEntity[entity];
+            _strategy.UnsetComponentTypes(allComponentsTypes, removedComponents);
+            UpdateEntitiesByQueryOnRemoveComponents(entity, allComponentsTypes, removedComponents);
+        }
+
         private IEnumerable<QueryId> GetQueriesByComponentType(TComponentType componentType)
         {
             if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
@@ -152,12 +166,33 @@ namespace Theraot.ECS
             return set;
         }
 
-        private void UpdateEntitiesByQueryOnRemoveComponent(TEntity entity, TComponentTypeSet allComponentsTypes, TComponentType addedComponentType)
+        private void UpdateEntitiesByQueryOnRemoveComponent(TEntity entity, TComponentTypeSet allComponentsTypes, TComponentType removedComponentType)
         {
-            foreach (var queryId in GetQueriesByComponentType(addedComponentType))
+            foreach (var queryId in GetQueriesByComponentType(removedComponentType))
             {
                 var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnRemovedComponent(addedComponentType, allComponentsTypes, _queryByQueryId[queryId]))
+                switch (_strategy.QueryCheckOnRemovedComponent(removedComponentType, allComponentsTypes, _queryByQueryId[queryId]))
+                {
+                    case QueryCheckResult.Remove:
+                        set.Remove(entity);
+                        break;
+                    case QueryCheckResult.Add:
+                        set.Add(entity);
+                        break;
+                    case QueryCheckResult.Noop:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void UpdateEntitiesByQueryOnRemoveComponents(TEntity entity, TComponentTypeSet allComponentsTypes, List<TComponentType> removedComponentTypes)
+        {
+            foreach (var queryId in GetQueriesByComponentTypes(removedComponentTypes))
+            {
+                var set = _entitiesByQueryId[queryId];
+                switch (_strategy.QueryCheckOnRemovedComponents(removedComponentTypes, allComponentsTypes, _queryByQueryId[queryId]))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entity);

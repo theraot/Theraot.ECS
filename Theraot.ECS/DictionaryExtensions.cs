@@ -6,6 +6,25 @@ namespace Theraot.ECS
 {
     internal static class DictionaryExtensions
     {
+        public static List<TKey> RemoveAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<TKey> source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            var result = new List<TKey>();
+            foreach (var key in source)
+            {
+                if (dictionary.Remove(key))
+                {
+                    result.Add(key);
+                }
+            }
+
+            return result;
+        }
+
         public static bool Set<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             var isNew = !dictionary.ContainsKey(key);

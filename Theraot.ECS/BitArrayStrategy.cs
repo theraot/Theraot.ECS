@@ -113,14 +113,50 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
+        public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<int> removedComponentTypes, ComponentTypeSet allComponentsTypes, BitArrayQuery query)
+        {
+            if (query.All.Overlaps(removedComponentTypes))
+            {
+                // The entity no longer has one of the components it should have for this queryId
+                return QueryCheckResult.Remove;
+            }
+            if
+            (
+                !query.None.Overlaps(allComponentsTypes)
+                && (query.Any.Count == 0 || (query.Any.Count > allComponentsTypes.Count ? query.Any.Overlaps(allComponentsTypes) : allComponentsTypes.Overlaps(query.Any)))
+            )
+            {
+                // The entity has none of the components it should not have for this queryId
+                // and at least one of the optional components (if any) for this queryId
+                return QueryCheckResult.Add;
+            }
+            return QueryCheckResult.Noop;
+        }
+
         public void SetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             componentTypeSet[componentType] = true;
         }
 
-        public void UnsetComponentType(ComponentTypeSet componentTypeSet, int removedComponentType)
+        public void SetComponentTypes(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
         {
-            componentTypeSet[removedComponentType] = false;
+            foreach (var componentType in componentTypes)
+            {
+                componentTypeSet[componentType] = true;
+            }
+        }
+
+        public void UnsetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
+        {
+            componentTypeSet[componentType] = false;
+        }
+
+        public void UnsetComponentTypes(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
+        {
+            foreach (var componentType in componentTypes)
+            {
+                componentTypeSet[componentType] = false;
+            }
         }
     }
 }

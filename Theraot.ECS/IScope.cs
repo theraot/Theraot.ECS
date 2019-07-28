@@ -14,5 +14,6 @@ namespace Theraot.ECS
         void SetComponents(TEntity entity, IDictionary<TComponentType, Component> components);
         bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component);
         void UnsetComponent(TEntity entity, TComponentType componentType);
+        void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes);
     }
 }

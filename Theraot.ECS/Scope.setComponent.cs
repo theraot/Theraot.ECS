@@ -31,6 +31,7 @@ namespace Theraot.ECS
             }
 
             var allComponentsTypes = _componentTypesByEntity[entity];
+            _strategy.SetComponentTypes(allComponentsTypes, addedComponents.Keys);
             UpdateEntitiesByQueryOnAddedComponents(entity, allComponentsTypes, addedComponents);
         }
 

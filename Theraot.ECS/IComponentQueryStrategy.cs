@@ -17,8 +17,14 @@ namespace Theraot.ECS
 
         QueryCheckResult QueryCheckOnRemovedComponent(TComponentType removedComponentType, TComponentTypeSet allComponentsTypes, TQuery query);
 
+        QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<TComponentType> removedComponentTypes, TComponentTypeSet allComponentsTypes, TQuery query);
+
         void SetComponentType(TComponentTypeSet componentTypeSet, TComponentType componentType);
 
-        void UnsetComponentType(TComponentTypeSet componentTypeSet, TComponentType removedComponentType);
+        void SetComponentTypes(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
+
+        void UnsetComponentType(TComponentTypeSet componentTypeSet, TComponentType componentType);
+
+        void UnsetComponentTypes(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
     }
 }
