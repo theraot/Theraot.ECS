@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ComponentType = System.Type;
+using ComponentType = System.String;
 
 namespace Theraot.ECS
 {

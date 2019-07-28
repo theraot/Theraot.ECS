@@ -20,7 +20,31 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
-            return values.Where(value => dictionary.Set(keySelector(value), value));
+
+            return from TValue value in values
+                   where dictionary.Set(keySelector(value), value)
+                   select value;
+        }
+
+        public static Dictionary<TKey, TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IDictionary<TKey, TValue> source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            var result = new Dictionary<TKey, TValue>();
+            foreach (var pair in source)
+            {
+                var key = pair.Key;
+                var value = pair.Value;
+                if (dictionary.Set(key, value))
+                {
+                    result.Add(key, value);
+                }
+            }
+
+            return result;
         }
 
         public static IEnumerable<TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue[] values, TKey[] keys)

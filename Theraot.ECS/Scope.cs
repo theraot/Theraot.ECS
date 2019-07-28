@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Component = System.Object;
 using QueryId = System.Int32;
 
@@ -84,9 +83,9 @@ namespace Theraot.ECS
             return queryId;
         }
 
-        public TComponent GetComponent<TComponent>(TEntity entity)
+        public TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType)
         {
-            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(GetComponentType<TComponent>(), out var result))
+            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(componentType, out var result))
             {
                 return (TComponent)result;
             }
@@ -102,9 +101,9 @@ namespace Theraot.ECS
             return Array.Empty<TEntity>();
         }
 
-        public bool TryGetComponent<TComponent>(TEntity entity, out TComponent component)
+        public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
         {
-            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(GetComponentType<TComponent>(), out var result))
+            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(componentType, out var result))
             {
                 component = (TComponent)result;
                 return true;
@@ -113,29 +112,17 @@ namespace Theraot.ECS
             return false;
         }
 
-        public void UnsetComponent<TComponent>(TEntity entity)
+        public void UnsetComponent(TEntity entity, TComponentType componentType)
         {
             var allComponents = _componentsByEntity[entity];
-            var removedComponentType = GetComponentType<TComponent>();
-            if (!allComponents.Remove(removedComponentType))
+            if (!allComponents.Remove(componentType))
             {
                 return;
             }
 
             var allComponentsTypes = _componentTypesByEntity[entity];
-            _strategy.UnsetComponentType(allComponentsTypes, removedComponentType);
-            UpdateEntitiesByQueryOnRemoveComponent(entity, allComponentsTypes, removedComponentType);
-        }
-
-        private TComponentType GetComponentType<TComponent>(TComponent component)
-        {
-            var _ = component;
-            return _strategy.GetType(typeof(TComponent));
-        }
-
-        private TComponentType GetComponentType<TComponent>()
-        {
-            return _strategy.GetType(typeof(TComponent));
+            _strategy.UnsetComponentType(allComponentsTypes, componentType);
+            UpdateEntitiesByQueryOnRemoveComponent(entity, allComponentsTypes, componentType);
         }
 
         private IEnumerable<QueryId> GetQueriesByComponentType(TComponentType componentType)
@@ -159,49 +146,6 @@ namespace Theraot.ECS
             }
 
             return set;
-        }
-
-        private void UpdateEntitiesByQueryOnAddedComponent(TEntity entity, TComponentTypeSet allComponentsTypes, TComponentType addedComponentType)
-        {
-            foreach (var queryId in GetQueriesByComponentType(addedComponentType))
-            {
-                var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnAddedComponent(addedComponentType, allComponentsTypes, _queryByQueryId[queryId]))
-                {
-                    case QueryCheckResult.Remove:
-                        set.Remove(entity);
-                        break;
-                    case QueryCheckResult.Add:
-                        set.Add(entity);
-                        break;
-                    case QueryCheckResult.Noop:
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        private void UpdateEntitiesByQueryOnAddedComponents(TEntity entity, TComponentTypeSet allComponentsTypes, Component[] addedComponents)
-        {
-            var addedComponentTypes = addedComponents.Select(GetComponentType).ToArray();
-            foreach (var queryId in GetQueriesByComponentTypes(addedComponentTypes))
-            {
-                var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnAddedComponents(addedComponentTypes, allComponentsTypes, _queryByQueryId[queryId]))
-                {
-                    case QueryCheckResult.Remove:
-                        set.Remove(entity);
-                        break;
-                    case QueryCheckResult.Add:
-                        set.Add(entity);
-                        break;
-                    case QueryCheckResult.Noop:
-                        break;
-                    default:
-                        break;
-                }
-            }
         }
 
         private void UpdateEntitiesByQueryOnRemoveComponent(TEntity entity, TComponentTypeSet allComponentsTypes, TComponentType addedComponentType)

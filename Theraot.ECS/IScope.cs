@@ -1,27 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Component = System.Object;
 using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    public interface IScope<TEntity, in TComponentType>
+    public interface IScope<TEntity, TComponentType>
     {
         TEntity CreateEntity();
         QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
-        TComponent GetComponent<TComponent>(TEntity entity);
+        TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType);
         IEnumerable<TEntity> GetEntities(QueryId query);
-        void Query<TComponent>(QueryId queryId, Action<TEntity, TComponent> callback);
-        void Query<TComponent1, TComponent2>(QueryId queryId, Action<TEntity, TComponent1, TComponent2> callback);
-        void Query<TComponent1, TComponent2, TComponent3>(QueryId queryId, Action<TEntity, TComponent1, TComponent2, TComponent3> callback);
-        void Query<TComponent>(Action<TEntity, TComponent> callback);
-        void Query<TComponent1, TComponent2>(Action<TEntity, TComponent1, TComponent2> callback);
-        void Query<TComponent1, TComponent2, TComponent3>(Action<TEntity, TComponent1, TComponent2, TComponent3> callback);
-        void SetComponent<TComponent>(TEntity entity, TComponent component);
-        void SetComponent<TComponent1, TComponent2>(TEntity entity, TComponent1 component1, TComponent2 component2);
-        void SetComponent<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponent1 component1, TComponent2 component2, TComponent3 component3);
-        void SetComponent(TEntity entity, params Component[] components);
-        bool TryGetComponent<TComponent>(TEntity entity, out TComponent component);
-        void UnsetComponent<TComponent>(TEntity entity);
+        void SetComponent<TComponent>(TEntity entity, TComponentType type, TComponent component);
+        void SetComponents(TEntity entity, IDictionary<TComponentType, Component> components);
+        bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component);
+        void UnsetComponent(TEntity entity, TComponentType componentType);
     }
 }

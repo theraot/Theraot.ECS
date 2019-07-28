@@ -22,8 +22,8 @@ namespace Tests
             var scope = Scope.CreateScope(System.Guid.NewGuid, new BitArrayStrategy(1));
             var entity = scope.CreateEntity();
             var obj = new object();
-            scope.SetComponent(entity, obj);
-            Assert.AreEqual(obj, scope.GetComponent<object>(entity));
+            scope.SetComponent(entity, 0, obj);
+            Assert.AreEqual(obj, scope.GetComponent<object>(entity, 0));
         }
 
         [Test]
@@ -32,8 +32,8 @@ namespace Tests
             var scope = Scope.CreateScope(System.Guid.NewGuid, new TypeHashSetStrategy());
             var entity = scope.CreateEntity();
             var obj = new object();
-            scope.SetComponent(entity, obj);
-            Assert.AreEqual(obj, scope.GetComponent<object>(entity));
+            scope.SetComponent(entity, "a" , obj);
+            Assert.AreEqual(obj, scope.GetComponent<object>(entity, "a"));
         }
 
         [Test]
@@ -43,8 +43,8 @@ namespace Tests
             var scope = Scope.CreateScope(() => entityId++, new TypeHashSetStrategy());
             var entityA = scope.CreateEntity();
             var entityB = scope.CreateEntity();
-            scope.SetComponent(entityA, 100);
-            var query = scope.CreateQuery(new[] { typeof(int) }, System.Type.EmptyTypes, System.Type.EmptyTypes);
+            scope.SetComponent(entityA, "a", 100);
+            var query = scope.CreateQuery(new[] { "a" }, System.Array.Empty<string>(), System.Array.Empty<string>());
             var entities = scope.GetEntities(query).ToArray();
             Assert.AreEqual(1, entities.Length);
             Assert.AreEqual(entityA, entities[0]);
@@ -56,10 +56,10 @@ namespace Tests
         {
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new TypeHashSetStrategy());
-            var query = scope.CreateQuery(new[] { typeof(int) }, System.Type.EmptyTypes, System.Type.EmptyTypes);
+            var query = scope.CreateQuery(new[] { "a" }, System.Array.Empty<string>(), System.Array.Empty<string>());
             var entityA = scope.CreateEntity();
             var entityB = scope.CreateEntity();
-            scope.SetComponent(entityA, 100);
+            scope.SetComponent(entityA, "a", 100);
             var entities = scope.GetEntities(query).ToArray();
             Assert.AreEqual(1, entities.Length);
             Assert.AreEqual(entityA, entities[0]);
@@ -73,8 +73,8 @@ namespace Tests
             var scope = Scope.CreateScope(() => entityId++, new BitArrayStrategy(1));
             var entity = scope.CreateEntity();
             var obj = new object();
-            scope.SetComponent(entity, obj);
-            Assert.AreEqual(obj, scope.GetComponent<object>(entity));
+            scope.SetComponent(entity, 0, obj);
+            Assert.AreEqual(obj, scope.GetComponent<object>(entity, 0));
         }
 
         [Test]
@@ -84,8 +84,8 @@ namespace Tests
             var scope = Scope.CreateScope(() => entityId++, new TypeHashSetStrategy());
             var entity = scope.CreateEntity();
             var obj = new object();
-            scope.SetComponent(entity, obj);
-            Assert.AreEqual(obj, scope.GetComponent<object>(entity));
+            scope.SetComponent(entity, "a", obj);
+            Assert.AreEqual(obj, scope.GetComponent<object>(entity, "a"));
         }
 
         [Test]
@@ -94,8 +94,8 @@ namespace Tests
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new BitArrayStrategy(1));
             var entity = scope.CreateEntity();
-            scope.SetComponent(entity, 42);
-            Assert.AreEqual(42, scope.GetComponent<int>(entity));
+            scope.SetComponent(entity, 0, 42);
+            Assert.AreEqual(42, scope.GetComponent<int>(entity, 0));
         }
 
         [Test]
@@ -104,8 +104,8 @@ namespace Tests
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new TypeHashSetStrategy());
             var entity = scope.CreateEntity();
-            scope.SetComponent(entity, 42);
-            Assert.AreEqual(42, scope.GetComponent<int>(entity));
+            scope.SetComponent(entity, "a", 42);
+            Assert.AreEqual(42, scope.GetComponent<int>(entity, "a"));
         }
     }
 }

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Component = System.Object;
-using ComponentType = System.Type;
-using ComponentTypeSet = Theraot.ECS.DictionaryKeySet<System.Type>;
+using ComponentType = System.String;
+using ComponentTypeSet = Theraot.ECS.DictionaryKeySet<string>;
 
 namespace Theraot.ECS
 {
@@ -32,11 +31,6 @@ namespace Theraot.ECS
             {
                 yield return componentType;
             }
-        }
-
-        public ComponentType GetType(Type type)
-        {
-            return type;
         }
 
         public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
@@ -103,7 +97,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnRemovedComponent(Type removedComponentType, ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
+        public QueryCheckResult QueryCheckOnRemovedComponent(string removedComponentType, ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
         {
             if (query.All.Contains(removedComponentType))
             {
@@ -128,7 +122,7 @@ namespace Theraot.ECS
             var _ = componentTypeSet;
         }
 
-        public void UnsetComponentType(ComponentTypeSet componentTypeSet, Type removedComponentType)
+        public void UnsetComponentType(ComponentTypeSet componentTypeSet, ComponentType removedComponentType)
         {
             var _ = componentTypeSet;
         }
