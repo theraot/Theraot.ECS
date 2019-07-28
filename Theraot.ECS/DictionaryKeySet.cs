@@ -1,11 +1,13 @@
-﻿using System;
+﻿// ReSharper disable RedundantExtendsListEntry
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Theraot.ECS
 {
-    public sealed class DictionaryKeySet<T> : ISet<T>
+    public sealed class DictionaryKeySet<T> : ISet<T>, IEnumerable<T>
     {
         private readonly Func<T, bool> _containsKey;
 

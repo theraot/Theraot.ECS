@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Component = System.Object;
@@ -110,7 +110,7 @@ namespace Theraot.ECS
             {
                 return result;
             }
-            return Array.Empty<TEntity>();
+            return EmptyArray<TEntity>.Instance;
         }
 
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
@@ -155,7 +155,7 @@ namespace Theraot.ECS
         {
             if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
             {
-                return Array.Empty<QueryId>();
+                return EmptyArray<QueryId>.Instance;
             }
             return queryIds;
         }
