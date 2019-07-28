@@ -21,8 +21,10 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            var a = bitArray;
-            var b = other;
+            var a1 = (BitArray)bitArray.Clone();
+            var b1 = (BitArray)other.Clone();
+            var a2 = (BitArray)bitArray.Clone();
+            var b2 = (BitArray)other.Clone();
             /*
              * +--------------+
              * |              |
@@ -75,7 +77,7 @@ namespace Theraot.ECS
              * +--------------+
              * If also this is not empty, it means a is a proper subset of b
              */
-            return a.And(b.Not()).IsEmpty() && !b.And(a.Not()).IsEmpty();
+            return a1.And(b1.Not()).IsEmpty() && !b2.And(a2.Not()).IsEmpty();
         }
 
         public static bool IsProperSupersetOf(this BitArray bitArray, BitArray other)
@@ -85,8 +87,10 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            var a = bitArray;
-            var b = other;
+            var a1 = (BitArray)bitArray.Clone();
+            var b1 = (BitArray)other.Clone();
+            var a2 = (BitArray)bitArray.Clone();
+            var b2 = (BitArray)other.Clone();
             /*
              * +--------------+
              * |              |
@@ -139,7 +143,7 @@ namespace Theraot.ECS
              * +--------------+
              * If also this is not empty, it means a is a proper superset of b
              */
-            return b.And(a.Not()).IsEmpty() && !a.And(b.Not()).IsEmpty();
+            return b1.And(a1.Not()).IsEmpty() && !a2.And(b2.Not()).IsEmpty();
         }
 
         public static bool IsSubsetOf(this BitArray bitArray, BitArray other)
@@ -149,8 +153,8 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            var a = bitArray;
-            var b = other;
+            var a = (BitArray)bitArray.Clone();
+            var b = (BitArray)other.Clone();
             /*
              * +--------------+
              * |              |
@@ -192,8 +196,8 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            var a = bitArray;
-            var b = other;
+            var a = (BitArray)bitArray.Clone();
+            var b = (BitArray)other.Clone();
             /*
              * +--------------+
              * |              |
@@ -235,8 +239,8 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            var a = bitArray;
-            var b = other;
+            var a = (BitArray)bitArray.Clone();
+            var b = (BitArray)other.Clone();
             /*
              * +--------------+
              * |              |
@@ -277,8 +281,11 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(other));
             }
-            var a = bitArray;
-            var b = other;
+
+            var a1 = (BitArray)bitArray.Clone();
+            var b1 = (BitArray)other.Clone();
+            var a2 = (BitArray)bitArray.Clone();
+            var b2 = (BitArray)other.Clone();
             /*
              * +--------------+
              * |              |
@@ -330,7 +337,7 @@ namespace Theraot.ECS
              * +--------------+
              * If this is empty, the sets are equal
              */
-            return a.Or(b).And(a.And(b).Not()).IsEmpty();
+            return a1.Or(b1).And(a2.And(b2).Not()).IsEmpty();
         }
     }
 }
