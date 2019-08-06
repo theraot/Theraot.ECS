@@ -139,49 +139,6 @@ namespace Theraot.Collections.Specialized
             return b.IsSubsetOf(a) && !a.IsSubsetOf(b);
         }
 
-        public static bool IsSupersetOf(this FlagArray flagArray, FlagArray other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-
-            var a = flagArray;
-            var b = other;
-            /*
-             * +--------------+
-             * |              |
-             * | a ___  ___ b |
-             * |  /   /\   \  |
-             * | |   |  |   | |
-             * |  \___\/___/  |
-             * |              |
-             * +--------------+
-             *
-             * a.Not()
-             * +--------------+
-             * |##############|
-             * |###___##___###|
-             * |##/   /\###\##|
-             * |#|   |  |###|#|
-             * |##\___\/___/##|
-             * |##############|
-             * +--------------+
-             *
-             * b.And(a.Not()) // b.Minus(a)
-             * +--------------+
-             * |              |
-             * |   ___  ___   |
-             * |  /   /\###\  |
-             * | |   |  |###| |
-             * |  \___\/___/  |
-             * |              |
-             * +--------------+
-             * If this is empty, it means a is superset of b
-             */
-            return b.IsSubsetOf(a);
-        }
-
         public static bool Overlaps(this FlagArray flagArray, FlagArray other)
         {
             if (other == null)

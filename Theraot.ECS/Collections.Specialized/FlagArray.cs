@@ -397,6 +397,11 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
+        public bool IsSupersetOf(FlagArray other)
+        {
+            return other.IsSubsetOf(this);
+        }
+
         public FlagArray Not()
         {
             var result = new FlagArray(Capacity);
