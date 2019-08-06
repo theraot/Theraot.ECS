@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Theraot.Collections.Specialized;
 using Component = System.Object;
 using ComponentType = System.Int32;
 using ComponentTypeSet = Theraot.Collections.Specialized.FlagArray;

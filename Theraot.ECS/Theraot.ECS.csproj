@@ -5,7 +5,7 @@
     <ProjectGuid>{C0F3154D-E98D-45ED-A3A9-0D2EB515B41B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Theraot.ECS</RootNamespace>
+    <RootNamespace>Theraot</RootNamespace>
     <AssemblyName>Theraot.ECS</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>True</SignAssembly>
