@@ -399,7 +399,37 @@ namespace Theraot.Collections.Specialized
 
         public bool IsSupersetOf(FlagArray other)
         {
-            return other.IsSubsetOf(this);
+            var order = other.Capacity > Capacity;
+            var b = order ? other._entries : _entries;
+            var a = order ? _entries : other._entries;
+            if (order)
+            {
+                for (var index = 0; index < a.Length; index++)
+                {
+                    if ((b[index] & ~a[index]) != 0)
+                    {
+                        return false;
+                    }
+                }
+                for (var index = a.Length; index < b.Length; index++)
+                {
+                    if (b[index] != 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                for (var index = 0; index < a.Length; index++)
+                {
+                    if ((a[index] & ~b[index]) != 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         public FlagArray Not()
