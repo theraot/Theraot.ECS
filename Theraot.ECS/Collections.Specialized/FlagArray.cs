@@ -412,6 +412,21 @@ namespace Theraot.Collections.Specialized
             return false;
         }
 
+        public bool SetEquals(FlagArray other)
+        {
+            var order = Capacity > other.Capacity;
+            var b = order ? _entries : other._entries;
+            var a = order ? other._entries : _entries;
+            for (var index = 0; index < a.Length; index++)
+            {
+                if ((a[index] & b[index]) != a[index])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public bool IsSupersetOf(FlagArray other)
         {
             var order = other.Capacity > Capacity;
