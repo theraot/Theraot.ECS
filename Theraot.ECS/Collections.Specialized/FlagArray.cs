@@ -8,7 +8,7 @@ namespace Theraot.Collections.Specialized
     [Serializable]
     public sealed partial class FlagArray : IList<bool>, ICloneable
     {
-        private readonly int[] _entries;
+        private int[] _entries;
 
         public FlagArray(FlagArray prototype)
         {
@@ -140,22 +140,9 @@ namespace Theraot.Collections.Specialized
             throw new NotSupportedException();
         }
 
-        public FlagArray And(FlagArray other)
+        public void Clear()
         {
-            var order = Capacity > other.Capacity;
-            var b = order ? _entries : other._entries;
-            var a = order ? other._entries : _entries;
-            var result = new FlagArray(order ? other.Capacity : Capacity);
-            for (var index = 0; index < a.Length; index++)
-            {
-                result._entries[index] = a[index] & b[index];
-            }
-            return result;
-        }
-
-        void ICollection<bool>.Clear()
-        {
-            throw new NotSupportedException();
+            _entries = new int[_entries.Length];
         }
 
         public FlagArray Clone()
@@ -335,133 +322,6 @@ namespace Theraot.Collections.Specialized
             throw new NotSupportedException();
         }
 
-        public FlagArray Minus(FlagArray other)
-        {
-            var order = Capacity > other.Capacity;
-            var b = order ? _entries : other._entries;
-            var a = order ? other._entries : _entries;
-            var result = new FlagArray(Capacity);
-            if (order)
-            {
-                for (var index = 0; index < a.Length; index++)
-                {
-                    result._entries[index] = b[index] & ~a[index];
-                }
-                for (var index = a.Length; index < b.Length; index++)
-                {
-                    result._entries[index] = b[index];
-                }
-            }
-            else
-            {
-                for (var index = 0; index < a.Length; index++)
-                {
-                    result._entries[index] = a[index] & ~b[index];
-                }
-            }
-            return result;
-        }
-
-        public bool IsSubsetOf(FlagArray other)
-        {
-            var order = Capacity > other.Capacity;
-            var b = order ? _entries : other._entries;
-            var a = order ? other._entries : _entries;
-            if (order)
-            {
-                for (var index = 0; index < a.Length; index++)
-                {
-                    if ((b[index] & ~a[index]) != 0)
-                    {
-                        return false;
-                    }
-                }
-                for (var index = a.Length; index < b.Length; index++)
-                {
-                    if (b[index] != 0)
-                    {
-                        return false;
-                    }
-                }
-            }
-            else
-            {
-                for (var index = 0; index < a.Length; index++)
-                {
-                    if ((a[index] & ~b[index]) != 0)
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-        public bool Overlaps(FlagArray other)
-        {
-            var order = Capacity > other.Capacity;
-            var b = order ? _entries : other._entries;
-            var a = order ? other._entries : _entries;
-            for (var index = 0; index < a.Length; index++)
-            {
-                if ((a[index] & b[index]) != 0)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public bool SetEquals(FlagArray other)
-        {
-            var order = Capacity > other.Capacity;
-            var b = order ? _entries : other._entries;
-            var a = order ? other._entries : _entries;
-            for (var index = 0; index < a.Length; index++)
-            {
-                if ((a[index] & b[index]) != a[index])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public bool IsSupersetOf(FlagArray other)
-        {
-            var order = other.Capacity > Capacity;
-            var b = order ? other._entries : _entries;
-            var a = order ? _entries : other._entries;
-            if (order)
-            {
-                for (var index = 0; index < a.Length; index++)
-                {
-                    if ((b[index] & ~a[index]) != 0)
-                    {
-                        return false;
-                    }
-                }
-                for (var index = a.Length; index < b.Length; index++)
-                {
-                    if (b[index] != 0)
-                    {
-                        return false;
-                    }
-                }
-            }
-            else
-            {
-                for (var index = 0; index < a.Length; index++)
-                {
-                    if ((a[index] & ~b[index]) != 0)
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
         public FlagArray Not()
         {
             var result = new FlagArray(Capacity);
@@ -473,23 +333,6 @@ namespace Theraot.Collections.Specialized
             if (mask != 0)
             {
                 result._entries[result._entries.Length - 1] &= mask;
-            }
-            return result;
-        }
-
-        public FlagArray Or(FlagArray other)
-        {
-            var order = Capacity > other.Capacity;
-            var b = order ? _entries : other._entries;
-            var a = order ? other._entries : _entries;
-            var result = new FlagArray(order ? Capacity : other.Capacity);
-            for (var index = 0; index < a.Length; index++)
-            {
-                result._entries[index] = a[index] | b[index];
-            }
-            for (var index = a.Length; index < b.Length; index++)
-            {
-                result._entries[index] = b[index];
             }
             return result;
         }
@@ -516,23 +359,6 @@ namespace Theraot.Collections.Specialized
             {
                 _entries[_entries.Length - 1] &= mask;
             }
-        }
-
-        public FlagArray Xor(FlagArray other)
-        {
-            var order = Capacity > other.Capacity;
-            var b = order ? _entries : other._entries;
-            var a = order ? other._entries : _entries;
-            var result = new FlagArray(order ? Capacity : other.Capacity);
-            for (var index = 0; index < a.Length; index++)
-            {
-                result._entries[index] = a[index] ^ b[index];
-            }
-            for (var index = a.Length; index < b.Length; index++)
-            {
-                result._entries[index] = b[index];
-            }
-            return result;
         }
 
         private static int BinaryReverse(int value)
@@ -638,6 +464,75 @@ namespace Theraot.Collections.Specialized
 
     public sealed partial class FlagArray
     {
+        public FlagArray And(FlagArray other)
+        {
+            return Build(And(other, out var length), length);
+        }
+
+        public bool IsSubsetOf(FlagArray other)
+        {
+            return IsEmpty(Minus(other, out _));
+        }
+
+        public bool IsSupersetOf(FlagArray other)
+        {
+            return IsEmpty(other.Minus(this, out _));
+        }
+
+        public FlagArray Minus(FlagArray other)
+        {
+            return Build(Minus(other, out var length), length);
+        }
+
+        public FlagArray Or(FlagArray other)
+        {
+            return Build(Or(other, out var length), length);
+        }
+
+        public bool Overlaps(FlagArray other)
+        {
+            return !IsEmpty(And(other, out _));
+        }
+
+        public bool SetEquals(FlagArray other)
+        {
+            return PairedPredicateAll(this, other, PairMode.Longer, (left, right) => left == right);
+        }
+
+        public FlagArray Xor(FlagArray other)
+        {
+            return Build(Xor(other, out var length), length);
+        }
+
+        private IEnumerable<int> And(FlagArray other, out int length)
+        {
+            return PairedOperation(this, other, PairMode.Shorter, (left, right) => left & right, out length);
+        }
+
+        private IEnumerable<int> Minus(FlagArray other, out int length)
+        {
+            return PairedOperation(this, other, PairMode.Left, (left, right) => left & ~right, out length);
+        }
+
+        private IEnumerable<int> Or(FlagArray other, out int length)
+        {
+            return PairedOperation(this, other, PairMode.Longer, (left, right) => left | right, out length);
+        }
+
+        private IEnumerable<int> Xor(FlagArray other, out int length)
+        {
+            return PairedOperation(this, other, PairMode.Longer, (left, right) => left ^ right, out length);
+        }
+    }
+
+    public sealed partial class FlagArray
+    {
+        private enum Ordering
+        {
+            LeftIsLonger,
+            RightIsLonger
+        }
+
         private enum PairMode
         {
             Shorter,
@@ -646,10 +541,30 @@ namespace Theraot.Collections.Specialized
             Right
         }
 
-        private enum Ordering
+        private static FlagArray Build(IEnumerable<int> enumerable, int length)
         {
-            LeftIsLonger,
-            RightIsLonger
+            var result = new FlagArray(length);
+            var index = 0;
+            foreach (var entry in enumerable)
+            {
+                result._entries[index] = entry;
+                index++;
+            }
+
+            return result;
+        }
+
+        private static bool IsEmpty(IEnumerable<int> enumerable)
+        {
+            foreach (var entry in enumerable)
+            {
+                if (entry != 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static IEnumerable<Pair> Iterator(int[] leftEntries, int[] rightEntries, int length)
@@ -684,25 +599,19 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        private static FlagArray PairedBuild(FlagArray left, FlagArray right, PairMode pairMode, Func<int, int, int> build)
+        private static IEnumerable<int> PairedOperation(FlagArray left, FlagArray right, PairMode pairMode, Func<int, int, int> operation, out int length)
         {
             var settings = new IterationSettings(pairMode, left, right);
-            var enumerable = PairedOperationExtracted(in settings, out var length);
-            var result = new FlagArray(length);
-            var index = 0;
-            foreach (var pair in enumerable)
+            var enumerable = PairedOperationExtracted(in settings, out length);
+            return Operate(enumerable);
+
+            IEnumerable<int> Operate(IEnumerable<Pair> pairs)
             {
-                result._entries[index] = build(pair.Left, pair.Right);
-                index++;
+                foreach (var pair in pairs)
+                {
+                    yield return operation(pair.Left, pair.Right);
+                }
             }
-
-            return result;
-        }
-
-        private static IEnumerable<Pair> PairedOperation(FlagArray left, FlagArray right, PairMode pairMode)
-        {
-            var settings = new IterationSettings(pairMode, left, right);
-            return PairedOperationExtracted(in settings, out _);
         }
 
         private static IEnumerable<Pair> PairedOperationExtracted(in IterationSettings settings, out int length)
@@ -737,25 +646,18 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        private static IEnumerable<bool> PairedPredicate(FlagArray left, FlagArray right, PairMode pairMode, Func<int, int, bool> predicate)
+        private static bool PairedPredicateAll(FlagArray left, FlagArray right, PairMode pairMode, Func<int, int, bool> predicate)
         {
-            foreach (var pair in PairedOperation(left, right, pairMode))
+            var settings = new IterationSettings(pairMode, left, right);
+            foreach (var pair in PairedOperationExtracted(in settings, out _))
             {
-                yield return predicate(pair.Left, pair.Right);
+                if (!predicate(pair.Left, pair.Right))
+                {
+                    return false;
+                }
             }
-        }
 
-        private readonly struct Pair
-        {
-            public readonly int Left;
-
-            public readonly int Right;
-
-            public Pair(int left, int right)
-            {
-                Left = left;
-                Right = right;
-            }
+            return true;
         }
 
         private readonly ref struct IterationSettings
@@ -780,6 +682,19 @@ namespace Theraot.Collections.Specialized
                 RightEntries = right._entries;
                 LongerLength = Order == Ordering.LeftIsLonger ? LeftEntries.Length : RightEntries.Length;
                 ShorterLength = Order == Ordering.RightIsLonger ? RightEntries.Length : LeftEntries.Length;
+            }
+        }
+
+        private readonly struct Pair
+        {
+            public readonly int Left;
+
+            public readonly int Right;
+
+            public Pair(int left, int right)
+            {
+                Left = left;
+                Right = right;
             }
         }
     }
