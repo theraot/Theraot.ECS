@@ -6,7 +6,7 @@ using System.Threading;
 namespace Theraot.Collections.Specialized
 {
     [Serializable]
-    public sealed class FlagArray : IList<bool>, ICloneable
+    public sealed partial class FlagArray : IList<bool>, ICloneable
     {
         private readonly int[] _entries;
 
@@ -632,6 +632,154 @@ namespace Theraot.Collections.Specialized
                 {
                     return;
                 }
+            }
+        }
+    }
+
+    public sealed partial class FlagArray
+    {
+        private enum PairMode
+        {
+            Shorter,
+            Longer,
+            Left,
+            Right
+        }
+
+        private enum Ordering
+        {
+            LeftIsLonger,
+            RightIsLonger
+        }
+
+        private static IEnumerable<Pair> Iterator(int[] leftEntries, int[] rightEntries, int length)
+        {
+            for (var index = 0; index < length; index++)
+            {
+                yield return new Pair(leftEntries[index], rightEntries[index]);
+            }
+        }
+
+        private static IEnumerable<Pair> IteratorExtendedToMatchLeft(int[] leftEntries, int[] rightEntries, int shorterLength, int longerLength)
+        {
+            for (var index = 0; index < shorterLength; index++)
+            {
+                yield return new Pair(leftEntries[index], rightEntries[index]);
+            }
+            for (var index = shorterLength; index < longerLength; index++)
+            {
+                yield return new Pair(leftEntries[index], 0);
+            }
+        }
+
+        private static IEnumerable<Pair> IteratorExtendedToMatchRight(int[] leftEntries, int[] rightEntries, int shorterLength, int longerLength)
+        {
+            for (var index = 0; index < shorterLength; index++)
+            {
+                yield return new Pair(leftEntries[index], rightEntries[index]);
+            }
+            for (var index = shorterLength; index < longerLength; index++)
+            {
+                yield return new Pair(0, rightEntries[index]);
+            }
+        }
+
+        private static FlagArray PairedBuild(FlagArray left, FlagArray right, PairMode pairMode, Func<int, int, int> build)
+        {
+            var settings = new IterationSettings(pairMode, left, right);
+            var enumerable = PairedOperationExtracted(in settings, out var length);
+            var result = new FlagArray(length);
+            var index = 0;
+            foreach (var pair in enumerable)
+            {
+                result._entries[index] = build(pair.Left, pair.Right);
+                index++;
+            }
+
+            return result;
+        }
+
+        private static IEnumerable<Pair> PairedOperation(FlagArray left, FlagArray right, PairMode pairMode)
+        {
+            var settings = new IterationSettings(pairMode, left, right);
+            return PairedOperationExtracted(in settings, out _);
+        }
+
+        private static IEnumerable<Pair> PairedOperationExtracted(in IterationSettings settings, out int length)
+        {
+            switch (settings.PairMode)
+            {
+                case PairMode.Longer:
+                    length = settings.LongerLength;
+                    return settings.Order == Ordering.LeftIsLonger
+                        ? IteratorExtendedToMatchLeft(settings.LeftEntries, settings.RightEntries, settings.ShorterLength, length)
+                        : IteratorExtendedToMatchRight(settings.LeftEntries, settings.RightEntries, settings.ShorterLength, length);
+
+                case PairMode.Shorter:
+                    length = settings.ShorterLength;
+                    return Iterator(settings.LeftEntries, settings.RightEntries, length);
+
+                case PairMode.Left:
+                    length = settings.LeftEntries.Length;
+                    return settings.Order == Ordering.LeftIsLonger
+                        ? IteratorExtendedToMatchLeft(settings.LeftEntries, settings.RightEntries, settings.ShorterLength, length)
+                        : Iterator(settings.LeftEntries, settings.RightEntries, length);
+
+                case PairMode.Right:
+                    length = settings.RightEntries.Length;
+                    return settings.Order == Ordering.RightIsLonger
+                        ? IteratorExtendedToMatchRight(settings.LeftEntries, settings.RightEntries, settings.ShorterLength, length)
+                        : Iterator(settings.LeftEntries, settings.RightEntries, length);
+
+                default:
+                    length = 0;
+                    return Array.Empty<Pair>();
+            }
+        }
+
+        private static IEnumerable<bool> PairedPredicate(FlagArray left, FlagArray right, PairMode pairMode, Func<int, int, bool> predicate)
+        {
+            foreach (var pair in PairedOperation(left, right, pairMode))
+            {
+                yield return predicate(pair.Left, pair.Right);
+            }
+        }
+
+        private readonly struct Pair
+        {
+            public readonly int Left;
+
+            public readonly int Right;
+
+            public Pair(int left, int right)
+            {
+                Left = left;
+                Right = right;
+            }
+        }
+
+        private readonly ref struct IterationSettings
+        {
+            public readonly int[] LeftEntries;
+
+            public readonly int LongerLength;
+
+            public readonly Ordering Order;
+
+            public readonly PairMode PairMode;
+
+            public readonly int[] RightEntries;
+
+            public readonly int ShorterLength;
+
+            public IterationSettings(PairMode pairMode, FlagArray left, FlagArray right)
+            {
+                PairMode = pairMode;
+                Order = left.Capacity > right.Capacity ? Ordering.LeftIsLonger : Ordering.RightIsLonger;
+                LeftEntries = left._entries;
+                RightEntries = right._entries;
+                LongerLength = Order == Ordering.LeftIsLonger ? LeftEntries.Length : RightEntries.Length;
+                ShorterLength = Order == Ordering.RightIsLonger ? RightEntries.Length : LeftEntries.Length;
             }
         }
     }
