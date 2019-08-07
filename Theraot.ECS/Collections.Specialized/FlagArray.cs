@@ -466,62 +466,62 @@ namespace Theraot.Collections.Specialized
     {
         public FlagArray And(FlagArray other)
         {
-            return Build(And(other, out var length), length);
+            return Build(Operation(Paired(this, other, PairMode.Shorter, out var length), And), length);
         }
 
         public bool IsSubsetOf(FlagArray other)
         {
-            return IsEmpty(Minus(other, out _));
+            return IsEmpty(Operation(Paired(this, other, PairMode.Left, out _), Minus));
         }
 
         public bool IsSupersetOf(FlagArray other)
         {
-            return IsEmpty(other.Minus(this, out _));
+            return IsEmpty(Operation(Paired(other, this, PairMode.Left, out _), Minus));
         }
 
         public FlagArray Minus(FlagArray other)
         {
-            return Build(Minus(other, out var length), length);
+            return Build(Operation(Paired(this, other, PairMode.Left, out var length), Minus), length);
         }
 
         public FlagArray Or(FlagArray other)
         {
-            return Build(Or(other, out var length), length);
+            return Build(Operation(Paired(this, other, PairMode.Longer, out var length), Or), length);
         }
 
         public bool Overlaps(FlagArray other)
         {
-            return !IsEmpty(And(other, out _));
+            return !IsEmpty(Operation(Paired(this, other, PairMode.Shorter, out _), And));
         }
 
         public bool SetEquals(FlagArray other)
         {
-            return PairedPredicateAll(this, other, PairMode.Longer, (left, right) => left == right);
+            return IsEmpty(Operation(Paired(this, other, PairMode.Longer, out _), Xor));
         }
 
         public FlagArray Xor(FlagArray other)
         {
-            return Build(Xor(other, out var length), length);
+            return Build(Operation(Paired(this, other, PairMode.Longer, out var length), Xor), length);
         }
 
-        private IEnumerable<int> And(FlagArray other, out int length)
+        private static int And(int left, int right)
         {
-            return PairedOperation(this, other, PairMode.Shorter, (left, right) => left & right, out length);
+            return left & right;
         }
 
-        private IEnumerable<int> Minus(FlagArray other, out int length)
+        private static int Minus(int left, int right)
         {
-            return PairedOperation(this, other, PairMode.Left, (left, right) => left & ~right, out length);
+            return left & ~right;
         }
 
-        private IEnumerable<int> Or(FlagArray other, out int length)
+        private static int Or(int left, int right)
         {
-            return PairedOperation(this, other, PairMode.Longer, (left, right) => left | right, out length);
+            return left | right;
         }
 
-        private IEnumerable<int> Xor(FlagArray other, out int length)
+        private static int Xor(int left, int right)
         {
-            return PairedOperation(this, other, PairMode.Longer, (left, right) => left ^ right, out length);
+            return left ^ right;
         }
     }
 
@@ -556,15 +556,19 @@ namespace Theraot.Collections.Specialized
 
         private static bool IsEmpty(IEnumerable<int> enumerable)
         {
+            var result = true;
             foreach (var entry in enumerable)
             {
-                if (entry != 0)
+                if (entry == 0)
                 {
-                    return false;
+                    continue;
                 }
+
+                result = false;
+                break;
             }
 
-            return true;
+            return result;
         }
 
         private static IEnumerable<Pair> Iterator(int[] leftEntries, int[] rightEntries, int length)
@@ -599,22 +603,21 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        private static IEnumerable<int> PairedOperation(FlagArray left, FlagArray right, PairMode pairMode, Func<int, int, int> operation, out int length)
+        private static IEnumerable<int> Operation(IEnumerable<Pair> paired, Func<int, int, int> operation)
         {
-            var settings = new IterationSettings(pairMode, left, right);
-            var enumerable = PairedOperationExtracted(in settings, out length);
-            return Operate(enumerable);
-
-            IEnumerable<int> Operate(IEnumerable<Pair> pairs)
+            foreach (var pair in paired)
             {
-                foreach (var pair in pairs)
-                {
-                    yield return operation(pair.Left, pair.Right);
-                }
+                yield return operation(pair.Left, pair.Right);
             }
         }
 
-        private static IEnumerable<Pair> PairedOperationExtracted(in IterationSettings settings, out int length)
+        private static IEnumerable<Pair> Paired(FlagArray left, FlagArray right, PairMode pairMode, out int length)
+        {
+            var settings = new IterationSettings(pairMode, left, right);
+            return PairedExtracted(in settings, out length);
+        }
+
+        private static IEnumerable<Pair> PairedExtracted(in IterationSettings settings, out int length)
         {
             switch (settings.PairMode)
             {
@@ -644,20 +647,6 @@ namespace Theraot.Collections.Specialized
                     length = 0;
                     return Array.Empty<Pair>();
             }
-        }
-
-        private static bool PairedPredicateAll(FlagArray left, FlagArray right, PairMode pairMode, Func<int, int, bool> predicate)
-        {
-            var settings = new IterationSettings(pairMode, left, right);
-            foreach (var pair in PairedOperationExtracted(in settings, out _))
-            {
-                if (!predicate(pair.Left, pair.Right))
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         private readonly ref struct IterationSettings
