@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 using Component = System.Object;
 using ComponentType = System.Int32;
@@ -17,6 +18,10 @@ namespace Theraot.ECS
 
         public ComponentTypeSet CreateComponentTypeSet(Dictionary<ComponentType, Component> dictionary)
         {
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException(nameof(dictionary));
+            }
             var set = new ComponentTypeSet(_capacity);
             foreach (var pair in dictionary)
             {
@@ -32,6 +37,14 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
         {
+            if (allComponentsTypes == null)
+            {
+                throw new ArgumentNullException(nameof(allComponentsTypes));
+            }
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
             if (allComponentsTypes.Overlaps(query.None))
             {
                 // The entity has one of the components it should not have for this queryId
@@ -52,6 +65,14 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
         {
+            if (allComponentsTypes == null)
+            {
+                throw new ArgumentNullException(nameof(allComponentsTypes));
+            }
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
             if (query.None[addedComponentType])
             {
                 // The entity has one of the components it should not have for this queryId
@@ -72,6 +93,14 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
         {
+            if (allComponentsTypes == null)
+            {
+                throw new ArgumentNullException(nameof(allComponentsTypes));
+            }
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
             if (query.None.Overlaps(addedComponentTypes))
             {
                 // The entity has one of the components it should not have for this queryId
@@ -92,6 +121,14 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnRemovedComponent(int removedComponentType, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
         {
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+            if (allComponentsTypes == null)
+            {
+                throw new ArgumentNullException(nameof(allComponentsTypes));
+            }
             if (query.All[removedComponentType] || (!query.Any.IsEmpty() && !allComponentsTypes.Overlaps(query.Any)))
             {
                 // The entity no longer has one of the components it should have for this queryId
@@ -112,6 +149,14 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<int> removedComponentTypes, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
         {
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+            if (allComponentsTypes == null)
+            {
+                throw new ArgumentNullException(nameof(allComponentsTypes));
+            }
             if (query.All.Overlaps(removedComponentTypes) || (!query.Any.IsEmpty() && !allComponentsTypes.Overlaps(query.Any)))
             {
                 // The entity no longer has one of the components it should have for this queryId
@@ -132,11 +177,23 @@ namespace Theraot.ECS
 
         public void SetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
+            if (componentTypeSet == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSet));
+            }
             componentTypeSet[componentType] = true;
         }
 
         public void SetComponentTypes(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
         {
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+            if (componentTypeSet == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSet));
+            }
             foreach (var componentType in componentTypes)
             {
                 componentTypeSet[componentType] = true;
@@ -145,11 +202,23 @@ namespace Theraot.ECS
 
         public void UnsetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
+            if (componentTypeSet == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSet));
+            }
             componentTypeSet[componentType] = false;
         }
 
         public void UnsetComponentTypes(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
         {
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+            if (componentTypeSet == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSet));
+            }
             foreach (var componentType in componentTypes)
             {
                 componentTypeSet[componentType] = false;

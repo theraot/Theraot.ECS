@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 
 namespace Theraot.ECS
@@ -7,6 +8,18 @@ namespace Theraot.ECS
     {
         public FlagArrayQuery(int length, IEnumerable<int> all, IEnumerable<int> any, IEnumerable<int> none)
         {
+            if (all == null)
+            {
+                throw new ArgumentNullException(nameof(all));
+            }
+            if (any == null)
+            {
+                throw new ArgumentNullException(nameof(any));
+            }
+            if (none == null)
+            {
+                throw new ArgumentNullException(nameof(none));
+            }
             All = ToFlagArray(all, length);
             Any = ToFlagArray(any, length);
             None = ToFlagArray(none, length);

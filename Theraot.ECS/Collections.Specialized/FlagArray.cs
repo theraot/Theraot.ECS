@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable CA1710 // Los identificadores deben tener un sufijo correcto
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;

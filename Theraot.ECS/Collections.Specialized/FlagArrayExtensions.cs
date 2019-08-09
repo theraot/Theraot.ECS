@@ -8,11 +8,19 @@ namespace Theraot.Collections.Specialized
     {
         public static bool IsEmpty(this FlagArray flagArray)
         {
+            if (flagArray == null)
+            {
+                throw new ArgumentNullException(nameof(flagArray));
+            }
             return !flagArray.Contains(true);
         }
 
         public static bool IsProperSubsetOf(this FlagArray flagArray, FlagArray other)
         {
+            if (flagArray == null)
+            {
+                throw new ArgumentNullException(nameof(flagArray));
+            }
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
@@ -77,6 +85,10 @@ namespace Theraot.Collections.Specialized
 
         public static bool IsProperSupersetOf(this FlagArray flagArray, FlagArray other)
         {
+            if (flagArray == null)
+            {
+                throw new ArgumentNullException(nameof(flagArray));
+            }
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
@@ -151,6 +163,10 @@ namespace Theraot.Collections.Specialized
 
         public static bool SetEquals(this FlagArray flagArray, FlagArray other)
         {
+            if (flagArray == null)
+            {
+                throw new ArgumentNullException(nameof(flagArray));
+            }
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Component = System.Object;
 using ComponentType = System.String;
 using ComponentTypeSet = Theraot.ECS.DictionaryKeySet<string>;
@@ -9,7 +10,7 @@ namespace Theraot.ECS
     {
         public ComponentTypeSet CreateComponentTypeSet(Dictionary<ComponentType, Component> dictionary)
         {
-            return ComponentTypeSet.CreateFrom(dictionary);
+            return DictionaryKeySet.CreateFrom(dictionary);
         }
 
         public TypeHashSetQuery CreateQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
@@ -19,6 +20,14 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
         {
+            if (allComponentsTypes == null)
+            {
+                throw new ArgumentNullException(nameof(allComponentsTypes));
+            }
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
             if
             (
                 query.None.Count != 0
@@ -43,6 +52,14 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
         {
+            if (allComponentsTypes == null)
+            {
+                throw new ArgumentNullException(nameof(allComponentsTypes));
+            }
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
             if (query.None.Count != 0 && query.None.Contains(addedComponentType))
             {
                 // The entity has one of the components it should not have for this queryId
@@ -63,6 +80,14 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
         {
+            if (allComponentsTypes == null)
+            {
+                throw new ArgumentNullException(nameof(allComponentsTypes));
+            }
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
             if (query.None.Count != 0 && query.None.Overlaps(addedComponentTypes))
             {
                 // The entity has one of the components it should not have for this queryId
@@ -83,6 +108,14 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnRemovedComponent(string removedComponentType, ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
         {
+            if (allComponentsTypes == null)
+            {
+                throw new ArgumentNullException(nameof(allComponentsTypes));
+            }
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
             if (query.All.Contains(removedComponentType) || (query.Any.Count != 0 && !allComponentsTypes.Overlaps(query.Any)))
             {
                 // The entity no longer has one of the components it should have for this queryId
@@ -103,6 +136,14 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<string> removedComponentTypes, ComponentTypeSet allComponentsTypes, TypeHashSetQuery query)
         {
+            if (allComponentsTypes == null)
+            {
+                throw new ArgumentNullException(nameof(allComponentsTypes));
+            }
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
             if (query.All.Overlaps(removedComponentTypes) || (query.Any.Count != 0 && !allComponentsTypes.Overlaps(query.Any)))
             {
                 // The entity no longer has one of the components it should have for this queryId

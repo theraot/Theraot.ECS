@@ -1,4 +1,5 @@
-﻿// ReSharper disable RedundantExtendsListEntry
+﻿#pragma warning disable CA1710 // Los identificadores deben tener un sufijo correcto
+// ReSharper disable RedundantExtendsListEntry
 
 using System;
 using System.Collections;
@@ -7,6 +8,18 @@ using System.Linq;
 
 namespace Theraot.ECS
 {
+    public sealed class DictionaryKeySet
+    {
+        public static DictionaryKeySet<TKey> CreateFrom<TKey, TValue>(Dictionary<TKey, TValue> dictionary)
+        {
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException(nameof(dictionary));
+            }
+            return new DictionaryKeySet<TKey>(dictionary.Keys, () => dictionary.Count, dictionary.ContainsKey);
+        }
+    }
+
     public sealed class DictionaryKeySet<T> : ISet<T>, IEnumerable<T>
     {
         private readonly Func<T, bool> _containsKey;
@@ -15,7 +28,7 @@ namespace Theraot.ECS
 
         private readonly IEnumerable<T> _wrapped;
 
-        private DictionaryKeySet(IEnumerable<T> wrapped, Func<int> count, Func<T, bool> containsKey)
+        internal DictionaryKeySet(IEnumerable<T> wrapped, Func<int> count, Func<T, bool> containsKey)
         {
             _wrapped = wrapped;
             _count = count;
@@ -25,11 +38,6 @@ namespace Theraot.ECS
         public int Count => _count();
 
         bool ICollection<T>.IsReadOnly => true;
-
-        public static DictionaryKeySet<T> CreateFrom<TValue>(Dictionary<T, TValue> dictionary)
-        {
-            return new DictionaryKeySet<T>(dictionary.Keys, () => dictionary.Count, dictionary.ContainsKey);
-        }
 
         public bool Contains(T item)
         {

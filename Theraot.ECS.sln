@@ -5,6 +5,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6D9DE7D7-68D9-442A-9C3F-42CC655E0C8A}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
+		rules.ruleset = rules.ruleset
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Theraot.ECS", "Theraot.ECS\Theraot.ECS.csproj", "{C0F3154D-E98D-45ED-A3A9-0D2EB515B41B}"

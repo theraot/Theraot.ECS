@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Component = System.Object;
 using QueryId = System.Int32;
 
@@ -29,6 +30,10 @@ namespace Theraot.ECS
     {
         public static void UnsetComponents<TEntity, TComponentType>(this IScope<TEntity, TComponentType> scope, TEntity entity, params TComponentType[] componentTypes)
         {
+            if (scope == null)
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
             scope.UnsetComponents(entity, componentTypes);
         }
     }
