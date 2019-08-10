@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -159,73 +159,6 @@ namespace Theraot.Collections.Specialized
             }
 
             return other.Any(index => flagArray[index]);
-        }
-
-        public static bool SetEquals(this FlagArray flagArray, FlagArray other)
-        {
-            if (flagArray == null)
-            {
-                throw new ArgumentNullException(nameof(flagArray));
-            }
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-
-            var a = flagArray;
-            var b = other;
-            /*
-             * +--------------+
-             * |              |
-             * | a ___  ___ b |
-             * |  /   /\   \  |
-             * | |   |  |   | |
-             * |  \___\/___/  |
-             * |              |
-             * +--------------+
-             *
-             * a.Or(b)
-             * +--------------+
-             * |              |
-             * |   ___  ___   |
-             * |  /###/\###\  |
-             * | |###|##|###| |
-             * |  \___\/___/  |
-             * |              |
-             * +--------------+
-             *
-             * a.And(b)
-             * +--------------+
-             * |              |
-             * |   ___  ___   |
-             * |  /   /\   \  |
-             * | |   |##|   | |
-             * |  \___\/___/  |
-             * |              |
-             * +--------------+
-             *
-             * a.And(b).Not()
-             * +--------------+
-             * |##############|
-             * |###___##___###|
-             * |##/###/\###\##|
-             * |#|###|  |###|#|
-             * |##\___\/___/##|
-             * |##############|
-             * +--------------+
-             *
-             * a.Or(b).And(a.And(b).Not()) // a.Or(b).Minus(a.And(b))
-             * +--------------+
-             * |              |
-             * |   ___  ___   |
-             * |  /###/\###\  |
-             * | |###|  |###| |
-             * |  \___\/___/  |
-             * |              |
-             * +--------------+
-             * If this is empty, the sets are equal
-             */
-            return a.Or(b).IsSubsetOf(a.And(b));
         }
     }
 }
