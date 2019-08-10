@@ -26,20 +26,35 @@ namespace Theraot.Collections.Specialized
             prototype._entries.CopyTo(_entries, 0);
         }
 
-        public FlagArray(int capacity, FlagArray prototype)
+        public FlagArray(IEnumerable<int> indexes)
         {
-            if (prototype == null)
+            if (indexes == null)
             {
-                throw new ArgumentNullException(nameof(prototype), $"{nameof(prototype)} is null.");
+                throw new ArgumentNullException(nameof(indexes), $"{nameof(indexes)} is null.");
             }
-            if (capacity < prototype.Capacity)
+            var indexesList = new List<int>();
+            var max = 0;
+            foreach (var index in indexes)
             {
-                throw new ArgumentOutOfRangeException(nameof(capacity), $"{nameof(capacity)} < {nameof(prototype)}.{nameof(Capacity)}.");
+                if (index < 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(indexes), "Negative index found");
+                }
+                if (index > max)
+                {
+                    max = index;
+                }
+                indexesList.Add(index);
             }
+
+            var capacity = max + 1;
             var length = GetLength(capacity);
             _entries = new int[length];
             Capacity = capacity;
-            prototype._entries.CopyTo(_entries, 0);
+            foreach (var index in indexesList)
+            {
+                this[index] = true;
+            }
         }
 
         public FlagArray(int capacity)
