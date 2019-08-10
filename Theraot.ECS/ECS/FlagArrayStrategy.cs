@@ -52,8 +52,8 @@ namespace Theraot.ECS
             }
             if
             (
-                (query.All.IsEmpty() || allComponentsTypes.IsSupersetOf(query.All))
-                && (query.Any.IsEmpty() || allComponentsTypes.Overlaps(query.Any))
+                (!query.All.Contains(true) || allComponentsTypes.IsSupersetOf(query.All))
+                && (!query.Any.Contains(true) || allComponentsTypes.Overlaps(query.Any))
             )
             {
                 // The entity has all the required components for this queryId
@@ -80,8 +80,8 @@ namespace Theraot.ECS
             }
             if
             (
-                (query.All.IsEmpty() || allComponentsTypes.IsSupersetOf(query.All))
-                && (query.Any.IsEmpty() || allComponentsTypes.Overlaps(query.Any))
+                (!query.All.Contains(true) || allComponentsTypes.IsSupersetOf(query.All))
+                && (!query.Any.Contains(true) || allComponentsTypes.Overlaps(query.Any))
             )
             {
                 // The entity has all the required components for this queryId
@@ -108,8 +108,8 @@ namespace Theraot.ECS
             }
             if
             (
-                (query.All.IsEmpty() || allComponentsTypes.IsSupersetOf(query.All))
-                && (query.Any.IsEmpty() || allComponentsTypes.Overlaps(query.Any))
+                (!query.All.Contains(true) || allComponentsTypes.IsSupersetOf(query.All))
+                && (!query.Any.Contains(true) || allComponentsTypes.Overlaps(query.Any))
             )
             {
                 // The entity has all the required components for this queryId
@@ -129,15 +129,15 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(allComponentsTypes));
             }
-            if (query.All[removedComponentType] || (!query.Any.IsEmpty() && !allComponentsTypes.Overlaps(query.Any)))
+            if (query.All[removedComponentType] || (query.Any.Contains(true) && !allComponentsTypes.Overlaps(query.Any)))
             {
                 // The entity no longer has one of the components it should have for this queryId
                 return QueryCheckResult.Remove;
             }
             if
             (
-                (query.None.IsEmpty() || !query.None.Overlaps(allComponentsTypes))
-                && (query.Any.IsEmpty() || allComponentsTypes.Overlaps(query.Any))
+                (!query.None.Contains(true) || !query.None.Overlaps(allComponentsTypes))
+                && (!query.Any.Contains(true) || allComponentsTypes.Overlaps(query.Any))
             )
             {
                 // The entity has none of the components it should not have for this queryId
@@ -157,15 +157,16 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(allComponentsTypes));
             }
-            if (query.All.Overlaps(removedComponentTypes) || (!query.Any.IsEmpty() && !allComponentsTypes.Overlaps(query.Any)))
+
+            if (query.All.Overlaps(removedComponentTypes) || (query.Any.Contains(true) && !allComponentsTypes.Overlaps(query.Any)))
             {
                 // The entity no longer has one of the components it should have for this queryId
                 return QueryCheckResult.Remove;
             }
             if
             (
-                (query.None.IsEmpty() || !query.None.Overlaps(allComponentsTypes))
-                && (query.Any.IsEmpty() || allComponentsTypes.Overlaps(query.Any))
+                (!query.None.Contains(true) || !query.None.Overlaps(allComponentsTypes))
+                && (!query.Any.Contains(true) || allComponentsTypes.Overlaps(query.Any))
             )
             {
                 // The entity has none of the components it should not have for this queryId
