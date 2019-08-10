@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Theraot.Collections.Specialized;
+using System.Linq;
 using Component = System.Object;
 using ComponentType = System.Int32;
 using ComponentTypeSet = Theraot.Collections.Specialized.FlagArray;
@@ -93,6 +93,10 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
         {
+            if (addedComponentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(addedComponentTypes));
+            }
             if (allComponentsTypes == null)
             {
                 throw new ArgumentNullException(nameof(allComponentsTypes));
@@ -101,7 +105,8 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(query));
             }
-            if (query.None.Overlaps(addedComponentTypes))
+
+            if (addedComponentTypes.Any(index => query.None[index]))
             {
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
@@ -149,6 +154,10 @@ namespace Theraot.ECS
 
         public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<int> removedComponentTypes, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
         {
+            if (removedComponentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(removedComponentTypes));
+            }
             if (query == null)
             {
                 throw new ArgumentNullException(nameof(query));
@@ -158,7 +167,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(allComponentsTypes));
             }
 
-            if (query.All.Overlaps(removedComponentTypes) || (query.Any.Contains(true) && !allComponentsTypes.Overlaps(query.Any)))
+            if (removedComponentTypes.Any(index => query.All[index]) || (query.Any.Contains(true) && !allComponentsTypes.Overlaps(query.Any)))
             {
                 // The entity no longer has one of the components it should have for this queryId
                 return QueryCheckResult.Remove;
