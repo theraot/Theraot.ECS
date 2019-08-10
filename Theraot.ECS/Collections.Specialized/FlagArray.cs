@@ -57,6 +57,41 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        public FlagArray(int capacity, IEnumerable<int> indexes)
+        {
+            if (indexes == null)
+            {
+                throw new ArgumentNullException(nameof(indexes), $"{nameof(indexes)} is null.");
+            }
+            var indexesList = new List<int>();
+            var max = 0;
+            foreach (var index in indexes)
+            {
+                if (index < 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(indexes), "Negative index found");
+                }
+                if (index > max)
+                {
+                    max = index;
+                }
+                indexesList.Add(index);
+            }
+
+            if (capacity < max + 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(capacity));
+            }
+
+            var length = GetLength(capacity);
+            _entries = new int[length];
+            Capacity = capacity;
+            foreach (var index in indexesList)
+            {
+                this[index] = true;
+            }
+        }
+
         public FlagArray(int capacity)
         {
             if (capacity < 0)
