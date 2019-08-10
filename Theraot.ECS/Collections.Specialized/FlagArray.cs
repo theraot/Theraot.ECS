@@ -532,12 +532,48 @@ namespace Theraot.Collections.Specialized
 
         public bool IsProperSubsetOf(FlagArray other)
         {
-            return IsEmpty(Operation(Paired(this, other, PairMode.Left, out _), Minus)) && !SetEquals(other);
+            var equals = true;
+
+            int Operate(int left, int right)
+            {
+                equals &= left == right;
+                return left & ~right;
+            }
+
+            foreach (var entry in Operation(Paired(this, other, PairMode.Longer, out _), Operate))
+            {
+                if (entry == 0)
+                {
+                    continue;
+                }
+
+                return false;
+            }
+
+            return !equals;
         }
 
         public bool IsProperSupersetOf(FlagArray other)
         {
-            return IsEmpty(Operation(Paired(other, this, PairMode.Left, out _), Minus)) && !SetEquals(other);
+            var equals = true;
+
+            int Operate(int left, int right)
+            {
+                equals &= left == right;
+                return left & ~right;
+            }
+
+            foreach (var entry in Operation(Paired(other, this, PairMode.Longer, out _), Operate))
+            {
+                if (entry == 0)
+                {
+                    continue;
+                }
+
+                return false;
+            }
+
+            return !equals;
         }
 
         public bool IsSubsetOf(FlagArray other)
