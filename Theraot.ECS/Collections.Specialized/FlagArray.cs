@@ -10,6 +10,8 @@ namespace Theraot.Collections.Specialized
     [Serializable]
     public sealed partial class FlagArray : IList<bool>, ICloneable
     {
+        private const int _sizeOfIndex = 32;
+        private const int _sizeOfIndexLog2 = 5;
         private int[] _entries;
 
         public FlagArray(FlagArray prototype)
@@ -18,8 +20,9 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(prototype), $"{nameof(prototype)} is null.");
             }
-            Capacity = prototype.Capacity;
-            _entries = new int[GetLength(Capacity)];
+            var length = _entries.Length;
+            _entries = new int[length];
+            Capacity = length * _sizeOfIndex;
             prototype._entries.CopyTo(_entries, 0);
         }
 
@@ -33,8 +36,9 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentOutOfRangeException(nameof(capacity), $"{nameof(capacity)} < {nameof(prototype)}.{nameof(Capacity)}.");
             }
-            Capacity = capacity;
-            _entries = new int[GetLength(Capacity)];
+            var length = GetLength(capacity);
+            _entries = new int[length];
+            Capacity = length * _sizeOfIndex;
             prototype._entries.CopyTo(_entries, 0);
         }
 
@@ -44,8 +48,9 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentOutOfRangeException(nameof(capacity), $"{nameof(capacity)} < 0");
             }
-            Capacity = capacity;
-            _entries = new int[GetLength(Capacity)];
+            var length = GetLength(capacity);
+            _entries = new int[length];
+            Capacity = length * _sizeOfIndex;
         }
 
         public FlagArray(int capacity, bool defaultValue)
@@ -81,7 +86,7 @@ namespace Theraot.Collections.Specialized
                 {
                     if (entry == 0)
                     {
-                        bitIndex += 32;
+                        bitIndex += _sizeOfIndex;
                         if (bitIndex >= Capacity)
                         {
                             yield break;
@@ -112,10 +117,10 @@ namespace Theraot.Collections.Specialized
         {
             get
             {
-                var entryIndex = index >> 5;
-                var bit = index & 31;
-                var mask = 1 << bit;
-                return GetBit(entryIndex, mask);
+                var entryIndex = index >> _sizeOfIndexLog2;
+                var bitIndex = index & (_sizeOfIndex - 1);
+                var bitMask = 1 << bitIndex;
+                return GetBit(entryIndex, bitMask);
             }
             set
             {
@@ -123,16 +128,16 @@ namespace Theraot.Collections.Specialized
                 {
                     throw new ArgumentOutOfRangeException(nameof(index));
                 }
-                var entryIndex = index >> 5;
-                var bit = index & 31;
-                var mask = 1 << bit;
+                var entryIndex = index >> _sizeOfIndexLog2;
+                var bitIndex = index & (_sizeOfIndex - 1);
+                var bitMask = 1 << bitIndex;
                 if (value)
                 {
-                    SetBit(entryIndex, mask);
+                    SetBit(entryIndex, bitMask);
                 }
                 else
                 {
-                    UnsetBit(entryIndex, mask);
+                    UnsetBit(entryIndex, bitMask);
                 }
             }
         }
@@ -163,7 +168,7 @@ namespace Theraot.Collections.Specialized
             var check = item ? 0 : -1;
             foreach (var entry in _entries)
             {
-                nextBitIndex += 32;
+                nextBitIndex += _sizeOfIndex;
                 if (nextBitIndex <= Capacity)
                 {
                     if (entry != check)
@@ -384,8 +389,8 @@ namespace Theraot.Collections.Specialized
         {
             unchecked
             {
-                var check = (uint)1 << 31;
-                var log2 = 32;
+                var check = (uint)1 << (_sizeOfIndex - 1);
+                var log2 = _sizeOfIndex;
                 var tmp = (uint)value;
                 do
                 {
@@ -406,12 +411,12 @@ namespace Theraot.Collections.Specialized
 
         private static int GetLength(int capacity)
         {
-            return (capacity >> 5) + ((capacity & 31) == 0 ? 0 : 1);
+            return (capacity >> _sizeOfIndexLog2) + ((capacity & (_sizeOfIndex - 1)) == 0 ? 0 : 1);
         }
 
         private static int GetMask(int capacity)
         {
-            return (1 << (capacity & 31)) - 1;
+            return (1 << (capacity & (_sizeOfIndex - 1))) - 1;
         }
 
         // Gem from Hacker's Delight
