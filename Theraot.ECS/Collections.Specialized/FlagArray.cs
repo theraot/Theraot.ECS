@@ -777,7 +777,7 @@ namespace Theraot.Collections.Specialized
                 Left = left;
                 Right = right;
                 Longer = Order == Ordering.LeftIsLonger ? Left : Right;
-                Shorter = Order == Ordering.RightIsLonger ? Right : Left;
+                Shorter = Order == Ordering.LeftIsLonger ? Right : Left;
             }
         }
 

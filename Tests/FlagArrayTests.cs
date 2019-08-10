@@ -22,9 +22,7 @@ namespace Tests
             Assert.AreEqual(false, c[1]);
             Assert.AreEqual(false, c[2]);
             Assert.AreEqual(true, c[3]);
-            Assert.AreEqual(false, c[4]);
-            Assert.AreEqual(false, c[5]);
-            Assert.AreEqual(6, c.Capacity);
+            Assert.AreEqual(4, c.Capacity);
             Assert.Throws<ArgumentOutOfRangeException>(() => _ = c[c.Capacity]);
         }
 
