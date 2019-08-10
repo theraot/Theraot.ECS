@@ -273,9 +273,11 @@ namespace Tests
                 Array.Empty<int>(),
                 Array.Empty<int>(),
                 new [] { 1, 2, 3, 4, 5 },
-                new [] { 0, 1, 2, 3 }
+                new [] { 0, 1, 2, 3 },
+                new [] { 0, 1, 2, 3 },
+                new [] { 1, 3, 120 }
             };
-            var capacities = new[] { 6, 4, 6, 4, 6, 4 };
+            var capacities = new[] { 6, 4, 6, 4, 6, 4, 128, 128 };
             sets = (from array in arrays select new HashSet<int>(array)).ToList();
             flagArrays = arrays.Select((t, index) => new FlagArray(capacities[index], t)).ToList();
         }
