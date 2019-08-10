@@ -530,6 +530,16 @@ namespace Theraot.Collections.Specialized
             return Build(Operation(Paired(this, other, PairMode.Shorter, out var capacity), And), capacity);
         }
 
+        public bool IsProperSubsetOf(FlagArray other)
+        {
+            return IsEmpty(Operation(Paired(this, other, PairMode.Left, out _), Minus)) && !SetEquals(other);
+        }
+
+        public bool IsProperSupersetOf(FlagArray other)
+        {
+            return IsEmpty(Operation(Paired(other, this, PairMode.Left, out _), Minus)) && !SetEquals(other);
+        }
+
         public bool IsSubsetOf(FlagArray other)
         {
             return IsEmpty(Operation(Paired(this, other, PairMode.Left, out _), Minus));
