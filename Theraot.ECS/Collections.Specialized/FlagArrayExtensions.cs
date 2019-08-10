@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -80,7 +80,7 @@ namespace Theraot.Collections.Specialized
              * +--------------+
              * If also this is not empty, it means a is a proper subset of b
              */
-            return a.IsSubsetOf(b) && !b.IsSubsetOf(a);
+            return a.IsSubsetOf(b) && !b.SetEquals(a);
         }
 
         public static bool IsProperSupersetOf(this FlagArray flagArray, FlagArray other)
@@ -148,7 +148,7 @@ namespace Theraot.Collections.Specialized
              * +--------------+
              * If also this is not empty, it means a is a proper superset of b
              */
-            return b.IsSubsetOf(a) && !a.IsSubsetOf(b);
+            return b.IsSubsetOf(a) && !a.SetEquals(b);
         }
 
         public static bool Overlaps(this FlagArray flagArray, IEnumerable<int> other)
