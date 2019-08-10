@@ -10,8 +10,8 @@ namespace Theraot.Collections.Specialized
     [Serializable]
     public sealed partial class FlagArray : IList<bool>, ICloneable
     {
-        private const int _sizeOfIndex = 32;
-        private const int _sizeOfIndexLog2 = 5;
+        private const int _sizeOfEntry = 32;
+        private const int _sizeOfEntryLog2 = 5;
         private int[] _entries;
 
         public FlagArray(FlagArray prototype)
@@ -22,7 +22,7 @@ namespace Theraot.Collections.Specialized
             }
             var length = _entries.Length;
             _entries = new int[length];
-            Capacity = length * _sizeOfIndex;
+            Capacity = prototype.Capacity;
             prototype._entries.CopyTo(_entries, 0);
         }
 
@@ -38,7 +38,7 @@ namespace Theraot.Collections.Specialized
             }
             var length = GetLength(capacity);
             _entries = new int[length];
-            Capacity = length * _sizeOfIndex;
+            Capacity = capacity;
             prototype._entries.CopyTo(_entries, 0);
         }
 
@@ -50,7 +50,7 @@ namespace Theraot.Collections.Specialized
             }
             var length = GetLength(capacity);
             _entries = new int[length];
-            Capacity = length * _sizeOfIndex;
+            Capacity = capacity;
         }
 
         public FlagArray(int capacity, bool defaultValue)
@@ -86,7 +86,7 @@ namespace Theraot.Collections.Specialized
                 {
                     if (entry == 0)
                     {
-                        bitIndex += _sizeOfIndex;
+                        bitIndex += _sizeOfEntry;
                         if (bitIndex >= Capacity)
                         {
                             yield break;
@@ -117,19 +117,23 @@ namespace Theraot.Collections.Specialized
         {
             get
             {
-                var entryIndex = index >> _sizeOfIndexLog2;
-                var bitIndex = index & (_sizeOfIndex - 1);
+                if (index >= Capacity)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(index));
+                }
+                var entryIndex = index >> _sizeOfEntryLog2;
+                var bitIndex = index & (_sizeOfEntry - 1);
                 var bitMask = 1 << bitIndex;
                 return GetBit(entryIndex, bitMask);
             }
             set
             {
-                if (index > Capacity)
+                if (index >= Capacity)
                 {
                     throw new ArgumentOutOfRangeException(nameof(index));
                 }
-                var entryIndex = index >> _sizeOfIndexLog2;
-                var bitIndex = index & (_sizeOfIndex - 1);
+                var entryIndex = index >> _sizeOfEntryLog2;
+                var bitIndex = index & (_sizeOfEntry - 1);
                 var bitMask = 1 << bitIndex;
                 if (value)
                 {
@@ -168,7 +172,7 @@ namespace Theraot.Collections.Specialized
             var check = item ? 0 : -1;
             foreach (var entry in _entries)
             {
-                nextBitIndex += _sizeOfIndex;
+                nextBitIndex += _sizeOfEntry;
                 if (nextBitIndex <= Capacity)
                 {
                     if (entry != check)
@@ -389,8 +393,8 @@ namespace Theraot.Collections.Specialized
         {
             unchecked
             {
-                var check = (uint)1 << (_sizeOfIndex - 1);
-                var log2 = _sizeOfIndex;
+                var check = (uint)1 << (_sizeOfEntry - 1);
+                var log2 = _sizeOfEntry;
                 var tmp = (uint)value;
                 do
                 {
@@ -411,12 +415,12 @@ namespace Theraot.Collections.Specialized
 
         private static int GetLength(int capacity)
         {
-            return (capacity >> _sizeOfIndexLog2) + ((capacity & (_sizeOfIndex - 1)) == 0 ? 0 : 1);
+            return (capacity >> _sizeOfEntryLog2) + ((capacity & (_sizeOfEntry - 1)) == 0 ? 0 : 1);
         }
 
         private static int GetMask(int capacity)
         {
-            return (1 << (capacity & (_sizeOfIndex - 1))) - 1;
+            return (1 << (capacity & (_sizeOfEntry - 1))) - 1;
         }
 
         // Gem from Hacker's Delight
@@ -473,7 +477,7 @@ namespace Theraot.Collections.Specialized
     {
         public FlagArray And(FlagArray other)
         {
-            return Build(Operation(Paired(this, other, PairMode.Shorter, out var length), And), length);
+            return Build(Operation(Paired(this, other, PairMode.Shorter, out var capacity), And), capacity);
         }
 
         public bool IsSubsetOf(FlagArray other)
@@ -488,12 +492,12 @@ namespace Theraot.Collections.Specialized
 
         public FlagArray Minus(FlagArray other)
         {
-            return Build(Operation(Paired(this, other, PairMode.Left, out var length), Minus), length);
+            return Build(Operation(Paired(this, other, PairMode.Left, out var capacity), Minus), capacity);
         }
 
         public FlagArray Or(FlagArray other)
         {
-            return Build(Operation(Paired(this, other, PairMode.Longer, out var length), Or), length);
+            return Build(Operation(Paired(this, other, PairMode.Longer, out var capacity), Or), capacity);
         }
 
         public bool Overlaps(FlagArray other)
@@ -508,7 +512,7 @@ namespace Theraot.Collections.Specialized
 
         public FlagArray Xor(FlagArray other)
         {
-            return Build(Operation(Paired(this, other, PairMode.Longer, out var length), Xor), length);
+            return Build(Operation(Paired(this, other, PairMode.Longer, out var capacity), Xor), capacity);
         }
 
         private static int And(int left, int right)
@@ -548,9 +552,9 @@ namespace Theraot.Collections.Specialized
             Right
         }
 
-        private static FlagArray Build(IEnumerable<int> enumerable, int length)
+        private static FlagArray Build(IEnumerable<int> enumerable, int capacity)
         {
-            var result = new FlagArray(length);
+            var result = new FlagArray(capacity);
             var index = 0;
             foreach (var entry in enumerable)
             {
@@ -618,66 +622,66 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        private static IEnumerable<Pair> Paired(FlagArray left, FlagArray right, PairMode pairMode, out int length)
+        private static IEnumerable<Pair> Paired(FlagArray left, FlagArray right, PairMode pairMode, out int capacity)
         {
             var settings = new IterationSettings(pairMode, left, right);
-            return PairedExtracted(in settings, out length);
+            return PairedExtracted(in settings, out capacity);
         }
 
-        private static IEnumerable<Pair> PairedExtracted(in IterationSettings settings, out int length)
+        private static IEnumerable<Pair> PairedExtracted(in IterationSettings settings, out int capacity)
         {
             switch (settings.PairMode)
             {
                 case PairMode.Longer:
-                    length = settings.LongerLength;
+                    capacity = settings.Longer.Capacity;
                     return settings.Order == Ordering.LeftIsLonger
-                        ? IteratorExtendedToMatchLeft(settings.LeftEntries, settings.RightEntries, settings.ShorterLength, length)
-                        : IteratorExtendedToMatchRight(settings.LeftEntries, settings.RightEntries, settings.ShorterLength, length);
+                        ? IteratorExtendedToMatchLeft(settings.Left._entries, settings.Right._entries, settings.Shorter._entries.Length, settings.Longer._entries.Length)
+                        : IteratorExtendedToMatchRight(settings.Left._entries, settings.Right._entries, settings.Shorter._entries.Length, settings.Longer._entries.Length);
 
                 case PairMode.Shorter:
-                    length = settings.ShorterLength;
-                    return Iterator(settings.LeftEntries, settings.RightEntries, length);
+                    capacity = settings.Shorter.Capacity;
+                    return Iterator(settings.Left._entries, settings.Right._entries, settings.Shorter._entries.Length);
 
                 case PairMode.Left:
-                    length = settings.LeftEntries.Length;
+                    capacity = settings.Left.Capacity;
                     return settings.Order == Ordering.LeftIsLonger
-                        ? IteratorExtendedToMatchLeft(settings.LeftEntries, settings.RightEntries, settings.ShorterLength, length)
-                        : Iterator(settings.LeftEntries, settings.RightEntries, length);
+                        ? IteratorExtendedToMatchLeft(settings.Left._entries, settings.Right._entries, settings.Shorter._entries.Length, settings.Left._entries.Length)
+                        : Iterator(settings.Left._entries, settings.Right._entries, settings.Left._entries.Length);
 
                 case PairMode.Right:
-                    length = settings.RightEntries.Length;
+                    capacity = settings.Right.Capacity;
                     return settings.Order == Ordering.RightIsLonger
-                        ? IteratorExtendedToMatchRight(settings.LeftEntries, settings.RightEntries, settings.ShorterLength, length)
-                        : Iterator(settings.LeftEntries, settings.RightEntries, length);
+                        ? IteratorExtendedToMatchRight(settings.Left._entries, settings.Right._entries, settings.Shorter._entries.Length, settings.Right._entries.Length)
+                        : Iterator(settings.Left._entries, settings.Right._entries, settings.Right._entries.Length);
 
                 default:
-                    length = 0;
+                    capacity = 0;
                     return Array.Empty<Pair>();
             }
         }
 
         private readonly ref struct IterationSettings
         {
-            public readonly int[] LeftEntries;
+            public readonly FlagArray Left;
 
-            public readonly int LongerLength;
+            public readonly FlagArray Longer;
 
             public readonly Ordering Order;
 
             public readonly PairMode PairMode;
 
-            public readonly int[] RightEntries;
+            public readonly FlagArray Right;
 
-            public readonly int ShorterLength;
+            public readonly FlagArray Shorter;
 
             public IterationSettings(PairMode pairMode, FlagArray left, FlagArray right)
             {
                 PairMode = pairMode;
                 Order = left.Capacity > right.Capacity ? Ordering.LeftIsLonger : Ordering.RightIsLonger;
-                LeftEntries = left._entries;
-                RightEntries = right._entries;
-                LongerLength = Order == Ordering.LeftIsLonger ? LeftEntries.Length : RightEntries.Length;
-                ShorterLength = Order == Ordering.RightIsLonger ? RightEntries.Length : LeftEntries.Length;
+                Left = left;
+                Right = right;
+                Longer = Order == Ordering.LeftIsLonger ? Left : Right;
+                Shorter = Order == Ordering.RightIsLonger ? Right : Left;
             }
         }
 
