@@ -5,15 +5,19 @@ using Component = System.Object;
 using ComponentType = System.Int32;
 using ComponentTypeSet = Theraot.Collections.Specialized.FlagArray;
 
+using QueryId = System.Int32;
+
 namespace Theraot.ECS
 {
-    public sealed class FlagArrayStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet, FlagArrayQuery>
+    public sealed class FlagArrayStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet>
     {
+        private readonly QueryStorage<FlagArrayQuery> _queryStorage;
         private readonly int _capacity;
 
         public FlagArrayStrategy(int capacity)
         {
             _capacity = capacity;
+            _queryStorage = new QueryStorage<FlagArrayQuery>();
         }
 
         public ComponentTypeSet CreateComponentTypeSet(Dictionary<ComponentType, Component> dictionary)
@@ -30,21 +34,19 @@ namespace Theraot.ECS
             return set;
         }
 
-        public FlagArrayQuery CreateQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
+        public QueryId CreateQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
         {
-            return new FlagArrayQuery(_capacity, all, any, none);
+            return _queryStorage.AddQuery(new FlagArrayQuery(_capacity, all, any, none));
         }
 
-        public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
+        public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (allComponentsTypes == null)
             {
                 throw new ArgumentNullException(nameof(allComponentsTypes));
             }
-            if (query == null)
-            {
-                throw new ArgumentNullException(nameof(query));
-            }
+
+            var query = _queryStorage.GetQuery(queryId);
             if (allComponentsTypes.Overlaps(query.None))
             {
                 // The entity has one of the components it should not have for this queryId
@@ -63,16 +65,14 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
+        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (allComponentsTypes == null)
             {
                 throw new ArgumentNullException(nameof(allComponentsTypes));
             }
-            if (query == null)
-            {
-                throw new ArgumentNullException(nameof(query));
-            }
+
+            var query = _queryStorage.GetQuery(queryId);
             if (query.None[addedComponentType])
             {
                 // The entity has one of the components it should not have for this queryId
@@ -91,7 +91,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
+        public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (addedComponentTypes == null)
             {
@@ -101,11 +101,8 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(allComponentsTypes));
             }
-            if (query == null)
-            {
-                throw new ArgumentNullException(nameof(query));
-            }
 
+            var query = _queryStorage.GetQuery(queryId);
             if (addedComponentTypes.Any(index => query.None[index]))
             {
                 // The entity has one of the components it should not have for this queryId
@@ -124,16 +121,14 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnRemovedComponent(int removedComponentType, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
+        public QueryCheckResult QueryCheckOnRemovedComponent(int removedComponentType, ComponentTypeSet allComponentsTypes, QueryId queryId)
         {
-            if (query == null)
-            {
-                throw new ArgumentNullException(nameof(query));
-            }
             if (allComponentsTypes == null)
             {
                 throw new ArgumentNullException(nameof(allComponentsTypes));
             }
+
+            var query = _queryStorage.GetQuery(queryId);
             if (query.All[removedComponentType] || (query.Any.Contains(true) && !allComponentsTypes.Overlaps(query.Any)))
             {
                 // The entity no longer has one of the components it should have for this queryId
@@ -152,21 +147,18 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<int> removedComponentTypes, ComponentTypeSet allComponentsTypes, FlagArrayQuery query)
+        public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<int> removedComponentTypes, ComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (removedComponentTypes == null)
             {
                 throw new ArgumentNullException(nameof(removedComponentTypes));
-            }
-            if (query == null)
-            {
-                throw new ArgumentNullException(nameof(query));
             }
             if (allComponentsTypes == null)
             {
                 throw new ArgumentNullException(nameof(allComponentsTypes));
             }
 
+            var query = _queryStorage.GetQuery(queryId);
             if (removedComponentTypes.Any(index => query.All[index]) || (query.Any.Contains(true) && !allComponentsTypes.Overlaps(query.Any)))
             {
                 // The entity no longer has one of the components it should have for this queryId

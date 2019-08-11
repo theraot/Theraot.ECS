@@ -3,7 +3,7 @@ using Theraot.ECS;
 
 namespace Tests
 {
-    internal class DummyStrategy : IComponentQueryStrategy<int, int, int>
+    internal class DummyStrategy : IComponentQueryStrategy<int, int>
     {
         public int CreateComponentTypeSet(Dictionary<int, object> dictionary)
         {

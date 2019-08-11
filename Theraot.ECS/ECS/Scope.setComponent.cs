@@ -6,7 +6,7 @@ using Component = System.Object;
 
 namespace Theraot.ECS
 {
-    public sealed partial class Scope<TEntity, TComponentType, TComponentTypeSet, TQuery>
+    public sealed partial class Scope<TEntity, TComponentType, TComponentTypeSet>
     {
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
@@ -40,7 +40,7 @@ namespace Theraot.ECS
             foreach (var queryId in GetQueriesByComponentType(addedComponentType))
             {
                 var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnAddedComponent(addedComponentType, allComponentsTypes, _queryStorage.GetQuery(queryId)))
+                switch (_strategy.QueryCheckOnAddedComponent(addedComponentType, allComponentsTypes, queryId))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entity);
@@ -65,7 +65,7 @@ namespace Theraot.ECS
             foreach (var queryId in GetQueriesByComponentTypes(addedComponentTypes))
             {
                 var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnAddedComponents(addedComponentTypes, allComponentsTypes, _queryStorage.GetQuery(queryId)))
+                switch (_strategy.QueryCheckOnAddedComponents(addedComponentTypes, allComponentsTypes, queryId))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entity);
