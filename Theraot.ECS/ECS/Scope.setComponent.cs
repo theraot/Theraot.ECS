@@ -40,7 +40,7 @@ namespace Theraot.ECS
             foreach (var queryId in GetQueriesByComponentType(addedComponentType))
             {
                 var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnAddedComponent(addedComponentType, allComponentsTypes, _queryByQueryId[queryId]))
+                switch (_strategy.QueryCheckOnAddedComponent(addedComponentType, allComponentsTypes, _queryStorage.GetQuery(queryId)))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entity);
@@ -65,7 +65,7 @@ namespace Theraot.ECS
             foreach (var queryId in GetQueriesByComponentTypes(addedComponentTypes))
             {
                 var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnAddedComponents(addedComponentTypes, allComponentsTypes, _queryByQueryId[queryId]))
+                switch (_strategy.QueryCheckOnAddedComponents(addedComponentTypes, allComponentsTypes, _queryStorage.GetQuery(queryId)))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entity);

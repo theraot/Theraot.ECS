@@ -24,15 +24,11 @@ namespace Theraot.ECS
 
         private readonly Func<TEntity> _entityFactory;
 
-        private readonly Dictionary<QueryId, TQuery> _queryByQueryId;
-
-        private readonly Dictionary<TQuery, QueryId> _queryIdByQuery;
-
         private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
 
         private readonly IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> _strategy;
 
-        private int _queryId;
+        private readonly QueryStorage<TQuery> _queryStorage;
 
         internal Scope(Func<TEntity> entityFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet, TQuery> strategy)
         {
@@ -42,8 +38,7 @@ namespace Theraot.ECS
             _componentTypesByEntity = new Dictionary<TEntity, TComponentTypeSet>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>();
-            _queryByQueryId = new Dictionary<QueryId, TQuery>();
-            _queryIdByQuery = new Dictionary<TQuery, QueryId>();
+            _queryStorage = new QueryStorage<TQuery>();
         }
 
         public TEntity CreateEntity()
@@ -61,13 +56,7 @@ namespace Theraot.ECS
             var anyArray = any.ToArray();
             var noneArray = none.ToArray();
             var query = _strategy.CreateQuery(allArray, anyArray, noneArray);
-            var queryId = _queryId;
-            if (!_queryIdByQuery.TryAdd(query, queryId))
-            {
-                return _queryIdByQuery[query];
-            }
-            _queryId++;
-            _queryByQueryId[queryId] = query;
+            var queryId = _queryStorage.AddQuery(query);
             var set = _entitiesByQueryId[queryId] = new HashSet<TEntity>();
             foreach (var componentType in allArray.Concat(anyArray).Concat(noneArray))
             {
@@ -179,7 +168,7 @@ namespace Theraot.ECS
             foreach (var queryId in GetQueriesByComponentType(removedComponentType))
             {
                 var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnRemovedComponent(removedComponentType, allComponentsTypes, _queryByQueryId[queryId]))
+                switch (_strategy.QueryCheckOnRemovedComponent(removedComponentType, allComponentsTypes, _queryStorage.GetQuery(queryId)))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entity);
@@ -203,7 +192,7 @@ namespace Theraot.ECS
             foreach (var queryId in GetQueriesByComponentTypes(removedComponentTypes))
             {
                 var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnRemovedComponents(removedComponentTypes, allComponentsTypes, _queryByQueryId[queryId]))
+                switch (_strategy.QueryCheckOnRemovedComponents(removedComponentTypes, allComponentsTypes, _queryStorage.GetQuery(queryId)))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entity);
