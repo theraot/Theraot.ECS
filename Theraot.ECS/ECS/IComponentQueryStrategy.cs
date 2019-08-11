@@ -4,7 +4,7 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    public interface IComponentQueryStrategy<TComponentType, TComponentTypeSet>
+    public interface IComponentQueryStrategy<TComponentType, TComponentTypeSet> : IComponentTypeManager<TComponentType, TComponentTypeSet>
     {
         TComponentTypeSet CreateComponentTypeSet(Dictionary<TComponentType, Component> dictionary);
 
@@ -19,13 +19,5 @@ namespace Theraot.ECS
         QueryCheckResult QueryCheckOnRemovedComponent(TComponentType removedComponentType, TComponentTypeSet allComponentsTypes, QueryId queryId);
 
         QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<TComponentType> removedComponentTypes, TComponentTypeSet allComponentsTypes, QueryId queryId);
-
-        void SetComponentType(TComponentTypeSet componentTypeSet, TComponentType componentType);
-
-        void SetComponentTypes(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
-
-        void UnsetComponentType(TComponentTypeSet componentTypeSet, TComponentType componentType);
-
-        void UnsetComponentTypes(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
     }
 }
