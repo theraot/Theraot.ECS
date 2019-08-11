@@ -12,7 +12,7 @@ namespace Theraot.Collections.Specialized
     {
         private const int _sizeOfEntry = 32;
         private const int _sizeOfEntryLog2 = 5;
-        private int[] _entries;
+        private readonly int[] _entries;
 
         public FlagArray(FlagArray prototype)
         {
@@ -203,7 +203,7 @@ namespace Theraot.Collections.Specialized
 
         public void Clear()
         {
-            _entries = new int[_entries.Length];
+            SetAll(false);
         }
 
         public FlagArray Clone()
@@ -791,6 +791,32 @@ namespace Theraot.Collections.Specialized
             {
                 Left = left;
                 Right = right;
+            }
+        }
+    }
+
+    public sealed partial class FlagArray : IEquatable<FlagArray>
+    {
+        public bool Equals(FlagArray other)
+        {
+            return SetEquals(other);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as FlagArray);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hash = 17;
+                foreach (var element in _entries)
+                {
+                    hash = (hash * 31) + element;
+                }
+                return hash;
             }
         }
     }
