@@ -46,7 +46,7 @@ namespace Theraot.ECS
             var entity = _entityFactory();
             var dictionary = new Dictionary<TComponentType, Component>();
             _componentsByEntity[entity] = dictionary;
-            _componentTypesByEntity[entity] = _strategy.CreateComponentTypeSet(dictionary);
+            _componentTypesByEntity[entity] = _manager.CreateComponentTypeSet(dictionary);
             return entity;
         }
 

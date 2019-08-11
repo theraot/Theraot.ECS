@@ -6,8 +6,6 @@ namespace Theraot.ECS
 {
     public interface IComponentQueryStrategy<TComponentType, TComponentTypeSet>
     {
-        TComponentTypeSet CreateComponentTypeSet(Dictionary<TComponentType, Component> dictionary);
-
         QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
 
         QueryCheckResult QueryCheck(TComponentTypeSet allComponentsTypes, QueryId queryId);

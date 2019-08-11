@@ -11,8 +11,9 @@ namespace Theraot.ECS
 {
     public sealed partial class FlagArrayStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet>
     {
-        private readonly QueryStorage<FlagArrayQuery> _queryStorage;
         private readonly int _capacity;
+
+        private readonly QueryStorage<FlagArrayQuery> _queryStorage;
 
         public FlagArrayStrategy(int capacity)
         {
@@ -21,20 +22,6 @@ namespace Theraot.ECS
         }
 
         public IComponentTypeManager<ComponentType, ComponentTypeSet> ComponentTypeManager => this;
-
-        public ComponentTypeSet CreateComponentTypeSet(Dictionary<ComponentType, Component> dictionary)
-        {
-            if (dictionary == null)
-            {
-                throw new ArgumentNullException(nameof(dictionary));
-            }
-            var set = new ComponentTypeSet(_capacity);
-            foreach (var pair in dictionary)
-            {
-                set[pair.Key] = true;
-            }
-            return set;
-        }
 
         public QueryId CreateQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
         {
@@ -182,6 +169,20 @@ namespace Theraot.ECS
 
     public sealed partial class FlagArrayStrategy : IComponentTypeManager<ComponentType, ComponentTypeSet>
     {
+        public ComponentTypeSet CreateComponentTypeSet(Dictionary<ComponentType, Component> dictionary)
+        {
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException(nameof(dictionary));
+            }
+            var set = new ComponentTypeSet(_capacity);
+            foreach (var pair in dictionary)
+            {
+                set[pair.Key] = true;
+            }
+            return set;
+        }
+
         public void SetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             if (componentTypeSet == null)

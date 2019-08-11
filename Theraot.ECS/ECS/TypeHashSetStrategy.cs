@@ -18,11 +18,6 @@ namespace Theraot.ECS
 
         public IComponentTypeManager<ComponentType, ComponentTypeSet> ComponentTypeManager => this;
 
-        public ComponentTypeSet CreateComponentTypeSet(Dictionary<ComponentType, Component> dictionary)
-        {
-            return DictionaryKeySet.CreateFrom(dictionary);
-        }
-
         public QueryId CreateQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
         {
             return _queryStorage.AddQuery(new TypeHashSetQuery(all, any, none));
@@ -165,6 +160,11 @@ namespace Theraot.ECS
 
     public sealed partial class TypeHashSetStrategy : IComponentTypeManager<ComponentType, ComponentTypeSet>
     {
+        public ComponentTypeSet CreateComponentTypeSet(Dictionary<ComponentType, Component> dictionary)
+        {
+            return DictionaryKeySet.CreateFrom(dictionary);
+        }
+
         public void SetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             var _ = componentTypeSet;
