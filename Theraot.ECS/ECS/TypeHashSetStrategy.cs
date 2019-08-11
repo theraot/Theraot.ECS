@@ -7,7 +7,7 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    public sealed class TypeHashSetStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet>
+    public sealed partial class TypeHashSetStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet>
     {
         private readonly QueryStorage<TypeHashSetQuery> _queryStorage;
 
@@ -159,7 +159,10 @@ namespace Theraot.ECS
             }
             return QueryCheckResult.Noop;
         }
+    }
 
+    public sealed partial class TypeHashSetStrategy
+    {
         public void SetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             var _ = componentTypeSet;

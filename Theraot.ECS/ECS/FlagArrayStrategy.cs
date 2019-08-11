@@ -9,7 +9,7 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    public sealed class FlagArrayStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet>
+    public sealed partial class FlagArrayStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet>
     {
         private readonly QueryStorage<FlagArrayQuery> _queryStorage;
         private readonly int _capacity;
@@ -176,7 +176,10 @@ namespace Theraot.ECS
             }
             return QueryCheckResult.Noop;
         }
+    }
 
+    public sealed partial class FlagArrayStrategy
+    {
         public void SetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             if (componentTypeSet == null)
