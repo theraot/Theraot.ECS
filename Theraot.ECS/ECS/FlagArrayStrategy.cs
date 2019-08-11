@@ -20,6 +20,8 @@ namespace Theraot.ECS
             _queryStorage = new QueryStorage<FlagArrayQuery>();
         }
 
+        public IComponentTypeManager<ComponentType, ComponentTypeSet> ComponentTypeManager => this;
+
         public ComponentTypeSet CreateComponentTypeSet(Dictionary<ComponentType, Component> dictionary)
         {
             if (dictionary == null)
@@ -178,7 +180,7 @@ namespace Theraot.ECS
         }
     }
 
-    public sealed partial class FlagArrayStrategy
+    public sealed partial class FlagArrayStrategy : IComponentTypeManager<ComponentType, ComponentTypeSet>
     {
         public void SetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {

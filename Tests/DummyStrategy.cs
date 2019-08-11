@@ -3,7 +3,7 @@ using Theraot.ECS;
 
 namespace Tests
 {
-    internal class DummyStrategy : IComponentQueryStrategy<int, int>
+    internal class DummyStrategy : IComponentQueryStrategy<int, int>, IComponentTypeManager<int, int>
     {
         public int CreateComponentTypeSet(Dictionary<int, object> dictionary)
         {
@@ -39,6 +39,8 @@ namespace Tests
         {
             return QueryCheckResult.Noop;
         }
+
+        public IComponentTypeManager<int, int> ComponentTypeManager => this;
 
         public void SetComponentType(int componentTypeSet, int componentType)
         {

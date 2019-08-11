@@ -28,10 +28,13 @@ namespace Theraot.ECS
 
         private readonly IComponentQueryStrategy<TComponentType, TComponentTypeSet> _strategy;
 
+        private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _manager;
+
         internal Scope(Func<TEntity> entityFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet> strategy)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
+            _manager = _strategy.ComponentTypeManager;
             _componentsByEntity = new Dictionary<TEntity, Dictionary<TComponentType, Component>>();
             _componentTypesByEntity = new Dictionary<TEntity, TComponentTypeSet>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
@@ -118,7 +121,7 @@ namespace Theraot.ECS
             }
 
             var allComponentsTypes = _componentTypesByEntity[entity];
-            _strategy.UnsetComponentType(allComponentsTypes, componentType);
+            _manager.UnsetComponentType(allComponentsTypes, componentType);
             UpdateEntitiesByQueryOnRemoveComponent(entity, allComponentsTypes, componentType);
         }
 
@@ -132,7 +135,7 @@ namespace Theraot.ECS
             }
 
             var allComponentsTypes = _componentTypesByEntity[entity];
-            _strategy.UnsetComponentTypes(allComponentsTypes, removedComponents);
+            _manager.UnsetComponentTypes(allComponentsTypes, removedComponents);
             UpdateEntitiesByQueryOnRemoveComponents(entity, allComponentsTypes, removedComponents);
         }
 
