@@ -23,7 +23,7 @@ namespace Theraot.ECS
 
         private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
 
-        private readonly Strategy<TComponentType, TComponentTypeSet> _strategy;
+        private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _manager;
 
@@ -31,7 +31,7 @@ namespace Theraot.ECS
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
-            _strategy = new Strategy<TComponentType, TComponentTypeSet>(manager);
+            _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(manager);
             _componentsByEntity = new Dictionary<TEntity, ComponentStorage<TComponentType, TComponentTypeSet>>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>();
@@ -49,7 +49,7 @@ namespace Theraot.ECS
             var allArray = all.ToArray();
             var anyArray = any.ToArray();
             var noneArray = none.ToArray();
-            var queryId = _strategy.CreateQuery(allArray, anyArray, noneArray);
+            var queryId = _queryManager.CreateQuery(allArray, anyArray, noneArray);
             var set = _entitiesByQueryId[queryId] = new HashSet<TEntity>();
             foreach (var componentType in allArray.Concat(anyArray).Concat(noneArray))
             {
@@ -69,7 +69,7 @@ namespace Theraot.ECS
             foreach (var entity in _componentsByEntity.Keys)
             {
                 var componentTypes = _componentsByEntity[entity].ComponentTypes;
-                if (_strategy.QueryCheck(componentTypes, queryId) == QueryCheckResult.Add)
+                if (_queryManager.QueryCheck(componentTypes, queryId) == QueryCheckResult.Add)
                 {
                     set.Add(entity);
                 }

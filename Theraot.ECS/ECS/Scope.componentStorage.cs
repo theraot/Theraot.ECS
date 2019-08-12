@@ -49,7 +49,7 @@ namespace Theraot.ECS
             foreach (var queryId in GetQueriesByComponentType(addedComponentType))
             {
                 var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnAddedComponent(addedComponentType, allComponentsTypes, queryId))
+                switch (_queryManager.QueryCheckOnAddedComponent(addedComponentType, allComponentsTypes, queryId))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entity);
@@ -74,7 +74,7 @@ namespace Theraot.ECS
             foreach (var queryId in GetQueriesByComponentTypes(addedComponentTypes))
             {
                 var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnAddedComponents(addedComponentTypes, allComponentsTypes, queryId))
+                switch (_queryManager.QueryCheckOnAddedComponents(addedComponentTypes, allComponentsTypes, queryId))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entity);
@@ -98,7 +98,7 @@ namespace Theraot.ECS
             foreach (var queryId in GetQueriesByComponentType(removedComponentType))
             {
                 var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnRemovedComponent(removedComponentType, allComponentsTypes, queryId))
+                switch (_queryManager.QueryCheckOnRemovedComponent(removedComponentType, allComponentsTypes, queryId))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entity);
@@ -122,7 +122,7 @@ namespace Theraot.ECS
             foreach (var queryId in GetQueriesByComponentTypes(removedComponentTypes))
             {
                 var set = _entitiesByQueryId[queryId];
-                switch (_strategy.QueryCheckOnRemovedComponents(removedComponentTypes, allComponentsTypes, queryId))
+                switch (_queryManager.QueryCheckOnRemovedComponents(removedComponentTypes, allComponentsTypes, queryId))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entity);

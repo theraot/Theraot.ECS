@@ -4,13 +4,13 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    internal sealed class Strategy<TComponentType, TComponentTypeSet>
+    internal sealed class QueryManager<TComponentType, TComponentTypeSet>
     {
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeSetManager;
 
         private readonly QueryStorage<Query<TComponentTypeSet>> _queryStorage;
 
-        public Strategy(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeSetManager)
+        public QueryManager(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeSetManager)
         {
             _componentTypeSetManager = componentTypeSetManager;
             _queryStorage = new QueryStorage<Query<TComponentTypeSet>>();
