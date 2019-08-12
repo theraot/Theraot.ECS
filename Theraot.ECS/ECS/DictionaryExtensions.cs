@@ -32,21 +32,21 @@ namespace Theraot.ECS
             return isNew;
         }
 
-        public static Dictionary<TKey, TValue> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<KeyValuePair<TKey, TValue>> source)
+        public static List<TKey> SetAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<KeyValuePair<TKey, TValue>> source)
         {
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
 
-            var result = new Dictionary<TKey, TValue>();
+            var result = new List<TKey>();
             foreach (var pair in source)
             {
                 var key = pair.Key;
                 var value = pair.Value;
                 if (dictionary.Set(key, value))
                 {
-                    result.Add(key, value);
+                    result.Add(key);
                 }
             }
 

@@ -68,9 +68,8 @@ namespace Theraot.ECS
             }
         }
 
-        private void UpdateEntitiesByQueryOnAddedComponents(TEntity entity, TComponentTypeSet allComponentsTypes, Dictionary<TComponentType, Component> addedComponents)
+        private void UpdateEntitiesByQueryOnAddedComponents(TEntity entity, TComponentTypeSet allComponentsTypes, List<TComponentType> addedComponentTypes)
         {
-            var addedComponentTypes = addedComponents.Keys;
             foreach (var queryId in GetQueriesByComponentTypes(addedComponentTypes))
             {
                 var set = _entitiesByQueryId[queryId];
