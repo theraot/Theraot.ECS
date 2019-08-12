@@ -39,80 +39,6 @@ namespace Theraot.ECS
 
         bool ICollection<T>.IsReadOnly => true;
 
-        public bool Contains(T item)
-        {
-            return _containsKey(item);
-        }
-
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            _wrapped.ToArray().CopyTo(array, arrayIndex);
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return _wrapped.GetEnumerator();
-        }
-
-        public bool IsProperSubsetOf(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-
-            return SetCheck.IsSubsetOf(_containsKey, _count(), other, true);
-        }
-
-        public bool IsProperSupersetOf(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-
-            return SetCheck.IsSupersetOf(_containsKey, _count(), other, true);
-        }
-
-        public bool IsSubsetOf(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-
-            return SetCheck.IsSubsetOf(_containsKey, _count(), other, false);
-        }
-
-        public bool IsSupersetOf(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-
-            return SetCheck.IsSupersetOf(_containsKey, _count(), other, false);
-        }
-
-        public bool Overlaps(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            return other.Any(Contains);
-        }
-
-        public bool SetEquals(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            var otherAsICollection = other is ICollection<T> otherCollection ? otherCollection : other.ToList();
-            return otherAsICollection.All(Contains) && this.All(input => otherAsICollection.Contains(input));
-        }
-
         void ICollection<T>.Add(T item)
         {
             throw new NotSupportedException();
@@ -128,9 +54,24 @@ namespace Theraot.ECS
             throw new NotSupportedException();
         }
 
+        public bool Contains(T item)
+        {
+            return _containsKey(item);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            _wrapped.ToArray().CopyTo(array, arrayIndex);
+        }
+
         void ISet<T>.ExceptWith(IEnumerable<T> other)
         {
             throw new NotSupportedException();
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _wrapped.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -143,9 +84,68 @@ namespace Theraot.ECS
             throw new NotSupportedException();
         }
 
+        public bool IsProperSubsetOf(IEnumerable<T> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            return IsSubsetOf(_containsKey, _count(), other, true);
+        }
+
+        public bool IsProperSupersetOf(IEnumerable<T> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            return IsSupersetOf(_containsKey, _count(), other, true);
+        }
+
+        public bool IsSubsetOf(IEnumerable<T> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            return IsSubsetOf(_containsKey, _count(), other, false);
+        }
+
+        public bool IsSupersetOf(IEnumerable<T> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            return IsSupersetOf(_containsKey, _count(), other, false);
+        }
+
+        public bool Overlaps(IEnumerable<T> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            return other.Any(Contains);
+        }
+
         bool ICollection<T>.Remove(T item)
         {
             throw new NotSupportedException();
+        }
+
+        public bool SetEquals(IEnumerable<T> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            var otherAsICollection = other is ICollection<T> otherCollection ? otherCollection : other.ToList();
+            return otherAsICollection.All(Contains) && this.All(input => otherAsICollection.Contains(input));
         }
 
         void ISet<T>.SymmetricExceptWith(IEnumerable<T> other)
@@ -156,6 +156,47 @@ namespace Theraot.ECS
         void ISet<T>.UnionWith(IEnumerable<T> other)
         {
             throw new NotSupportedException();
+        }
+
+        private static bool IsSubsetOf(Func<T, bool> contains, int count, IEnumerable<T> other, bool proper)
+        {
+            var elementCount = 0;
+            var matchCount = 0;
+            foreach (var item in other)
+            {
+                elementCount++;
+                if (contains(item))
+                {
+                    matchCount++;
+                }
+            }
+
+            if (proper)
+            {
+                return matchCount == count && elementCount > count;
+            }
+
+            return matchCount == count;
+        }
+
+        private static bool IsSupersetOf(Func<T, bool> contains, int count, IEnumerable<T> other, bool proper)
+        {
+            var elementCount = 0;
+            foreach (var item in other)
+            {
+                elementCount++;
+                if (!contains(item))
+                {
+                    return false;
+                }
+            }
+
+            if (proper)
+            {
+                return elementCount < count;
+            }
+
+            return true;
         }
     }
 }
