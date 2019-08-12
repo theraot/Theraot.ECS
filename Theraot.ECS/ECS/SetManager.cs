@@ -53,16 +53,6 @@ namespace Theraot.ECS
             return componentTypeSet.IsSupersetOf(other);
         }
 
-        public ComponentTypeSet Create(Dictionary<ComponentType, Component> dictionary)
-        {
-            if (dictionary == null)
-            {
-                throw new ArgumentNullException(nameof(dictionary));
-            }
-
-            return new HashSet<ComponentType>(dictionary.Keys);
-        }
-
         public ComponentTypeSet Create(IEnumerable<ComponentType> enumerable)
         {
             return new HashSet<ComponentType>(enumerable);

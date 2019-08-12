@@ -13,7 +13,7 @@ namespace Theraot.ECS
         {
             _componentTypeManager = componentTypeManager;
             _dictionary = new Dictionary<TComponentType, Component>();
-            ComponentTypes = _componentTypeManager.Create(_dictionary);
+            ComponentTypes = _componentTypeManager.Create(_dictionary.Keys);
         }
 
         public TComponentTypeSet ComponentTypes { get; }

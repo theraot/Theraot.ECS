@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using Component = System.Object;
 
 namespace Theraot.ECS
 {
-    public interface IComponentTypeManager<TComponentType, TComponentTypeSet>
+    public interface IComponentTypeManager<in TComponentType, TComponentTypeSet>
     {
         void Add(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
 
@@ -12,8 +11,6 @@ namespace Theraot.ECS
         bool Contains(TComponentTypeSet componentTypeSet, TComponentType componentType);
 
         bool ContainsAll(TComponentTypeSet componentTypeSet, TComponentTypeSet other);
-
-        TComponentTypeSet Create(Dictionary<TComponentType, Component> dictionary);
 
         TComponentTypeSet Create(IEnumerable<TComponentType> enumerable);
 

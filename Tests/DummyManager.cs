@@ -23,11 +23,6 @@ namespace Tests
             return false;
         }
 
-        public int Create(Dictionary<int, object> dictionary)
-        {
-            return 0;
-        }
-
         public int Create(IEnumerable<int> enumerable)
         {
             return 0;

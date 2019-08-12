@@ -59,23 +59,19 @@ namespace Theraot.ECS
             return componentTypeSet.IsSupersetOf(other);
         }
 
-        public ComponentTypeSet Create(Dictionary<ComponentType, Component> dictionary)
-        {
-            if (dictionary == null)
-            {
-                throw new ArgumentNullException(nameof(dictionary));
-            }
-
-            return CreateComponentTypeSetExtracted(dictionary.Keys);
-        }
-
         public ComponentTypeSet Create(IEnumerable<ComponentType> enumerable)
         {
             if (enumerable == null)
             {
                 throw new ArgumentNullException(nameof(enumerable));
             }
-            return CreateComponentTypeSetExtracted(enumerable);
+
+            var set = new ComponentTypeSet(_capacity);
+            foreach (var key in enumerable)
+            {
+                set[key] = true;
+            }
+            return set;
         }
 
         public bool IsEmpty(ComponentTypeSet componentTypeSet)
@@ -128,16 +124,6 @@ namespace Theraot.ECS
             {
                 componentTypeSet[componentType] = false;
             }
-        }
-
-        private ComponentTypeSet CreateComponentTypeSetExtracted(IEnumerable<ComponentType> enumerable)
-        {
-            var set = new ComponentTypeSet(_capacity);
-            foreach (var key in enumerable)
-            {
-                set[key] = true;
-            }
-            return set;
         }
     }
 }
