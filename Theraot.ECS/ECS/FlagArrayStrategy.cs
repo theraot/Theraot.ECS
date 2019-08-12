@@ -13,19 +13,26 @@ namespace Theraot.ECS
     {
         private readonly int _capacity;
 
-        private readonly QueryStorage<FlagArrayQuery> _queryStorage;
+        private readonly QueryStorage<Query<ComponentTypeSet>> _queryStorage;
 
         public FlagArrayStrategy(int capacity)
         {
             _capacity = capacity;
-            _queryStorage = new QueryStorage<FlagArrayQuery>();
+            _queryStorage = new QueryStorage<Query<ComponentTypeSet>>();
         }
 
         public IComponentTypeManager<ComponentType, ComponentTypeSet> ComponentTypeManager => this;
 
         public QueryId CreateQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
         {
-            return _queryStorage.AddQuery(new FlagArrayQuery(_capacity, all, any, none));
+            return _queryStorage.AddQuery(
+                new Query<ComponentTypeSet>
+                (
+                    CreateComponentTypeSet(all),
+                    CreateComponentTypeSet(any),
+                    CreateComponentTypeSet(none)
+                )
+            );
         }
 
         public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, QueryId queryId)

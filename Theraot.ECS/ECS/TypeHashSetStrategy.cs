@@ -9,18 +9,25 @@ namespace Theraot.ECS
 {
     public sealed partial class TypeHashSetStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet>
     {
-        private readonly QueryStorage<TypeHashSetQuery> _queryStorage;
+        private readonly QueryStorage<Query<ComponentTypeSet>> _queryStorage;
 
         public TypeHashSetStrategy()
         {
-            _queryStorage = new QueryStorage<TypeHashSetQuery>();
+            _queryStorage = new QueryStorage<Query<ComponentTypeSet>>();
         }
 
         public IComponentTypeManager<ComponentType, ComponentTypeSet> ComponentTypeManager => this;
 
         public QueryId CreateQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
         {
-            return _queryStorage.AddQuery(new TypeHashSetQuery(all, any, none));
+            return _queryStorage.AddQuery(
+                new Query<ComponentTypeSet>
+                (
+                    CreateComponentTypeSet(all),
+                    CreateComponentTypeSet(any),
+                    CreateComponentTypeSet(none)
+                )
+            );
         }
 
         public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, QueryId queryId)
