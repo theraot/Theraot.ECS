@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Theraot.Collections.Specialized;
 using Component = System.Object;
 using ComponentType = System.String;
-using ComponentTypeSet = System.Collections.Generic.ISet<string>;
+using ComponentTypeSet = System.Collections.Generic.HashSet<string>;
 
 namespace Theraot.ECS
 {
@@ -15,10 +14,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentTypeSet));
             }
-            if (componentTypeSet.IsReadOnly)
-            {
-                return;
-            }
+
             componentTypeSet.Add(componentType);
         }
 
@@ -31,10 +27,6 @@ namespace Theraot.ECS
             if (componentTypeSet == null)
             {
                 throw new ArgumentNullException(nameof(componentTypeSet));
-            }
-            if (componentTypeSet.IsReadOnly)
-            {
-                return;
             }
 
             foreach (var componentType in componentTypes)
@@ -63,7 +55,12 @@ namespace Theraot.ECS
 
         public ComponentTypeSet Create(Dictionary<ComponentType, Component> dictionary)
         {
-            return DictionaryKeySet.CreateFrom(dictionary);
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException(nameof(dictionary));
+            }
+
+            return new HashSet<ComponentType>(dictionary.Keys);
         }
 
         public ComponentTypeSet Create(IEnumerable<ComponentType> enumerable)
@@ -108,10 +105,6 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentTypeSet));
             }
-            if (componentTypeSet.IsReadOnly)
-            {
-                return;
-            }
 
             componentTypeSet.Remove(componentType);
         }
@@ -125,10 +118,6 @@ namespace Theraot.ECS
             if (componentTypeSet == null)
             {
                 throw new ArgumentNullException(nameof(componentTypeSet));
-            }
-            if (componentTypeSet.IsReadOnly)
-            {
-                return;
             }
 
             foreach (var componentType in componentTypes)
