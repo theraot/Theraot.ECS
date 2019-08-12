@@ -5,7 +5,7 @@ namespace Tests
 {
     internal class DummyStrategy : IComponentQueryStrategy<int, int>, IComponentTypeManager<int, int>
     {
-        public IComponentTypeManager<int, int> ComponentTypeManager => this;
+        public IComponentTypeManager<int, int> ComponentTypeSetManager => this;
 
         public void Add(int componentTypeSet, IEnumerable<int> componentTypes)
         {

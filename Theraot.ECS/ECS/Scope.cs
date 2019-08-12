@@ -31,7 +31,7 @@ namespace Theraot.ECS
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
-            _manager = _strategy.ComponentTypeManager;
+            _manager = _strategy.ComponentTypeSetManager;
             _componentsByEntity = new Dictionary<TEntity, ComponentStorage<TComponentType, TComponentTypeSet>>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>();

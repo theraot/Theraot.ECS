@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Component = System.Object;
 using ComponentType = System.String;
 using ComponentTypeSet = System.Collections.Generic.ISet<string>;
+
 using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    public sealed partial class TypeHashSetStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet>
+    public sealed class TypeHashSetStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet>
     {
         private readonly QueryStorage<Query<ComponentTypeSet>> _queryStorage;
 
@@ -16,16 +16,16 @@ namespace Theraot.ECS
             _queryStorage = new QueryStorage<Query<ComponentTypeSet>>();
         }
 
-        public IComponentTypeManager<ComponentType, ComponentTypeSet> ComponentTypeManager => this;
+        public IComponentTypeManager<ComponentType, ComponentTypeSet> ComponentTypeSetManager { get; } = new SetManager();
 
         public QueryId CreateQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
         {
             return _queryStorage.AddQuery(
                 new Query<ComponentTypeSet>
                 (
-                    Create(all),
-                    Create(any),
-                    Create(none)
+                    ComponentTypeSetManager.Create(all),
+                    ComponentTypeSetManager.Create(any),
+                    ComponentTypeSetManager.Create(none)
                 )
             );
         }
@@ -142,174 +142,47 @@ namespace Theraot.ECS
 
         private bool CheckAll(ComponentTypeSet allComponentsTypes, ComponentTypeSet all)
         {
-            return IsEmpty(all) || Contains(allComponentsTypes, all); //
+            return ComponentTypeSetManager.IsEmpty(all) || ComponentTypeSetManager.Contains(allComponentsTypes, all); //
         }
 
         private bool CheckAny(ComponentTypeSet allComponentsTypes, ComponentTypeSet any)
         {
-            return IsEmpty(any) || Overlaps(any, allComponentsTypes); //
+            return ComponentTypeSetManager.IsEmpty(any) || ComponentTypeSetManager.Overlaps(any, allComponentsTypes); //
         }
 
         private bool CheckNone(ComponentTypeSet allComponentsTypes, ComponentTypeSet none)
         {
-            return IsEmpty(none) || !Overlaps(none, allComponentsTypes); //
+            return ComponentTypeSetManager.IsEmpty(none) || !ComponentTypeSetManager.Overlaps(none, allComponentsTypes); //
         }
 
         private bool CheckNotAll(ComponentType removedComponentType, ComponentTypeSet all)
         {
-            return Contains(all, removedComponentType); //
+            return ComponentTypeSetManager.Contains(all, removedComponentType); //
         }
 
         private bool CheckNotAll(IEnumerable<ComponentType> removedComponentTypes, ComponentTypeSet all)
         {
-            return Overlaps(all, removedComponentTypes); //
+            return ComponentTypeSetManager.Overlaps(all, removedComponentTypes); //
         }
 
         private bool CheckNotAny(ComponentTypeSet allComponentsTypes, ComponentTypeSet any)
         {
-            return !IsEmpty(any) && !Overlaps(any, allComponentsTypes); //
+            return !ComponentTypeSetManager.IsEmpty(any) && !ComponentTypeSetManager.Overlaps(any, allComponentsTypes); //
         }
 
         private bool CheckNotNone(ComponentType addedComponentType, ComponentTypeSet none)
         {
-            return Contains(none, addedComponentType); //
+            return ComponentTypeSetManager.Contains(none, addedComponentType); //
         }
 
         private bool CheckNotNone(ComponentTypeSet allComponentsTypes, ComponentTypeSet none)
         {
-            return Overlaps(none, allComponentsTypes); //
+            return ComponentTypeSetManager.Overlaps(none, allComponentsTypes); //
         }
 
         private bool CheckNotNone(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet none)
         {
-            return Overlaps(none, addedComponentTypes); //
-        }
-    }
-
-    public sealed partial class TypeHashSetStrategy : IComponentTypeManager<ComponentType, ComponentTypeSet>
-    {
-        public void Add(ComponentTypeSet componentTypeSet, ComponentType componentType)
-        {
-            if (componentTypeSet == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypeSet));
-            }
-            if (componentTypeSet.IsReadOnly)
-            {
-                return;
-            }
-            componentTypeSet.Add(componentType);
-        }
-
-        public void Add(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
-        {
-            if (componentTypes == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypes));
-            }
-            if (componentTypeSet == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypeSet));
-            }
-            if (componentTypeSet.IsReadOnly)
-            {
-                return;
-            }
-
-            foreach (var componentType in componentTypes)
-            {
-                componentTypeSet.Add(componentType);
-            }
-        }
-
-        public bool Contains(ComponentTypeSet componentTypeSet, ComponentType componentType)
-        {
-            if (componentTypeSet == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypeSet));
-            }
-            return componentTypeSet.Count != 0 && componentTypeSet.Contains(componentType);
-        }
-
-        public bool Contains(ComponentTypeSet componentTypeSet, ComponentTypeSet other)
-        {
-            if (componentTypeSet == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypeSet));
-            }
-            return componentTypeSet.IsSupersetOf(other);
-        }
-
-        public ComponentTypeSet Create(Dictionary<ComponentType, Component> dictionary)
-        {
-            return DictionaryKeySet.CreateFrom(dictionary);
-        }
-
-        public ComponentTypeSet Create(IEnumerable<ComponentType> enumerable)
-        {
-            return new HashSet<ComponentType>(enumerable);
-        }
-
-        public bool IsEmpty(ComponentTypeSet componentTypeSet)
-        {
-            if (componentTypeSet == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypeSet));
-            }
-            return componentTypeSet.Count == 0;
-        }
-
-        public bool Overlaps(ComponentTypeSet componentTypeSet, IEnumerable<string> componentTypes)
-        {
-            if (componentTypeSet == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypeSet));
-            }
-            return componentTypeSet.Count != 0 && componentTypeSet.Overlaps(componentTypes);
-        }
-
-        public bool Overlaps(ComponentTypeSet componentTypeSetA, ComponentTypeSet componentTypeSetB)
-        {
-            if (componentTypeSetA == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypeSetA));
-            }
-            return componentTypeSetA.Count != 0 && (componentTypeSetA.Count > componentTypeSetB.Count ? componentTypeSetA.Overlaps(componentTypeSetB) : componentTypeSetB.Overlaps(componentTypeSetA));
-        }
-
-        public void Remove(ComponentTypeSet componentTypeSet, ComponentType componentType)
-        {
-            if (componentTypeSet == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypeSet));
-            }
-            if (componentTypeSet.IsReadOnly)
-            {
-                return;
-            }
-
-            componentTypeSet.Remove(componentType);
-        }
-
-        public void Remove(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
-        {
-            if (componentTypes == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypes));
-            }
-            if (componentTypeSet == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypeSet));
-            }
-            if (componentTypeSet.IsReadOnly)
-            {
-                return;
-            }
-
-            foreach (var componentType in componentTypes)
-            {
-                componentTypeSet.Remove(componentType);
-            }
+            return ComponentTypeSetManager.Overlaps(none, addedComponentTypes); //
         }
     }
 }

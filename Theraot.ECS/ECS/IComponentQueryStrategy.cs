@@ -17,6 +17,6 @@ namespace Theraot.ECS
 
         QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<TComponentType> removedComponentTypes, TComponentTypeSet allComponentsTypes, QueryId queryId);
 
-        IComponentTypeManager<TComponentType, TComponentTypeSet> ComponentTypeManager { get; }
+        IComponentTypeManager<TComponentType, TComponentTypeSet> ComponentTypeSetManager { get; }
     }
 }
