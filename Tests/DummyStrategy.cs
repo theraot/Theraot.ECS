@@ -5,7 +5,14 @@ namespace Tests
 {
     internal class DummyStrategy : IComponentQueryStrategy<int, int>, IComponentTypeManager<int, int>
     {
+        public IComponentTypeManager<int, int> ComponentTypeManager => this;
+
         public int CreateComponentTypeSet(Dictionary<int, object> dictionary)
+        {
+            return 0;
+        }
+
+        public int CreateComponentTypeSet(IEnumerable<int> enumerable)
         {
             return 0;
         }
@@ -39,8 +46,6 @@ namespace Tests
         {
             return QueryCheckResult.Noop;
         }
-
-        public IComponentTypeManager<int, int> ComponentTypeManager => this;
 
         public void SetComponentType(int componentTypeSet, int componentType)
         {

@@ -110,7 +110,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnRemovedComponent(int removedComponentType, ComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheckOnRemovedComponent(ComponentType removedComponentType, ComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (allComponentsTypes == null)
             {
@@ -136,7 +136,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<int> removedComponentTypes, ComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<ComponentType> removedComponentTypes, ComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (removedComponentTypes == null)
             {
@@ -175,12 +175,17 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(dictionary));
             }
-            var set = new ComponentTypeSet(_capacity);
-            foreach (var pair in dictionary)
+
+            return CreateComponentTypeSetExtracted(dictionary.Keys);
+        }
+
+        public ComponentTypeSet CreateComponentTypeSet(IEnumerable<ComponentType> enumerable)
+        {
+            if (enumerable == null)
             {
-                set[pair.Key] = true;
+                throw new ArgumentNullException(nameof(enumerable));
             }
-            return set;
+            return CreateComponentTypeSetExtracted(enumerable);
         }
 
         public void SetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
@@ -231,6 +236,16 @@ namespace Theraot.ECS
             {
                 componentTypeSet[componentType] = false;
             }
+        }
+
+        private ComponentTypeSet CreateComponentTypeSetExtracted(IEnumerable<ComponentType> enumerable)
+        {
+            var set = new ComponentTypeSet(_capacity);
+            foreach (var key in enumerable)
+            {
+                set[key] = true;
+            }
+            return set;
         }
     }
 }

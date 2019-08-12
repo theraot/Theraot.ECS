@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Component = System.Object;
 using ComponentType = System.String;
-using ComponentTypeSet = Theraot.ECS.DictionaryKeySet<string>;
+using ComponentTypeSet = System.Collections.Generic.ISet<string>;
 using QueryId = System.Int32;
 
 namespace Theraot.ECS
@@ -165,24 +165,78 @@ namespace Theraot.ECS
             return DictionaryKeySet.CreateFrom(dictionary);
         }
 
+        public ComponentTypeSet CreateComponentTypeSet(IEnumerable<string> enumerable)
+        {
+            return new HashSet<string>(enumerable);
+        }
+
         public void SetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
-            var _ = componentTypeSet;
+            if (componentTypeSet == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSet));
+            }
+            if (componentTypeSet.IsReadOnly)
+            {
+                return;
+            }
+            componentTypeSet.Add(componentType);
         }
 
         public void SetComponentTypes(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
         {
-            var _ = componentTypeSet;
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+            if (componentTypeSet == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSet));
+            }
+            if (componentTypeSet.IsReadOnly)
+            {
+                return;
+            }
+
+            foreach (var componentType in componentTypes)
+            {
+                componentTypeSet.Add(componentType);
+            }
         }
 
         public void UnsetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
-            var _ = componentTypeSet;
+            if (componentTypeSet == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSet));
+            }
+            if (componentTypeSet.IsReadOnly)
+            {
+                return;
+            }
+
+            componentTypeSet.Remove(componentType);
         }
 
         public void UnsetComponentTypes(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
         {
-            var _ = componentTypeSet;
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+            if (componentTypeSet == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSet));
+            }
+            if (componentTypeSet.IsReadOnly)
+            {
+                return;
+            }
+
+            foreach (var componentType in componentTypes)
+            {
+                componentTypeSet.Remove(componentType);
+            }
         }
     }
 }
