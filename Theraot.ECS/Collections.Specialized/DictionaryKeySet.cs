@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Theraot.ECS
+namespace Theraot.Collections.Specialized
 {
     public sealed class DictionaryKeySet
     {
