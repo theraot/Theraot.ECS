@@ -61,7 +61,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return this.IsSubsetOf(other, true);
+            return SetCheck.IsSubsetOf(_containsKey, _count(), other, true);
         }
 
         public bool IsProperSupersetOf(IEnumerable<T> other)
@@ -71,7 +71,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return this.IsSupersetOf(other, true);
+            return SetCheck.IsSupersetOf(_containsKey, _count(), other, true);
         }
 
         public bool IsSubsetOf(IEnumerable<T> other)
@@ -81,7 +81,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return this.IsSubsetOf(other, false);
+            return SetCheck.IsSubsetOf(_containsKey, _count(), other, false);
         }
 
         public bool IsSupersetOf(IEnumerable<T> other)
@@ -91,7 +91,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return this.IsSupersetOf(other, false);
+            return SetCheck.IsSupersetOf(_containsKey, _count(), other, false);
         }
 
         public bool Overlaps(IEnumerable<T> other)
@@ -109,7 +109,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(other));
             }
-            var otherAsICollection = other is ICollection<T> otherCollection ? otherCollection : other.ToArray();
+            var otherAsICollection = other is ICollection<T> otherCollection ? otherCollection : other.ToList();
             return otherAsICollection.All(Contains) && this.All(input => otherAsICollection.Contains(input));
         }
 
