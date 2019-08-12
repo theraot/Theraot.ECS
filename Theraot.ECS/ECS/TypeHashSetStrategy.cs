@@ -105,7 +105,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnRemovedComponent(string removedComponentType, ComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheckOnRemovedComponent(ComponentType removedComponentType, ComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (allComponentsTypes == null)
             {
@@ -131,7 +131,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<string> removedComponentTypes, ComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<ComponentType> removedComponentTypes, ComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (allComponentsTypes == null)
             {
