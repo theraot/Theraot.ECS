@@ -7,9 +7,9 @@ namespace Theraot.ECS
 {
     public static class Scope
     {
-        public static IScope<TEntity, TComponentType> CreateScope<TEntity, TComponentType, TComponentTypeSet>(Func<TEntity> entityIdFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> manager)
+        public static IScope<TEntity, TComponentType> CreateScope<TEntity, TComponentType, TComponentTypeSet>(Func<TEntity> entityIdFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
-            return new Scope<TEntity, TComponentType, TComponentTypeSet>(entityIdFactory, manager);
+            return new Scope<TEntity, TComponentType, TComponentTypeSet>(entityIdFactory, componentTypeManager);
         }
     }
 
@@ -25,13 +25,13 @@ namespace Theraot.ECS
 
         private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
-        private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _manager;
+        private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
-        internal Scope(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> manager)
+        internal Scope(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
-            _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(manager);
+            _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
+            _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
             _componentsByEntity = new Dictionary<TEntity, ComponentStorage<TComponentType, TComponentTypeSet>>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>();
@@ -40,7 +40,7 @@ namespace Theraot.ECS
         public TEntity CreateEntity()
         {
             var entity = _entityFactory();
-            _componentsByEntity[entity] = new ComponentStorage<TComponentType, TComponentTypeSet>(_manager);
+            _componentsByEntity[entity] = new ComponentStorage<TComponentType, TComponentTypeSet>(_componentTypeManager);
             return entity;
         }
 

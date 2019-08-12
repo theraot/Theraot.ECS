@@ -6,13 +6,13 @@ namespace Theraot.ECS
 {
     internal sealed class QueryManager<TComponentType, TComponentTypeSet>
     {
-        private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeSetManager;
+        private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
         private readonly QueryStorage<Query<TComponentTypeSet>> _queryStorage;
 
-        public QueryManager(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeSetManager)
+        public QueryManager(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
-            _componentTypeSetManager = componentTypeSetManager;
+            _componentTypeManager = componentTypeManager;
             _queryStorage = new QueryStorage<Query<TComponentTypeSet>>();
         }
 
@@ -21,9 +21,9 @@ namespace Theraot.ECS
             return _queryStorage.AddQuery(
                 new Query<TComponentTypeSet>
                 (
-                    _componentTypeSetManager.Create(all),
-                    _componentTypeSetManager.Create(any),
-                    _componentTypeSetManager.Create(none)
+                    _componentTypeManager.Create(all),
+                    _componentTypeManager.Create(any),
+                    _componentTypeManager.Create(none)
                 )
             );
         }
@@ -140,47 +140,47 @@ namespace Theraot.ECS
 
         private bool CheckAll(TComponentTypeSet allComponentsTypes, TComponentTypeSet all)
         {
-            return _componentTypeSetManager.IsEmpty(all) || _componentTypeSetManager.ContainsAll(allComponentsTypes, all); //
+            return _componentTypeManager.IsEmpty(all) || _componentTypeManager.ContainsAll(allComponentsTypes, all); //
         }
 
         private bool CheckAny(TComponentTypeSet allComponentsTypes, TComponentTypeSet any)
         {
-            return _componentTypeSetManager.IsEmpty(any) || _componentTypeSetManager.Overlaps(any, allComponentsTypes); //
+            return _componentTypeManager.IsEmpty(any) || _componentTypeManager.Overlaps(any, allComponentsTypes); //
         }
 
         private bool CheckNone(TComponentTypeSet allComponentsTypes, TComponentTypeSet none)
         {
-            return _componentTypeSetManager.IsEmpty(none) || !_componentTypeSetManager.Overlaps(none, allComponentsTypes); //
+            return _componentTypeManager.IsEmpty(none) || !_componentTypeManager.Overlaps(none, allComponentsTypes); //
         }
 
         private bool CheckNotAll(TComponentType removedComponentType, TComponentTypeSet all)
         {
-            return _componentTypeSetManager.Contains(all, removedComponentType); //
+            return _componentTypeManager.Contains(all, removedComponentType); //
         }
 
         private bool CheckNotAll(IEnumerable<TComponentType> removedComponentTypes, TComponentTypeSet all)
         {
-            return _componentTypeSetManager.Overlaps(all, removedComponentTypes); //
+            return _componentTypeManager.Overlaps(all, removedComponentTypes); //
         }
 
         private bool CheckNotAny(TComponentTypeSet allComponentsTypes, TComponentTypeSet any)
         {
-            return !_componentTypeSetManager.IsEmpty(any) && !_componentTypeSetManager.Overlaps(any, allComponentsTypes); //
+            return !_componentTypeManager.IsEmpty(any) && !_componentTypeManager.Overlaps(any, allComponentsTypes); //
         }
 
         private bool CheckNotNone(TComponentType addedComponentType, TComponentTypeSet none)
         {
-            return _componentTypeSetManager.Contains(none, addedComponentType); //
+            return _componentTypeManager.Contains(none, addedComponentType); //
         }
 
         private bool CheckNotNone(TComponentTypeSet allComponentsTypes, TComponentTypeSet none)
         {
-            return _componentTypeSetManager.Overlaps(none, allComponentsTypes); //
+            return _componentTypeManager.Overlaps(none, allComponentsTypes); //
         }
 
         private bool CheckNotNone(IEnumerable<TComponentType> addedComponentTypes, TComponentTypeSet none)
         {
-            return _componentTypeSetManager.Overlaps(none, addedComponentTypes); //
+            return _componentTypeManager.Overlaps(none, addedComponentTypes); //
         }
     }
 }

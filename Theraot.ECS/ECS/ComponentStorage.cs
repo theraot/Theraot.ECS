@@ -7,13 +7,13 @@ namespace Theraot.ECS
     {
         private readonly Dictionary<TComponentType, Component> _dictionary;
 
-        private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _manager;
+        private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
-        public ComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> manager)
+        public ComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
-            _manager = manager;
+            _componentTypeManager = componentTypeManager;
             _dictionary = new Dictionary<TComponentType, Component>();
-            ComponentTypes = _manager.Create(_dictionary);
+            ComponentTypes = _componentTypeManager.Create(_dictionary);
         }
 
         public TComponentTypeSet ComponentTypes { get; }
@@ -27,7 +27,7 @@ namespace Theraot.ECS
                 return false;
             }
 
-            _manager.Add(allComponentsTypes, componentType);
+            _componentTypeManager.Add(allComponentsTypes, componentType);
             return true;
         }
 
@@ -41,7 +41,7 @@ namespace Theraot.ECS
                 return false;
             }
 
-            _manager.Add(allComponentsTypes, addedComponents.Keys);
+            _componentTypeManager.Add(allComponentsTypes, addedComponents.Keys);
             return true;
         }
 
@@ -59,7 +59,7 @@ namespace Theraot.ECS
                 return false;
             }
 
-            _manager.Remove(allComponentsTypes, componentType);
+            _componentTypeManager.Remove(allComponentsTypes, componentType);
             return true;
         }
 
@@ -73,7 +73,7 @@ namespace Theraot.ECS
                 return false;
             }
 
-            _manager.Remove(allComponentsTypes, removedComponents);
+            _componentTypeManager.Remove(allComponentsTypes, removedComponents);
             return true;
         }
     }
