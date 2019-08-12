@@ -7,12 +7,12 @@ namespace Tests
     {
         public IComponentTypeManager<int, int> ComponentTypeManager => this;
 
-        public int CreateComponentTypeSet(Dictionary<int, object> dictionary)
+        public int Create(Dictionary<int, object> dictionary)
         {
             return 0;
         }
 
-        public int CreateComponentTypeSet(IEnumerable<int> enumerable)
+        public int Create(IEnumerable<int> enumerable)
         {
             return 0;
         }
@@ -47,19 +47,19 @@ namespace Tests
             return QueryCheckResult.Noop;
         }
 
-        public void SetComponentType(int componentTypeSet, int componentType)
+        public void Add(int componentTypeSet, int componentType)
         {
         }
 
-        public void SetComponentTypes(int componentTypeSet, IEnumerable<int> componentTypes)
+        public void Add(int componentTypeSet, IEnumerable<int> componentTypes)
         {
         }
 
-        public void UnsetComponentType(int componentTypeSet, int componentType)
+        public void Remove(int componentTypeSet, int componentType)
         {
         }
 
-        public void UnsetComponentTypes(int componentTypeSet, IEnumerable<int> componentTypes)
+        public void Remove(int componentTypeSet, IEnumerable<int> componentTypes)
         {
         }
     }

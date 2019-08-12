@@ -13,7 +13,7 @@ namespace Theraot.ECS
         {
             _manager = manager;
             _dictionary = new Dictionary<TComponentType, Component>();
-            ComponentTypes = _manager.CreateComponentTypeSet(_dictionary);
+            ComponentTypes = _manager.Create(_dictionary);
         }
 
         public TComponentTypeSet ComponentTypes { get; }
@@ -27,7 +27,7 @@ namespace Theraot.ECS
                 return false;
             }
 
-            _manager.SetComponentType(allComponentsTypes, componentType);
+            _manager.Add(allComponentsTypes, componentType);
             return true;
         }
 
@@ -41,7 +41,7 @@ namespace Theraot.ECS
                 return false;
             }
 
-            _manager.SetComponentTypes(allComponentsTypes, addedComponents.Keys);
+            _manager.Add(allComponentsTypes, addedComponents.Keys);
             return true;
         }
 
@@ -59,7 +59,7 @@ namespace Theraot.ECS
                 return false;
             }
 
-            _manager.UnsetComponentType(allComponentsTypes, componentType);
+            _manager.Remove(allComponentsTypes, componentType);
             return true;
         }
 
@@ -73,7 +73,7 @@ namespace Theraot.ECS
                 return false;
             }
 
-            _manager.UnsetComponentTypes(allComponentsTypes, removedComponents);
+            _manager.Remove(allComponentsTypes, removedComponents);
             return true;
         }
     }

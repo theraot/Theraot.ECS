@@ -6,16 +6,16 @@ namespace Theraot.ECS
 {
     public interface IComponentTypeManager<TComponentType, TComponentTypeSet>
     {
-        TComponentTypeSet CreateComponentTypeSet(IEnumerable<TComponentType> enumerable);
+        TComponentTypeSet Create(IEnumerable<TComponentType> enumerable);
 
-        TComponentTypeSet CreateComponentTypeSet(Dictionary<TComponentType, Component> dictionary);
+        TComponentTypeSet Create(Dictionary<TComponentType, Component> dictionary);
 
-        void SetComponentType(TComponentTypeSet componentTypeSet, TComponentType componentType);
+        void Add(TComponentTypeSet componentTypeSet, TComponentType componentType);
 
-        void SetComponentTypes(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
+        void Add(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
 
-        void UnsetComponentType(TComponentTypeSet componentTypeSet, TComponentType componentType);
+        void Remove(TComponentTypeSet componentTypeSet, TComponentType componentType);
 
-        void UnsetComponentTypes(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
+        void Remove(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
     }
 }

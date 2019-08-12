@@ -23,9 +23,9 @@ namespace Theraot.ECS
             return _queryStorage.AddQuery(
                 new Query<ComponentTypeSet>
                 (
-                    CreateComponentTypeSet(all),
-                    CreateComponentTypeSet(any),
-                    CreateComponentTypeSet(none)
+                    Create(all),
+                    Create(any),
+                    Create(none)
                 )
             );
         }
@@ -213,17 +213,17 @@ namespace Theraot.ECS
 
     public sealed partial class TypeHashSetStrategy : IComponentTypeManager<ComponentType, ComponentTypeSet>
     {
-        public ComponentTypeSet CreateComponentTypeSet(Dictionary<ComponentType, Component> dictionary)
+        public ComponentTypeSet Create(Dictionary<ComponentType, Component> dictionary)
         {
             return DictionaryKeySet.CreateFrom(dictionary);
         }
 
-        public ComponentTypeSet CreateComponentTypeSet(IEnumerable<ComponentType> enumerable)
+        public ComponentTypeSet Create(IEnumerable<ComponentType> enumerable)
         {
             return new HashSet<ComponentType>(enumerable);
         }
 
-        public void SetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
+        public void Add(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             if (componentTypeSet == null)
             {
@@ -236,7 +236,7 @@ namespace Theraot.ECS
             componentTypeSet.Add(componentType);
         }
 
-        public void SetComponentTypes(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
+        public void Add(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
         {
             if (componentTypes == null)
             {
@@ -257,7 +257,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void UnsetComponentType(ComponentTypeSet componentTypeSet, ComponentType componentType)
+        public void Remove(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             if (componentTypeSet == null)
             {
@@ -271,7 +271,7 @@ namespace Theraot.ECS
             componentTypeSet.Remove(componentType);
         }
 
-        public void UnsetComponentTypes(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
+        public void Remove(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
         {
             if (componentTypes == null)
             {
