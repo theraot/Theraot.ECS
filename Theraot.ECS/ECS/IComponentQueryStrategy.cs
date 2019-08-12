@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Component = System.Object;
 using QueryId = System.Int32;
 
 namespace Theraot.ECS

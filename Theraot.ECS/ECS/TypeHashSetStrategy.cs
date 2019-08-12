@@ -140,89 +140,54 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        private static bool CheckAll(ComponentTypeSet allComponentsTypes, ComponentTypeSet all)
+        private bool CheckAll(ComponentTypeSet allComponentsTypes, ComponentTypeSet all)
         {
             return IsEmpty(all) || Contains(allComponentsTypes, all); //
         }
 
-        private static bool CheckAny(ComponentTypeSet allComponentsTypes, ComponentTypeSet any)
+        private bool CheckAny(ComponentTypeSet allComponentsTypes, ComponentTypeSet any)
         {
             return IsEmpty(any) || Overlaps(any, allComponentsTypes); //
         }
 
-        private static bool CheckNone(ComponentTypeSet allComponentsTypes, ComponentTypeSet none)
+        private bool CheckNone(ComponentTypeSet allComponentsTypes, ComponentTypeSet none)
         {
             return IsEmpty(none) || !Overlaps(none, allComponentsTypes); //
         }
 
-        private static bool CheckNotAll(IEnumerable<ComponentType> removedComponentTypes, ComponentTypeSet all)
-        {
-            return Overlaps(all, removedComponentTypes); //
-        }
-
-        private static bool CheckNotAll(ComponentType removedComponentType, ComponentTypeSet all)
+        private bool CheckNotAll(ComponentType removedComponentType, ComponentTypeSet all)
         {
             return Contains(all, removedComponentType); //
         }
 
-        private static bool CheckNotAny(ComponentTypeSet allComponentsTypes, ComponentTypeSet any)
+        private bool CheckNotAll(IEnumerable<ComponentType> removedComponentTypes, ComponentTypeSet all)
+        {
+            return Overlaps(all, removedComponentTypes); //
+        }
+
+        private bool CheckNotAny(ComponentTypeSet allComponentsTypes, ComponentTypeSet any)
         {
             return !IsEmpty(any) && !Overlaps(any, allComponentsTypes); //
         }
 
-        private static bool CheckNotNone(ComponentTypeSet allComponentsTypes, ComponentTypeSet none)
-        {
-            return Overlaps(none, allComponentsTypes); //
-        }
-
-        private static bool CheckNotNone(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet none)
-        {
-            return Overlaps(none, addedComponentTypes); //
-        }
-
-        private static bool CheckNotNone(ComponentType addedComponentType, ComponentTypeSet none)
+        private bool CheckNotNone(ComponentType addedComponentType, ComponentTypeSet none)
         {
             return Contains(none, addedComponentType); //
         }
 
-        private static bool Contains(ComponentTypeSet componentTypeSet, ComponentType componentType)
+        private bool CheckNotNone(ComponentTypeSet allComponentsTypes, ComponentTypeSet none)
         {
-            return componentTypeSet.Count != 0 && componentTypeSet.Contains(componentType);
+            return Overlaps(none, allComponentsTypes); //
         }
 
-        private static bool Contains(ComponentTypeSet componentTypeSet, ComponentTypeSet other)
+        private bool CheckNotNone(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet none)
         {
-            return componentTypeSet.IsSupersetOf(other);
-        }
-
-        private static bool Overlaps(ComponentTypeSet componentTypeSet, IEnumerable<string> componentTypes)
-        {
-            return componentTypeSet.Count != 0 && componentTypeSet.Overlaps(componentTypes);
-        }
-
-        private static bool Overlaps(ComponentTypeSet componentTypeSetA, ComponentTypeSet componentTypeSetB)
-        {
-            return componentTypeSetA.Count != 0 && (componentTypeSetA.Count > componentTypeSetB.Count ? componentTypeSetA.Overlaps(componentTypeSetB) : componentTypeSetB.Overlaps(componentTypeSetA));
-        }
-
-        private static bool IsEmpty(ComponentTypeSet componentTypeSet)
-        {
-            return componentTypeSet.Count == 0;
+            return Overlaps(none, addedComponentTypes); //
         }
     }
 
     public sealed partial class TypeHashSetStrategy : IComponentTypeManager<ComponentType, ComponentTypeSet>
     {
-        public ComponentTypeSet Create(Dictionary<ComponentType, Component> dictionary)
-        {
-            return DictionaryKeySet.CreateFrom(dictionary);
-        }
-
-        public ComponentTypeSet Create(IEnumerable<ComponentType> enumerable)
-        {
-            return new HashSet<ComponentType>(enumerable);
-        }
-
         public void Add(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             if (componentTypeSet == null)
@@ -255,6 +220,61 @@ namespace Theraot.ECS
             {
                 componentTypeSet.Add(componentType);
             }
+        }
+
+        public bool Contains(ComponentTypeSet componentTypeSet, ComponentType componentType)
+        {
+            if (componentTypeSet == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSet));
+            }
+            return componentTypeSet.Count != 0 && componentTypeSet.Contains(componentType);
+        }
+
+        public bool Contains(ComponentTypeSet componentTypeSet, ComponentTypeSet other)
+        {
+            if (componentTypeSet == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSet));
+            }
+            return componentTypeSet.IsSupersetOf(other);
+        }
+
+        public ComponentTypeSet Create(Dictionary<ComponentType, Component> dictionary)
+        {
+            return DictionaryKeySet.CreateFrom(dictionary);
+        }
+
+        public ComponentTypeSet Create(IEnumerable<ComponentType> enumerable)
+        {
+            return new HashSet<ComponentType>(enumerable);
+        }
+
+        public bool IsEmpty(ComponentTypeSet componentTypeSet)
+        {
+            if (componentTypeSet == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSet));
+            }
+            return componentTypeSet.Count == 0;
+        }
+
+        public bool Overlaps(ComponentTypeSet componentTypeSet, IEnumerable<string> componentTypes)
+        {
+            if (componentTypeSet == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSet));
+            }
+            return componentTypeSet.Count != 0 && componentTypeSet.Overlaps(componentTypes);
+        }
+
+        public bool Overlaps(ComponentTypeSet componentTypeSetA, ComponentTypeSet componentTypeSetB)
+        {
+            if (componentTypeSetA == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSetA));
+            }
+            return componentTypeSetA.Count != 0 && (componentTypeSetA.Count > componentTypeSetB.Count ? componentTypeSetA.Overlaps(componentTypeSetB) : componentTypeSetB.Overlaps(componentTypeSetA));
         }
 
         public void Remove(ComponentTypeSet componentTypeSet, ComponentType componentType)

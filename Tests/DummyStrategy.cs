@@ -7,6 +7,19 @@ namespace Tests
     {
         public IComponentTypeManager<int, int> ComponentTypeManager => this;
 
+        public void Add(int componentTypeSet, IEnumerable<int> componentTypes)
+        {
+        }
+
+        public void Add(int componentTypeSet, int componentType)
+        {
+        }
+
+        public bool Contains(int componentTypeSet, int componentType)
+        {
+            return false;
+        }
+
         public int Create(Dictionary<int, object> dictionary)
         {
             return 0;
@@ -20,6 +33,21 @@ namespace Tests
         public int CreateQuery(IEnumerable<int> all, IEnumerable<int> any, IEnumerable<int> none)
         {
             return 0;
+        }
+
+        public bool IsEmpty(int componentTypeSet)
+        {
+            return false;
+        }
+
+        public bool Overlaps(int componentTypeSet, IEnumerable<int> componentTypes)
+        {
+            return false;
+        }
+
+        public bool Overlaps(int componentTypeSetA, int componentTypeSetB)
+        {
+            return false;
         }
 
         public QueryCheckResult QueryCheck(int allComponentsTypes, int query)
@@ -47,19 +75,11 @@ namespace Tests
             return QueryCheckResult.Noop;
         }
 
-        public void Add(int componentTypeSet, int componentType)
-        {
-        }
-
-        public void Add(int componentTypeSet, IEnumerable<int> componentTypes)
+        public void Remove(int componentTypeSet, IEnumerable<int> componentTypes)
         {
         }
 
         public void Remove(int componentTypeSet, int componentType)
-        {
-        }
-
-        public void Remove(int componentTypeSet, IEnumerable<int> componentTypes)
         {
         }
     }
