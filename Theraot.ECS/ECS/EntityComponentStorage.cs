@@ -3,13 +3,13 @@ using Component = System.Object;
 
 namespace Theraot.ECS
 {
-    internal sealed class ComponentStorage<TComponentType, TComponentTypeSet>
+    internal sealed class EntityComponentStorage<TComponentType, TComponentTypeSet>
     {
         private readonly Dictionary<TComponentType, Component> _dictionary;
 
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
-        public ComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
+        public EntityComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _componentTypeManager = componentTypeManager;
             _dictionary = new Dictionary<TComponentType, Component>();

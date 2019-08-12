@@ -15,7 +15,7 @@ namespace Theraot.ECS
 
     public sealed partial class Scope<TEntity, TComponentType, TComponentTypeSet> : IScope<TEntity, TComponentType>
     {
-        private readonly Dictionary<TEntity, ComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
+        private readonly Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
 
         private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
 
@@ -32,7 +32,7 @@ namespace Theraot.ECS
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
-            _componentsByEntity = new Dictionary<TEntity, ComponentStorage<TComponentType, TComponentTypeSet>>();
+            _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>();
         }
@@ -40,7 +40,7 @@ namespace Theraot.ECS
         public TEntity CreateEntity()
         {
             var entity = _entityFactory();
-            _componentsByEntity[entity] = new ComponentStorage<TComponentType, TComponentTypeSet>(_componentTypeManager);
+            _componentsByEntity[entity] = new EntityComponentStorage<TComponentType, TComponentTypeSet>(_componentTypeManager);
             return entity;
         }
 
