@@ -7,9 +7,9 @@ namespace Theraot.ECS
 {
     public static class Scope
     {
-        public static IScope<TEntity, TComponentType> CreateScope<TEntity, TComponentType, TComponentTypeSet>(Func<TEntity> entityIdFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet> strategy)
+        public static IScope<TEntity, TComponentType> CreateScope<TEntity, TComponentType, TComponentTypeSet>(Func<TEntity> entityIdFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> manager)
         {
-            return new Scope<TEntity, TComponentType, TComponentTypeSet>(entityIdFactory, strategy);
+            return new Scope<TEntity, TComponentType, TComponentTypeSet>(entityIdFactory, manager);
         }
     }
 
@@ -23,15 +23,15 @@ namespace Theraot.ECS
 
         private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
 
-        private readonly IComponentQueryStrategy<TComponentType, TComponentTypeSet> _strategy;
+        private readonly Strategy<TComponentType, TComponentTypeSet> _strategy;
 
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _manager;
 
-        internal Scope(Func<TEntity> entityFactory, IComponentQueryStrategy<TComponentType, TComponentTypeSet> strategy)
+        internal Scope(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> manager)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
-            _strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
-            _manager = _strategy.ComponentTypeSetManager;
+            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            _strategy = new Strategy<TComponentType, TComponentTypeSet>(manager);
             _componentsByEntity = new Dictionary<TEntity, ComponentStorage<TComponentType, TComponentTypeSet>>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>();

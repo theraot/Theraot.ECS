@@ -11,7 +11,7 @@ namespace Theraot.ECS
 
         bool Contains(TComponentTypeSet componentTypeSet, TComponentType componentType);
 
-        bool Contains(TComponentTypeSet componentTypeSet, TComponentTypeSet other);
+        bool ContainsAll(TComponentTypeSet componentTypeSet, TComponentTypeSet other);
 
         TComponentTypeSet Create(Dictionary<TComponentType, Component> dictionary);
 

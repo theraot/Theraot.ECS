@@ -52,7 +52,7 @@ namespace Theraot.ECS
             return componentTypeSet[componentType];
         }
 
-        public bool Contains(ComponentTypeSet componentTypeSet, ComponentTypeSet other)
+        public bool ContainsAll(ComponentTypeSet componentTypeSet, ComponentTypeSet other)
         {
             if (componentTypeSet == null)
             {

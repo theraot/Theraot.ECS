@@ -1,36 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using ComponentType = System.String;
-using ComponentTypeSet = System.Collections.Generic.ISet<string>;
-
 using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    public sealed class TypeHashSetStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet>
+    internal sealed class Strategy<TComponentType, TComponentTypeSet>
     {
-        private readonly QueryStorage<Query<ComponentTypeSet>> _queryStorage;
+        private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeSetManager;
 
-        public TypeHashSetStrategy()
+        private readonly QueryStorage<Query<TComponentTypeSet>> _queryStorage;
+
+        public Strategy(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeSetManager)
         {
-            _queryStorage = new QueryStorage<Query<ComponentTypeSet>>();
+            _componentTypeSetManager = componentTypeSetManager;
+            _queryStorage = new QueryStorage<Query<TComponentTypeSet>>();
         }
 
-        public IComponentTypeManager<ComponentType, ComponentTypeSet> ComponentTypeSetManager { get; } = new SetManager();
-
-        public QueryId CreateQuery(IEnumerable<ComponentType> all, IEnumerable<ComponentType> any, IEnumerable<ComponentType> none)
+        public QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
             return _queryStorage.AddQuery(
-                new Query<ComponentTypeSet>
+                new Query<TComponentTypeSet>
                 (
-                    ComponentTypeSetManager.Create(all),
-                    ComponentTypeSetManager.Create(any),
-                    ComponentTypeSetManager.Create(none)
+                    _componentTypeSetManager.Create(all),
+                    _componentTypeSetManager.Create(any),
+                    _componentTypeSetManager.Create(none)
                 )
             );
         }
 
-        public QueryCheckResult QueryCheck(ComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheck(TComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (allComponentsTypes == null)
             {
@@ -52,7 +50,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponent(ComponentType addedComponentType, ComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheckOnAddedComponent(TComponentType addedComponentType, TComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (allComponentsTypes == null)
             {
@@ -74,7 +72,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<TComponentType> addedComponentTypes, TComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (allComponentsTypes == null)
             {
@@ -96,7 +94,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnRemovedComponent(ComponentType removedComponentType, ComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheckOnRemovedComponent(TComponentType removedComponentType, TComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (allComponentsTypes == null)
             {
@@ -118,7 +116,7 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<ComponentType> removedComponentTypes, ComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<TComponentType> removedComponentTypes, TComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (allComponentsTypes == null)
             {
@@ -140,49 +138,49 @@ namespace Theraot.ECS
             return QueryCheckResult.Noop;
         }
 
-        private bool CheckAll(ComponentTypeSet allComponentsTypes, ComponentTypeSet all)
+        private bool CheckAll(TComponentTypeSet allComponentsTypes, TComponentTypeSet all)
         {
-            return ComponentTypeSetManager.IsEmpty(all) || ComponentTypeSetManager.Contains(allComponentsTypes, all); //
+            return _componentTypeSetManager.IsEmpty(all) || _componentTypeSetManager.ContainsAll(allComponentsTypes, all); //
         }
 
-        private bool CheckAny(ComponentTypeSet allComponentsTypes, ComponentTypeSet any)
+        private bool CheckAny(TComponentTypeSet allComponentsTypes, TComponentTypeSet any)
         {
-            return ComponentTypeSetManager.IsEmpty(any) || ComponentTypeSetManager.Overlaps(any, allComponentsTypes); //
+            return _componentTypeSetManager.IsEmpty(any) || _componentTypeSetManager.Overlaps(any, allComponentsTypes); //
         }
 
-        private bool CheckNone(ComponentTypeSet allComponentsTypes, ComponentTypeSet none)
+        private bool CheckNone(TComponentTypeSet allComponentsTypes, TComponentTypeSet none)
         {
-            return ComponentTypeSetManager.IsEmpty(none) || !ComponentTypeSetManager.Overlaps(none, allComponentsTypes); //
+            return _componentTypeSetManager.IsEmpty(none) || !_componentTypeSetManager.Overlaps(none, allComponentsTypes); //
         }
 
-        private bool CheckNotAll(ComponentType removedComponentType, ComponentTypeSet all)
+        private bool CheckNotAll(TComponentType removedComponentType, TComponentTypeSet all)
         {
-            return ComponentTypeSetManager.Contains(all, removedComponentType); //
+            return _componentTypeSetManager.Contains(all, removedComponentType); //
         }
 
-        private bool CheckNotAll(IEnumerable<ComponentType> removedComponentTypes, ComponentTypeSet all)
+        private bool CheckNotAll(IEnumerable<TComponentType> removedComponentTypes, TComponentTypeSet all)
         {
-            return ComponentTypeSetManager.Overlaps(all, removedComponentTypes); //
+            return _componentTypeSetManager.Overlaps(all, removedComponentTypes); //
         }
 
-        private bool CheckNotAny(ComponentTypeSet allComponentsTypes, ComponentTypeSet any)
+        private bool CheckNotAny(TComponentTypeSet allComponentsTypes, TComponentTypeSet any)
         {
-            return !ComponentTypeSetManager.IsEmpty(any) && !ComponentTypeSetManager.Overlaps(any, allComponentsTypes); //
+            return !_componentTypeSetManager.IsEmpty(any) && !_componentTypeSetManager.Overlaps(any, allComponentsTypes); //
         }
 
-        private bool CheckNotNone(ComponentType addedComponentType, ComponentTypeSet none)
+        private bool CheckNotNone(TComponentType addedComponentType, TComponentTypeSet none)
         {
-            return ComponentTypeSetManager.Contains(none, addedComponentType); //
+            return _componentTypeSetManager.Contains(none, addedComponentType); //
         }
 
-        private bool CheckNotNone(ComponentTypeSet allComponentsTypes, ComponentTypeSet none)
+        private bool CheckNotNone(TComponentTypeSet allComponentsTypes, TComponentTypeSet none)
         {
-            return ComponentTypeSetManager.Overlaps(none, allComponentsTypes); //
+            return _componentTypeSetManager.Overlaps(none, allComponentsTypes); //
         }
 
-        private bool CheckNotNone(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet none)
+        private bool CheckNotNone(IEnumerable<TComponentType> addedComponentTypes, TComponentTypeSet none)
         {
-            return ComponentTypeSetManager.Overlaps(none, addedComponentTypes); //
+            return _componentTypeSetManager.Overlaps(none, addedComponentTypes); //
         }
     }
 }
