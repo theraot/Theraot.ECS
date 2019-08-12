@@ -5,8 +5,6 @@ using Component = System.Object;
 using ComponentType = System.Int32;
 using ComponentTypeSet = Theraot.Collections.Specialized.FlagArray;
 
-using QueryId = System.Int32;
-
 namespace Theraot.ECS
 {
     public sealed class FlagArrayManager : IComponentTypeManager<ComponentType, ComponentTypeSet>
