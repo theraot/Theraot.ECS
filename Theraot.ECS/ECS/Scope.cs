@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Component = System.Object;
 using QueryId = System.Int32;
 
 namespace Theraot.ECS
@@ -16,9 +15,7 @@ namespace Theraot.ECS
 
     public sealed partial class Scope<TEntity, TComponentType, TComponentTypeSet> : IScope<TEntity, TComponentType>
     {
-        private readonly Dictionary<TEntity, Dictionary<TComponentType, Component>> _componentsByEntity;
-
-        private readonly Dictionary<TEntity, TComponentTypeSet> _componentTypesByEntity;
+        private readonly Dictionary<TEntity, ComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
 
         private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
 
@@ -35,8 +32,7 @@ namespace Theraot.ECS
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
             _manager = _strategy.ComponentTypeManager;
-            _componentsByEntity = new Dictionary<TEntity, Dictionary<TComponentType, Component>>();
-            _componentTypesByEntity = new Dictionary<TEntity, TComponentTypeSet>();
+            _componentsByEntity = new Dictionary<TEntity, ComponentStorage<TComponentType, TComponentTypeSet>>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>();
         }
@@ -44,9 +40,7 @@ namespace Theraot.ECS
         public TEntity CreateEntity()
         {
             var entity = _entityFactory();
-            var dictionary = new Dictionary<TComponentType, Component>();
-            _componentsByEntity[entity] = dictionary;
-            _componentTypesByEntity[entity] = _manager.CreateComponentTypeSet(dictionary);
+            _componentsByEntity[entity] = new ComponentStorage<TComponentType, TComponentTypeSet>(_manager);
             return entity;
         }
 
@@ -68,13 +62,13 @@ namespace Theraot.ECS
                 queryIds.Add(queryId);
             }
 
-            if (_componentTypesByEntity.Count == 0)
+            if (_componentsByEntity.Count == 0)
             {
                 return queryId;
             }
-            foreach (var entity in _componentTypesByEntity.Keys)
+            foreach (var entity in _componentsByEntity.Keys)
             {
-                var componentTypes = _componentTypesByEntity[entity];
+                var componentTypes = _componentsByEntity[entity].ComponentTypes;
                 if (_strategy.QueryCheck(componentTypes, queryId) == QueryCheckResult.Add)
                 {
                     set.Add(entity);
@@ -85,7 +79,7 @@ namespace Theraot.ECS
 
         public TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType)
         {
-            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(componentType, out var result))
+            if (_componentsByEntity.TryGetValue(entity, out var components) && components.Dictionary.TryGetValue(componentType, out var result))
             {
                 return (TComponent)result;
             }
@@ -103,7 +97,7 @@ namespace Theraot.ECS
 
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
         {
-            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(componentType, out var result))
+            if (_componentsByEntity.TryGetValue(entity, out var components) && components.Dictionary.TryGetValue(componentType, out var result))
             {
                 component = (TComponent)result;
                 return true;
@@ -114,27 +108,27 @@ namespace Theraot.ECS
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)
         {
-            var allComponents = _componentsByEntity[entity];
+            var allComponents = _componentsByEntity[entity].Dictionary;
             if (!allComponents.Remove(componentType))
             {
                 return;
             }
 
-            var allComponentsTypes = _componentTypesByEntity[entity];
+            var allComponentsTypes = _componentsByEntity[entity].ComponentTypes;
             _manager.UnsetComponentType(allComponentsTypes, componentType);
             UpdateEntitiesByQueryOnRemoveComponent(entity, allComponentsTypes, componentType);
         }
 
         public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
         {
-            var allComponents = _componentsByEntity[entity];
+            var allComponents = _componentsByEntity[entity].Dictionary;
             var removedComponents = allComponents.RemoveAll(componentTypes);
             if (removedComponents.Count == 0)
             {
                 return;
             }
 
-            var allComponentsTypes = _componentTypesByEntity[entity];
+            var allComponentsTypes = _componentsByEntity[entity].ComponentTypes;
             _manager.UnsetComponentTypes(allComponentsTypes, removedComponents);
             UpdateEntitiesByQueryOnRemoveComponents(entity, allComponentsTypes, removedComponents);
         }

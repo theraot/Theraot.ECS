@@ -10,27 +10,27 @@ namespace Theraot.ECS
     {
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
-            var allComponents = _componentsByEntity[entity];
+            var allComponents = _componentsByEntity[entity].Dictionary;
             if (!allComponents.Set(componentType, component))
             {
                 return;
             }
 
-            var allComponentsTypes = _componentTypesByEntity[entity];
+            var allComponentsTypes = _componentsByEntity[entity].ComponentTypes;
             _manager.SetComponentType(allComponentsTypes, componentType);
             UpdateEntitiesByQueryOnAddedComponent(entity, allComponentsTypes, componentType);
         }
 
         public void SetComponents(TEntity entity, IEnumerable<KeyValuePair<TComponentType, Component>> components)
         {
-            var allComponents = _componentsByEntity[entity];
+            var allComponents = _componentsByEntity[entity].Dictionary;
             var addedComponents = allComponents.SetAll(components);
             if (addedComponents.Count == 0)
             {
                 return;
             }
 
-            var allComponentsTypes = _componentTypesByEntity[entity];
+            var allComponentsTypes = _componentsByEntity[entity].ComponentTypes;
             _manager.SetComponentTypes(allComponentsTypes, addedComponents.Keys);
             UpdateEntitiesByQueryOnAddedComponents(entity, allComponentsTypes, addedComponents);
         }
