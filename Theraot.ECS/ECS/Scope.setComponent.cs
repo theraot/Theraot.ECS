@@ -10,29 +10,18 @@ namespace Theraot.ECS
     {
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
-            var allComponents = _componentsByEntity[entity].Dictionary;
-            if (!allComponents.Set(componentType, component))
+            if (_componentsByEntity[entity].SetComponent(componentType, component, out var allComponentsTypes))
             {
-                return;
+                UpdateEntitiesByQueryOnAddedComponent(entity, allComponentsTypes, componentType);
             }
-
-            var allComponentsTypes = _componentsByEntity[entity].ComponentTypes;
-            _manager.SetComponentType(allComponentsTypes, componentType);
-            UpdateEntitiesByQueryOnAddedComponent(entity, allComponentsTypes, componentType);
         }
 
         public void SetComponents(TEntity entity, IEnumerable<KeyValuePair<TComponentType, Component>> components)
         {
-            var allComponents = _componentsByEntity[entity].Dictionary;
-            var addedComponents = allComponents.SetAll(components);
-            if (addedComponents.Count == 0)
+            if (_componentsByEntity[entity].SetComponents(components, out var allComponentsTypes, out var addedComponents))
             {
-                return;
+                UpdateEntitiesByQueryOnAddedComponents(entity, allComponentsTypes, addedComponents);
             }
-
-            var allComponentsTypes = _componentsByEntity[entity].ComponentTypes;
-            _manager.SetComponentTypes(allComponentsTypes, addedComponents.Keys);
-            UpdateEntitiesByQueryOnAddedComponents(entity, allComponentsTypes, addedComponents);
         }
 
         private void UpdateEntitiesByQueryOnAddedComponent(TEntity entity, TComponentTypeSet allComponentsTypes, TComponentType addedComponentType)

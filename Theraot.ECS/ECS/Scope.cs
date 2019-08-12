@@ -108,29 +108,18 @@ namespace Theraot.ECS
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)
         {
-            var allComponents = _componentsByEntity[entity].Dictionary;
-            if (!allComponents.Remove(componentType))
+            if (_componentsByEntity[entity].UnsetComponent(componentType, out var allComponentsTypes))
             {
-                return;
+                UpdateEntitiesByQueryOnRemoveComponent(entity, allComponentsTypes, componentType);
             }
-
-            var allComponentsTypes = _componentsByEntity[entity].ComponentTypes;
-            _manager.UnsetComponentType(allComponentsTypes, componentType);
-            UpdateEntitiesByQueryOnRemoveComponent(entity, allComponentsTypes, componentType);
         }
 
         public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
         {
-            var allComponents = _componentsByEntity[entity].Dictionary;
-            var removedComponents = allComponents.RemoveAll(componentTypes);
-            if (removedComponents.Count == 0)
+            if (_componentsByEntity[entity].UnsetComponents(componentTypes, out var allComponentsTypes, out var removedComponents))
             {
-                return;
+                UpdateEntitiesByQueryOnRemoveComponents(entity, allComponentsTypes, removedComponents);
             }
-
-            var allComponentsTypes = _componentsByEntity[entity].ComponentTypes;
-            _manager.UnsetComponentTypes(allComponentsTypes, removedComponents);
-            UpdateEntitiesByQueryOnRemoveComponents(entity, allComponentsTypes, removedComponents);
         }
 
         private IEnumerable<QueryId> GetQueriesByComponentType(TComponentType componentType)
