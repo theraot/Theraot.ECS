@@ -1,6 +1,6 @@
 ﻿namespace Theraot.ECS
 {
-    public enum QueryCheckResult
+    internal enum QueryCheckResult
     {
         Remove = -1,
         Noop = 0,

@@ -3,7 +3,7 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    public class QueryStorage<TQuery>
+    internal sealed class QueryStorage<TQuery>
     {
         private readonly Dictionary<QueryId, TQuery> _queryByQueryId;
 
