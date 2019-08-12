@@ -18,10 +18,10 @@ namespace Theraot.ECS
 
         public TComponentTypeSet ComponentTypes { get; }
 
-        public bool SetComponent<TComponent>(TComponentType componentType, TComponent component, out TComponentTypeSet allComponentsTypes)
+        public bool SetComponent<TComponent>(TComponentType componentType, TComponent component)
         {
             var allComponents = _dictionary;
-            allComponentsTypes = ComponentTypes;
+            var allComponentsTypes = ComponentTypes;
             if (!allComponents.Set(componentType, component))
             {
                 return false;
@@ -31,10 +31,10 @@ namespace Theraot.ECS
             return true;
         }
 
-        public bool SetComponents(IEnumerable<KeyValuePair<TComponentType, Component>> components, out TComponentTypeSet allComponentsTypes, out Dictionary<TComponentType, Component> addedComponents)
+        public bool SetComponents(IEnumerable<KeyValuePair<TComponentType, Component>> components, out Dictionary<TComponentType, Component> addedComponents)
         {
             var allComponents = _dictionary;
-            allComponentsTypes = ComponentTypes;
+            var allComponentsTypes = ComponentTypes;
             addedComponents = allComponents.SetAll(components);
             if (addedComponents.Count == 0)
             {
@@ -50,10 +50,10 @@ namespace Theraot.ECS
             return _dictionary.TryGetValue(componentType, out component);
         }
 
-        public bool UnsetComponent(TComponentType componentType, out TComponentTypeSet allComponentsTypes)
+        public bool UnsetComponent(TComponentType componentType)
         {
             var allComponents = _dictionary;
-            allComponentsTypes = ComponentTypes;
+            var allComponentsTypes = ComponentTypes;
             if (!allComponents.Remove(componentType))
             {
                 return false;
@@ -63,10 +63,10 @@ namespace Theraot.ECS
             return true;
         }
 
-        public bool UnsetComponents(IEnumerable<TComponentType> componentTypes, out TComponentTypeSet allComponentsTypes, out List<TComponentType> removedComponents)
+        public bool UnsetComponents(IEnumerable<TComponentType> componentTypes, out List<TComponentType> removedComponents)
         {
             var allComponents = _dictionary;
-            allComponentsTypes = ComponentTypes;
+            var allComponentsTypes = ComponentTypes;
             removedComponents = allComponents.RemoveAll(componentTypes);
             if (removedComponents.Count == 0)
             {

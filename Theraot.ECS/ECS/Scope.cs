@@ -108,17 +108,19 @@ namespace Theraot.ECS
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)
         {
-            if (_componentsByEntity[entity].UnsetComponent(componentType, out var allComponentsTypes))
+            var componentStorage = _componentsByEntity[entity];
+            if (componentStorage.UnsetComponent(componentType))
             {
-                UpdateEntitiesByQueryOnRemoveComponent(entity, allComponentsTypes, componentType);
+                UpdateEntitiesByQueryOnRemoveComponent(entity, componentStorage.ComponentTypes, componentType);
             }
         }
 
         public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
         {
-            if (_componentsByEntity[entity].UnsetComponents(componentTypes, out var allComponentsTypes, out var removedComponents))
+            var componentStorage = _componentsByEntity[entity];
+            if (componentStorage.UnsetComponents(componentTypes, out var removedComponents))
             {
-                UpdateEntitiesByQueryOnRemoveComponents(entity, allComponentsTypes, removedComponents);
+                UpdateEntitiesByQueryOnRemoveComponents(entity, componentStorage.ComponentTypes, removedComponents);
             }
         }
 
