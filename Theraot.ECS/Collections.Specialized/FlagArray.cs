@@ -320,7 +320,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
-            var source = (this).Take(countLimit);
+            var source = this.Take(countLimit);
             try
             {
                 var index = arrayIndex;

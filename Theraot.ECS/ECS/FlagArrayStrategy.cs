@@ -11,8 +11,6 @@ namespace Theraot.ECS
 {
     public sealed partial class FlagArrayStrategy : IComponentQueryStrategy<ComponentType, ComponentTypeSet>
     {
-        private readonly int _capacity;
-
         private readonly QueryStorage<Query<ComponentTypeSet>> _queryStorage;
 
         public FlagArrayStrategy(int capacity)
@@ -43,16 +41,12 @@ namespace Theraot.ECS
             }
 
             var query = _queryStorage.GetQuery(queryId);
-            if (allComponentsTypes.Overlaps(query.None))
+            if (CheckNotNone(allComponentsTypes, query.None))
             {
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
-            if
-            (
-                (!query.All.Contains(true) || allComponentsTypes.IsSupersetOf(query.All))
-                && (!query.Any.Contains(true) || allComponentsTypes.Overlaps(query.Any))
-            )
+            if (CheckAll(allComponentsTypes, query.All) && CheckAny(allComponentsTypes, query.Any))
             {
                 // The entity has all the required components for this queryId
                 // and at least one of the optional components (if any) for this queryId
@@ -69,16 +63,12 @@ namespace Theraot.ECS
             }
 
             var query = _queryStorage.GetQuery(queryId);
-            if (query.None[addedComponentType])
+            if (CheckNotNone(addedComponentType, query.None))
             {
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
-            if
-            (
-                (!query.All.Contains(true) || allComponentsTypes.IsSupersetOf(query.All))
-                && (!query.Any.Contains(true) || allComponentsTypes.Overlaps(query.Any))
-            )
+            if (CheckAll(allComponentsTypes, query.All) && CheckAny(allComponentsTypes, query.Any))
             {
                 // The entity has all the required components for this queryId
                 // and at least one of the optional components (if any) for this queryId
@@ -99,16 +89,12 @@ namespace Theraot.ECS
             }
 
             var query = _queryStorage.GetQuery(queryId);
-            if (addedComponentTypes.Any(index => query.None[index]))
+            if (CheckNotNone(addedComponentTypes, query.None))
             {
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
-            if
-            (
-                (!query.All.Contains(true) || allComponentsTypes.IsSupersetOf(query.All))
-                && (!query.Any.Contains(true) || allComponentsTypes.Overlaps(query.Any))
-            )
+            if (CheckAll(allComponentsTypes, query.All) && CheckAny(allComponentsTypes, query.Any))
             {
                 // The entity has all the required components for this queryId
                 // and at least one of the optional components (if any) for this queryId
@@ -125,16 +111,12 @@ namespace Theraot.ECS
             }
 
             var query = _queryStorage.GetQuery(queryId);
-            if (query.All[removedComponentType] || (query.Any.Contains(true) && !allComponentsTypes.Overlaps(query.Any)))
+            if (CheckNotAll(removedComponentType, query.All) || CheckNotAny(allComponentsTypes, query.Any))
             {
                 // The entity no longer has one of the components it should have for this queryId
                 return QueryCheckResult.Remove;
             }
-            if
-            (
-                (!query.None.Contains(true) || !query.None.Overlaps(allComponentsTypes))
-                && (!query.Any.Contains(true) || allComponentsTypes.Overlaps(query.Any))
-            )
+            if (CheckNone(allComponentsTypes, query.None) && CheckAny(allComponentsTypes, query.Any))
             {
                 // The entity has none of the components it should not have for this queryId
                 // and at least one of the optional components (if any) for this queryId
@@ -155,16 +137,12 @@ namespace Theraot.ECS
             }
 
             var query = _queryStorage.GetQuery(queryId);
-            if (removedComponentTypes.Any(index => query.All[index]) || (query.Any.Contains(true) && !allComponentsTypes.Overlaps(query.Any)))
+            if (CheckNotAll(removedComponentTypes, query.All) || CheckNotAny(allComponentsTypes, query.Any))
             {
                 // The entity no longer has one of the components it should have for this queryId
                 return QueryCheckResult.Remove;
             }
-            if
-            (
-                (!query.None.Contains(true) || !query.None.Overlaps(allComponentsTypes))
-                && (!query.Any.Contains(true) || allComponentsTypes.Overlaps(query.Any))
-            )
+            if (CheckNone(allComponentsTypes, query.None) && CheckAny(allComponentsTypes, query.Any))
             {
                 // The entity has none of the components it should not have for this queryId
                 // and at least one of the optional components (if any) for this queryId
@@ -172,10 +150,82 @@ namespace Theraot.ECS
             }
             return QueryCheckResult.Noop;
         }
+
+        private static bool CheckAll(ComponentTypeSet allComponentsTypes, ComponentTypeSet all)
+        {
+            return IsEmpty(all) || Contains(allComponentsTypes, all); //
+        }
+
+        private static bool CheckAny(ComponentTypeSet allComponentsTypes, ComponentTypeSet any)
+        {
+            return IsEmpty(any) || Overlaps(any, allComponentsTypes); //
+        }
+
+        private static bool CheckNone(ComponentTypeSet allComponentsTypes, ComponentTypeSet none)
+        {
+            return IsEmpty(none) || !Overlaps(none, allComponentsTypes); //
+        }
+
+        private static bool CheckNotAll(IEnumerable<ComponentType> removedComponentTypes, ComponentTypeSet all)
+        {
+            return Overlaps(all, removedComponentTypes); //
+        }
+
+        private static bool CheckNotAll(ComponentType removedComponentType, ComponentTypeSet all)
+        {
+            return Contains(all, removedComponentType); //
+        }
+
+        private static bool CheckNotAny(ComponentTypeSet allComponentsTypes, ComponentTypeSet any)
+        {
+            return !IsEmpty(any) && !Overlaps(any, allComponentsTypes); //
+        }
+
+        private static bool CheckNotNone(ComponentTypeSet allComponentsTypes, ComponentTypeSet none)
+        {
+            return Overlaps(allComponentsTypes, none); //
+        }
+
+        private static bool CheckNotNone(IEnumerable<ComponentType> addedComponentTypes, ComponentTypeSet none)
+        {
+            return Overlaps(none, addedComponentTypes); //
+        }
+
+        private static bool CheckNotNone(ComponentType addedComponentType, ComponentTypeSet none)
+        {
+            return Contains(none, addedComponentType); //
+        }
+
+        private static bool Contains(ComponentTypeSet componentTypeSet, ComponentType componentType)
+        {
+            return componentTypeSet[componentType];
+        }
+
+        private static bool Contains(ComponentTypeSet componentTypeSet, ComponentTypeSet other)
+        {
+            return componentTypeSet.IsSupersetOf(other);
+        }
+
+        private static bool Overlaps(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
+        {
+            return componentTypes.Any(index => componentTypeSet[index]);
+        }
+
+        private static bool Overlaps(ComponentTypeSet componentTypeSetA, ComponentTypeSet componentTypeSetB)
+        {
+            return componentTypeSetA.Overlaps(componentTypeSetB);
+        }
+
+        private static bool IsEmpty(ComponentTypeSet componentTypeSet)
+        {
+            return !componentTypeSet.Contains(true);
+        }
     }
 
     public sealed partial class FlagArrayStrategy : IComponentTypeManager<ComponentType, ComponentTypeSet>
     {
+        private readonly int _capacity;
+
         public ComponentTypeSet CreateComponentTypeSet(Dictionary<ComponentType, Component> dictionary)
         {
             if (dictionary == null)
