@@ -46,12 +46,12 @@ namespace Theraot.ECS
 
         public QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
-            var allArray = all.ToArray();
-            var anyArray = any.ToArray();
-            var noneArray = none.ToArray();
-            var queryId = _queryManager.CreateQuery(allArray, anyArray, noneArray);
+            var allAsICollection = all is ICollection<TComponentType> allCollection ? allCollection : all.ToList();
+            var anyAsICollection = any is ICollection<TComponentType> anyCollection ? anyCollection : any.ToList();
+            var noneAsICollection = none is ICollection<TComponentType> noneCollection ? noneCollection : none.ToList();
+            var queryId = _queryManager.CreateQuery(allAsICollection, anyAsICollection, noneAsICollection);
             var set = _entitiesByQueryId[queryId] = new HashSet<TEntity>();
-            foreach (var componentType in allArray.Concat(anyArray).Concat(noneArray))
+            foreach (var componentType in allAsICollection.Concat(anyAsICollection).Concat(noneAsICollection))
             {
                 if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
                 {
