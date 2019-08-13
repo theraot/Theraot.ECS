@@ -13,7 +13,7 @@ namespace Theraot.ECS
         public EntityComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _componentTypeManager = componentTypeManager;
-            _dictionary = new CacheFriendlyDictionary<TComponentType, Component>();
+            _dictionary = new CacheFriendlyDictionary<TComponentType, Component>(null, 16);
             ComponentTypes = _componentTypeManager.Create(_dictionary.Keys);
         }
 

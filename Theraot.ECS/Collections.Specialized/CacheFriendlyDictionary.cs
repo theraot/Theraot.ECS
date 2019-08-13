@@ -13,70 +13,19 @@ namespace Theraot.Collections.Specialized
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public sealed class CacheFriendlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICloneable
     {
-        private IComparer<TKey> _comparer;
+        private readonly IComparer<TKey> _comparer;
         private KeyList _keyList;
         private TKey[] _keys;
         private ValueList _valueList;
         private TValue[] _values;
 
-        public CacheFriendlyDictionary()
+        public CacheFriendlyDictionary(IComparer<TKey> comparer, int initialCapacity)
         {
-            _keys = EmptyArray<TKey>.Instance;
-            _values = EmptyArray<TValue>.Instance;
+            _comparer = comparer ?? Comparer<TKey>.Default;
             Count = 0;
-            _comparer = Comparer<TKey>.Default;
-        }
-
-        public CacheFriendlyDictionary(int initialCapacity)
-        {
-            if (initialCapacity < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(initialCapacity), "Non-negative number required.");
-            }
-
             _keys = new TKey[initialCapacity];
             _values = new TValue[initialCapacity];
             _comparer = Comparer<TKey>.Default;
-        }
-
-        public CacheFriendlyDictionary(IComparer<TKey> comparer)
-            : this()
-        {
-            if (comparer != null)
-            {
-                _comparer = comparer;
-            }
-        }
-
-        public CacheFriendlyDictionary(IComparer<TKey> comparer, int capacity)
-            : this(comparer)
-        {
-            Capacity = capacity;
-        }
-
-        public CacheFriendlyDictionary(IDictionary<TKey, TValue> dictionary)
-            : this(dictionary, null)
-        {
-            // Empty
-        }
-
-        public CacheFriendlyDictionary(IDictionary<TKey, TValue> dictionary, IComparer<TKey> comparer)
-            : this(comparer, dictionary?.Count ?? 0)
-        {
-            if (dictionary == null)
-            {
-                throw new ArgumentNullException(nameof(dictionary), "Dictionary cannot be null.");
-            }
-
-            dictionary.Keys.CopyTo(_keys, 0);
-            dictionary.Values.CopyTo(_values, 0);
-
-            Array.Sort(_keys, comparer);
-            for (var index = 0; index < _keys.Length; index++)
-            {
-                _values[index] = dictionary[_keys[index]];
-            }
-            Count = dictionary.Count;
         }
 
         public int Capacity
@@ -183,13 +132,11 @@ namespace Theraot.Collections.Specialized
 
         public object Clone()
         {
-            var clone = new CacheFriendlyDictionary<TKey, TValue>(Count);
+            var clone = new CacheFriendlyDictionary<TKey, TValue>(_comparer, Count);
             Array.Copy(_keys, 0, clone._keys, 0, Count);
             Array.Copy(_values, 0, clone._values, 0, Count);
             clone.Count = Count;
-            clone._comparer = _comparer;
-            return clone
-;
+            return clone;
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
