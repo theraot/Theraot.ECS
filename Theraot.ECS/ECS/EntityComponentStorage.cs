@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
+using Theraot.Collections.Specialized;
 using Component = System.Object;
 
 namespace Theraot.ECS
 {
     internal sealed class EntityComponentStorage<TComponentType, TComponentTypeSet>
     {
-        private readonly Dictionary<TComponentType, Component> _dictionary;
+        private readonly CacheFriendlyDictionary<TComponentType, Component> _dictionary;
 
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
         public EntityComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _componentTypeManager = componentTypeManager;
-            _dictionary = new Dictionary<TComponentType, Component>();
+            _dictionary = new CacheFriendlyDictionary<TComponentType, Component>();
             ComponentTypes = _componentTypeManager.Create(_dictionary.Keys);
         }
 
