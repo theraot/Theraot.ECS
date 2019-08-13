@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using Theraot.Collections.Specialized;
 using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
     internal sealed class QueryStorage<TComponentTypeSet>
     {
-        private readonly Dictionary<QueryId, Query<TComponentTypeSet>> _queryByQueryId;
+        private readonly CacheFriendlyDictionary<QueryId, Query<TComponentTypeSet>> _queryByQueryId;
 
         private readonly Dictionary<Query<TComponentTypeSet>, QueryId> _queryIdByQuery;
 
@@ -13,7 +14,7 @@ namespace Theraot.ECS
 
         public QueryStorage(IEqualityComparer<Query<TComponentTypeSet>> queryEqualityComparer)
         {
-            _queryByQueryId = new Dictionary<QueryId, Query<TComponentTypeSet>>();
+            _queryByQueryId = new CacheFriendlyDictionary<QueryId, Query<TComponentTypeSet>>(Comparer<QueryId>.Default, 16);
             _queryIdByQuery = new Dictionary<Query<TComponentTypeSet>, QueryId>(queryEqualityComparer);
         }
 

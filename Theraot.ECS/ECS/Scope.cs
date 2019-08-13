@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Theraot.Collections.Specialized;
 using QueryId = System.Int32;
 
 namespace Theraot.ECS
@@ -17,7 +18,7 @@ namespace Theraot.ECS
     {
         private readonly Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
 
-        private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
+        private readonly CacheFriendlyDictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
 
         private readonly Func<TEntity> _entityFactory;
 
@@ -33,7 +34,7 @@ namespace Theraot.ECS
             _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
             _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>>();
-            _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
+            _entitiesByQueryId = new CacheFriendlyDictionary<QueryId, HashSet<TEntity>>(Comparer<QueryId>.Default, 16);
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>();
         }
 
