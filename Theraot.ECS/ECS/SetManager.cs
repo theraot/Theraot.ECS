@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Component = System.Object;
 using ComponentType = System.String;
 using ComponentTypeSet = System.Collections.Generic.HashSet<string>;
 
@@ -53,9 +52,9 @@ namespace Theraot.ECS
             return componentTypeSet.IsSupersetOf(other);
         }
 
-        public ComponentTypeSet Create(IEnumerable<ComponentType> enumerable)
+        public ComponentTypeSet Create()
         {
-            return new HashSet<ComponentType>(enumerable);
+            return new HashSet<ComponentType>();
         }
 
         public bool IsEmpty(ComponentTypeSet componentTypeSet)

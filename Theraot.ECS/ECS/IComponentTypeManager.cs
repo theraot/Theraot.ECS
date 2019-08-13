@@ -12,7 +12,7 @@ namespace Theraot.ECS
 
         bool ContainsAll(TComponentTypeSet componentTypeSet, TComponentTypeSet other);
 
-        TComponentTypeSet Create(IEnumerable<TComponentType> enumerable);
+        TComponentTypeSet Create();
 
         bool IsEmpty(TComponentTypeSet componentTypeSet);
 

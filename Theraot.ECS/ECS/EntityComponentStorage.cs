@@ -14,7 +14,7 @@ namespace Theraot.ECS
         {
             _componentTypeManager = componentTypeManager;
             _dictionary = new CacheFriendlyDictionary<TComponentType, Component>(null, 16);
-            ComponentTypes = _componentTypeManager.Create(_dictionary.Keys);
+            ComponentTypes = _componentTypeManager.Create();
         }
 
         public TComponentTypeSet ComponentTypes { get; }

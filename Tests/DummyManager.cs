@@ -23,7 +23,7 @@ namespace Tests
             return false;
         }
 
-        public int Create(IEnumerable<int> enumerable)
+        public int Create()
         {
             return 0;
         }

@@ -18,12 +18,18 @@ namespace Theraot.ECS
 
         public QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
+            var allSet = _componentTypeManager.Create();
+            _componentTypeManager.Add(allSet, all);
+            var anySet = _componentTypeManager.Create();
+            _componentTypeManager.Add(anySet, any);
+            var noneSet = _componentTypeManager.Create();
+            _componentTypeManager.Add(noneSet, none);
             return _queryStorage.AddQuery(
                 new Query<TComponentTypeSet>
                 (
-                    _componentTypeManager.Create(all),
-                    _componentTypeManager.Create(any),
-                    _componentTypeManager.Create(none)
+                    allSet,
+                    anySet,
+                    noneSet
                 )
             );
         }

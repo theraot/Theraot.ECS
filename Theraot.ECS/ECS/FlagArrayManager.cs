@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Component = System.Object;
 using ComponentType = System.Int32;
 using ComponentTypeSet = Theraot.Collections.Specialized.FlagArray;
 
@@ -59,19 +58,9 @@ namespace Theraot.ECS
             return componentTypeSet.IsSupersetOf(other);
         }
 
-        public ComponentTypeSet Create(IEnumerable<ComponentType> enumerable)
+        public ComponentTypeSet Create()
         {
-            if (enumerable == null)
-            {
-                throw new ArgumentNullException(nameof(enumerable));
-            }
-
-            var set = new ComponentTypeSet(_capacity);
-            foreach (var key in enumerable)
-            {
-                set[key] = true;
-            }
-            return set;
+            return new ComponentTypeSet(_capacity);
         }
 
         public bool IsEmpty(ComponentTypeSet componentTypeSet)
