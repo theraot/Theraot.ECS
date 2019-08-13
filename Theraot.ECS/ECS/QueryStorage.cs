@@ -3,21 +3,21 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    internal sealed class QueryStorage<TQuery>
+    internal sealed class QueryStorage<TComponentTypeSet>
     {
-        private readonly Dictionary<QueryId, TQuery> _queryByQueryId;
+        private readonly Dictionary<QueryId, Query<TComponentTypeSet>> _queryByQueryId;
 
-        private readonly Dictionary<TQuery, QueryId> _queryIdByQuery;
+        private readonly Dictionary<Query<TComponentTypeSet>, QueryId> _queryIdByQuery;
 
         private int _queryId;
 
         public QueryStorage()
         {
-            _queryByQueryId = new Dictionary<QueryId, TQuery>();
-            _queryIdByQuery = new Dictionary<TQuery, QueryId>();
+            _queryByQueryId = new Dictionary<QueryId, Query<TComponentTypeSet>>();
+            _queryIdByQuery = new Dictionary<Query<TComponentTypeSet>, QueryId>();
         }
 
-        public QueryId AddQuery(TQuery query)
+        public QueryId AddQuery(Query<TComponentTypeSet> query)
         {
             var queryId = _queryId;
             if (!_queryIdByQuery.TryAdd(query, queryId))
@@ -29,7 +29,7 @@ namespace Theraot.ECS
             return queryId;
         }
 
-        public TQuery GetQuery(QueryId queryId)
+        public Query<TComponentTypeSet> GetQuery(QueryId queryId)
         {
             return _queryByQueryId[queryId];
         }

@@ -8,12 +8,12 @@ namespace Theraot.ECS
     {
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
-        private readonly QueryStorage<Query<TComponentTypeSet>> _queryStorage;
+        private readonly QueryStorage<TComponentTypeSet> _queryStorage;
 
         public QueryManager(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _componentTypeManager = componentTypeManager;
-            _queryStorage = new QueryStorage<Query<TComponentTypeSet>>();
+            _queryStorage = new QueryStorage<TComponentTypeSet>();
         }
 
         public QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
