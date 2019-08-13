@@ -4,7 +4,7 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    internal sealed class QueryManager<TComponentType, TComponentTypeSet>
+    internal sealed class QueryManager<TComponentType, TComponentTypeSet> : IEqualityComparer<Query<TComponentTypeSet>>
     {
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
@@ -13,7 +13,7 @@ namespace Theraot.ECS
         public QueryManager(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _componentTypeManager = componentTypeManager;
-            _queryStorage = new QueryStorage<TComponentTypeSet>();
+            _queryStorage = new QueryStorage<TComponentTypeSet>(this);
         }
 
         public QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
@@ -187,6 +187,35 @@ namespace Theraot.ECS
         private bool CheckNotNone(IEnumerable<TComponentType> addedComponentTypes, TComponentTypeSet none)
         {
             return _componentTypeManager.Overlaps(none, addedComponentTypes); //
+        }
+
+        public bool Equals(Query<TComponentTypeSet> x, Query<TComponentTypeSet> y)
+        {
+            if (x == y)
+            {
+                return true;
+            }
+            if (x == null || y == null)
+            {
+                return false;
+            }
+
+            return _componentTypeManager.ContainsAll(x.All, y.All)
+                   && _componentTypeManager.ContainsAll(y.All, x.All)
+                   && _componentTypeManager.ContainsAll(x.Any, y.Any)
+                   && _componentTypeManager.ContainsAll(y.Any, x.Any)
+                   && _componentTypeManager.ContainsAll(x.None, y.None)
+                   && _componentTypeManager.ContainsAll(y.None, x.None);
+        }
+
+        public int GetHashCode(Query<TComponentTypeSet> obj)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            return obj.All.GetHashCode() ^ obj.Any.GetHashCode() ^ obj.None.GetHashCode();
         }
     }
 }

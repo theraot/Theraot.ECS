@@ -11,10 +11,10 @@ namespace Theraot.ECS
 
         private int _queryId;
 
-        public QueryStorage()
+        public QueryStorage(IEqualityComparer<Query<TComponentTypeSet>> queryEqualityComparer)
         {
             _queryByQueryId = new Dictionary<QueryId, Query<TComponentTypeSet>>();
-            _queryIdByQuery = new Dictionary<Query<TComponentTypeSet>, QueryId>();
+            _queryIdByQuery = new Dictionary<Query<TComponentTypeSet>, QueryId>(queryEqualityComparer);
         }
 
         public QueryId AddQuery(Query<TComponentTypeSet> query)
