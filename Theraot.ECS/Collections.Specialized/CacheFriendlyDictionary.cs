@@ -176,16 +176,6 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public TValue GetByIndex(int index)
-        {
-            if (index < 0 || index >= Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
-            }
-
-            return _values[index];
-        }
-
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             for (var index = Count - 1; index >= 0; index--)
@@ -197,16 +187,6 @@ namespace Theraot.Collections.Specialized
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        public TKey GetKey(int index)
-        {
-            if (index < 0 || index >= Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
-            }
-
-            return _keys[index];
         }
 
         public IList<TKey> GetKeyList()
@@ -276,16 +256,6 @@ namespace Theraot.Collections.Specialized
             }
 
             return result;
-        }
-
-        public void RemoveAt(int index)
-        {
-            if (index < 0 || index >= Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
-            }
-
-            RemoveAtExtracted(index);
         }
 
         public bool Set(TKey key, TValue value)
@@ -427,7 +397,18 @@ namespace Theraot.Collections.Specialized
                 set => throw new NotSupportedException("Mutating a key collection derived from a dictionary is not allowed.");
             }
 
-            public TKey this[int index] => _dictionary.GetKey(index);
+            public TKey this[int index]
+            {
+                get
+                {
+                    if (index < 0 || index >= _dictionary.Count)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
+                    }
+
+                    return _dictionary._keys[index];
+                }
+            }
 
             void ICollection<TKey>.Add(TKey item)
             {
@@ -511,7 +492,18 @@ namespace Theraot.Collections.Specialized
 
             public bool IsReadOnly => true;
 
-            public TValue this[int index] => _dictionary.GetByIndex(index);
+            public TValue this[int index]
+            {
+                get
+                {
+                    if (index < 0 || index >= _dictionary.Count)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
+                    }
+
+                    return _dictionary._values[index];
+                }
+            }
 
             TValue IList<TValue>.this[int index]
             {
