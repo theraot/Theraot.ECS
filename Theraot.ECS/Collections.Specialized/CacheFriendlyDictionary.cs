@@ -388,9 +388,9 @@ namespace Theraot.Collections.Specialized
 
             public IEnumerator<TKey> GetEnumerator()
             {
-                foreach (var key in _dictionary._keys)
+                for (var index = _dictionary.Count - 1; index >= 0; index--)
                 {
-                    yield return key;
+                    yield return _dictionary._keys[index];
                 }
             }
 
@@ -479,9 +479,9 @@ namespace Theraot.Collections.Specialized
 
             public IEnumerator<TValue> GetEnumerator()
             {
-                foreach (var value in _dictionary._values)
+                for (var index = _dictionary.Count - 1; index >= 0; index--)
                 {
-                    yield return value;
+                    yield return _dictionary._values[index];
                 }
             }
 
