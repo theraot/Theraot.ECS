@@ -259,6 +259,25 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
+        public List<TKey> RemoveAll(IEnumerable<TKey> source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            var result = new List<TKey>();
+            foreach (var key in source)
+            {
+                if (Remove(key))
+                {
+                    result.Add(key);
+                }
+            }
+
+            return result;
+        }
+
         public void RemoveAt(int index)
         {
             if (index < 0 || index >= Count)
@@ -267,6 +286,45 @@ namespace Theraot.Collections.Specialized
             }
 
             RemoveAtExtracted(index);
+        }
+
+        public bool Set(TKey key, TValue value)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key), "Key cannot be null.");
+            }
+
+            var index = Array.BinarySearch(_keys, 0, Count, key, _comparer);
+            if (index >= 0)
+            {
+                _values[index] = value;
+                return false;
+            }
+
+            Insert(~index, key, value);
+            return true;
+        }
+
+        public List<TKey> SetAll(IEnumerable<KeyValuePair<TKey, TValue>> source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            var result = new List<TKey>();
+            foreach (var pair in source)
+            {
+                var key = pair.Key;
+                var value = pair.Value;
+                if (Set(key, value))
+                {
+                    result.Add(key);
+                }
+            }
+
+            return result;
         }
 
         public void TrimToSize()
