@@ -300,7 +300,8 @@ namespace Theraot.Collections.Specialized
             {
                 return false;
             }
-            RemoveAt(index);
+
+            RemoveAtExtracted(index);
             return true;
         }
 
@@ -311,7 +312,8 @@ namespace Theraot.Collections.Specialized
             {
                 return false;
             }
-            RemoveAt(index);
+
+            RemoveAtExtracted(index);
             return true;
         }
 
@@ -322,14 +324,7 @@ namespace Theraot.Collections.Specialized
                 throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
             }
 
-            Count--;
-            if (index < Count)
-            {
-                Array.Copy(_keys, index + 1, _keys, index, Count - index);
-                Array.Copy(_values, index + 1, _values, index, Count - index);
-            }
-            _keys[Count] = default;
-            _values[Count] = default;
+            RemoveAtExtracted(index);
         }
 
         public void TrimToSize()
@@ -389,6 +384,19 @@ namespace Theraot.Collections.Specialized
             _keys[index] = key;
             _values[index] = value;
             Count++;
+        }
+
+        private void RemoveAtExtracted(int index)
+        {
+            Count--;
+            if (index < Count)
+            {
+                Array.Copy(_keys, index + 1, _keys, index, Count - index);
+                Array.Copy(_values, index + 1, _values, index, Count - index);
+            }
+
+            _keys[Count] = default;
+            _values[Count] = default;
         }
 
         private sealed class KeyList : IList<TKey>
