@@ -21,7 +21,10 @@ namespace Theraot.Collections.Specialized
 
         public CacheFriendlyDictionary()
         {
-            Init();
+            _keys = EmptyArray<TKey>.Instance;
+            _values = EmptyArray<TValue>.Instance;
+            Count = 0;
+            _comparer = Comparer<TKey>.Default;
         }
 
         public CacheFriendlyDictionary(int initialCapacity)
@@ -359,14 +362,6 @@ namespace Theraot.Collections.Specialized
             }
 
             Capacity = newCapacity;
-        }
-
-        private void Init()
-        {
-            _keys = EmptyArray<TKey>.Instance;
-            _values = EmptyArray<TValue>.Instance;
-            Count = 0;
-            _comparer = Comparer<TKey>.Default;
         }
 
         private void Insert(int index, TKey key, TValue value)
