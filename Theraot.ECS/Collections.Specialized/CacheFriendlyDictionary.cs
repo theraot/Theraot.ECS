@@ -104,18 +104,10 @@ namespace Theraot.Collections.Specialized
 
         public void Add(TKey key, TValue value)
         {
-            if (key == null)
+            if (!TryAdd(key, value))
             {
-                throw new ArgumentNullException(nameof(key), "Key cannot be null.");
+                throw new ArgumentException("Item has already been added.");
             }
-
-            var index = Array.BinarySearch(_keys, 0, Count, key, _comparer);
-            if (index >= 0)
-            {
-                throw new ArgumentException("Item has already been added. Key in dictionary: '{GetKey(i)}'  Key being added: '{key}'");
-            }
-
-            Insert(~index, key, value);
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
@@ -280,6 +272,23 @@ namespace Theraot.Collections.Specialized
         public void TrimToSize()
         {
             Capacity = Count;
+        }
+
+        public bool TryAdd(TKey key, TValue value)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key), "Key cannot be null.");
+            }
+
+            var index = Array.BinarySearch(_keys, 0, Count, key, _comparer);
+            if (index >= 0)
+            {
+                return false;
+            }
+
+            Insert(~index, key, value);
+            return true;
         }
 
         public bool TryGetValue(TKey key, out TValue value)
