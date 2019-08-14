@@ -6,7 +6,7 @@ namespace Theraot.ECS
 {
     internal sealed class QueryStorage<TComponentTypeSet>
     {
-        private readonly CompactDictionary<QueryId, Query<TComponentTypeSet>> _queryByQueryId;
+        private readonly IndexedCollection<Query<TComponentTypeSet>> _queryByQueryId;
 
         private readonly CompactDictionary<Query<TComponentTypeSet>, QueryId> _queryIdByQuery;
 
@@ -14,7 +14,7 @@ namespace Theraot.ECS
 
         public QueryStorage(IEqualityComparer<Query<TComponentTypeSet>> queryEqualityComparer)
         {
-            _queryByQueryId = new CompactDictionary<QueryId, Query<TComponentTypeSet>>(Comparer<QueryId>.Default, 16);
+            _queryByQueryId = new IndexedCollection<Query<TComponentTypeSet>>(16);
             _queryIdByQuery = new CompactDictionary<Query<TComponentTypeSet>, QueryId>(new ProxyComparer<Query<TComponentTypeSet>>(queryEqualityComparer), 16);
         }
 
