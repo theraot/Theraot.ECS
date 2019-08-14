@@ -11,7 +11,7 @@ using Theraot.ECS;
 namespace Theraot.Collections.Specialized
 {
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
-    public sealed class CacheFriendlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICloneable
+    public sealed class CompactDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICloneable
     {
         private readonly IComparer<TKey> _comparer;
         private KeyList _keyList;
@@ -19,7 +19,7 @@ namespace Theraot.Collections.Specialized
         private ValueList _valueList;
         private TValue[] _values;
 
-        public CacheFriendlyDictionary(IComparer<TKey> comparer, int initialCapacity)
+        public CompactDictionary(IComparer<TKey> comparer, int initialCapacity)
         {
             _comparer = comparer ?? Comparer<TKey>.Default;
             Count = 0;
@@ -124,7 +124,7 @@ namespace Theraot.Collections.Specialized
 
         public object Clone()
         {
-            var clone = new CacheFriendlyDictionary<TKey, TValue>(_comparer, Count);
+            var clone = new CompactDictionary<TKey, TValue>(_comparer, Count);
             Array.Copy(_keys, 0, clone._keys, 0, Count);
             Array.Copy(_values, 0, clone._values, 0, Count);
             clone.Count = Count;
@@ -409,9 +409,9 @@ namespace Theraot.Collections.Specialized
 
         private sealed class KeyList : IList<TKey>
         {
-            private readonly CacheFriendlyDictionary<TKey, TValue> _dictionary;
+            private readonly CompactDictionary<TKey, TValue> _dictionary;
 
-            internal KeyList(CacheFriendlyDictionary<TKey, TValue> dictionary)
+            internal KeyList(CompactDictionary<TKey, TValue> dictionary)
             {
                 _dictionary = dictionary;
             }
@@ -510,9 +510,9 @@ namespace Theraot.Collections.Specialized
 
         private sealed class ValueList : IList<TValue>
         {
-            private readonly CacheFriendlyDictionary<TKey, TValue> _dictionary;
+            private readonly CompactDictionary<TKey, TValue> _dictionary;
 
-            internal ValueList(CacheFriendlyDictionary<TKey, TValue> dictionary)
+            internal ValueList(CompactDictionary<TKey, TValue> dictionary)
             {
                 _dictionary = dictionary;
             }

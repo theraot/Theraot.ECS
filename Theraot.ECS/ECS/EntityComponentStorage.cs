@@ -6,14 +6,14 @@ namespace Theraot.ECS
 {
     internal sealed class EntityComponentStorage<TComponentType, TComponentTypeSet>
     {
-        private readonly CacheFriendlyDictionary<TComponentType, Component> _dictionary;
+        private readonly CompactDictionary<TComponentType, Component> _dictionary;
 
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
         public EntityComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _componentTypeManager = componentTypeManager;
-            _dictionary = new CacheFriendlyDictionary<TComponentType, Component>(null, 16);
+            _dictionary = new CompactDictionary<TComponentType, Component>(null, 16);
             ComponentTypes = _componentTypeManager.Create();
         }
 
