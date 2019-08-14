@@ -16,13 +16,13 @@ namespace Theraot.ECS
 
     public sealed partial class Scope<TEntity, TComponentType, TComponentTypeSet> : IScope<TEntity, TComponentType>
     {
-        private readonly Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
+        private readonly CacheFriendlyDictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
 
         private readonly CacheFriendlyDictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
 
         private readonly Func<TEntity> _entityFactory;
 
-        private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
+        private readonly CacheFriendlyDictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
 
         private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
@@ -33,9 +33,9 @@ namespace Theraot.ECS
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
-            _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>>();
+            _componentsByEntity = new CacheFriendlyDictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>>(Comparer<TEntity>.Default, 16);
             _entitiesByQueryId = new CacheFriendlyDictionary<QueryId, HashSet<TEntity>>(Comparer<QueryId>.Default, 16);
-            _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>();
+            _queryIdsByComponentType = new CacheFriendlyDictionary<TComponentType, HashSet<QueryId>>(componentTypeManager, 16);
         }
 
         public TEntity CreateEntity()

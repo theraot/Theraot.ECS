@@ -34,6 +34,13 @@ namespace Theraot.ECS
             }
         }
 
+        public int Compare(string x, string y)
+        {
+            var left = x ?? string.Empty;
+            var right = x ?? string.Empty;
+            return string.CompareOrdinal(left, right);
+        }
+
         public bool Contains(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             if (componentTypeSet == null)

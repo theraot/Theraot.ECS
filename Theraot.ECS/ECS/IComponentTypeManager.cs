@@ -2,7 +2,7 @@
 
 namespace Theraot.ECS
 {
-    public interface IComponentTypeManager<in TComponentType, TComponentTypeSet>
+    public interface IComponentTypeManager<in TComponentType, TComponentTypeSet> : IComparer<TComponentType>
     {
         void Add(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
 

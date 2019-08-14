@@ -50,5 +50,10 @@ namespace Tests
         public void Remove(int componentTypeSet, int componentType)
         {
         }
+
+        public int Compare(int x, int y)
+        {
+            return x.CompareTo(y);
+        }
     }
 }

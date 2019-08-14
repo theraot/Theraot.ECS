@@ -40,6 +40,11 @@ namespace Theraot.ECS
             }
         }
 
+        public int Compare(ComponentType x, ComponentType y)
+        {
+            return x.CompareTo(y);
+        }
+
         public bool Contains(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             if (componentTypeSet == null)

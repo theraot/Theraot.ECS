@@ -8,14 +8,14 @@ namespace Theraot.ECS
     {
         private readonly CacheFriendlyDictionary<QueryId, Query<TComponentTypeSet>> _queryByQueryId;
 
-        private readonly Dictionary<Query<TComponentTypeSet>, QueryId> _queryIdByQuery;
+        private readonly CacheFriendlyDictionary<Query<TComponentTypeSet>, QueryId> _queryIdByQuery;
 
         private int _queryId;
 
         public QueryStorage(IEqualityComparer<Query<TComponentTypeSet>> queryEqualityComparer)
         {
             _queryByQueryId = new CacheFriendlyDictionary<QueryId, Query<TComponentTypeSet>>(Comparer<QueryId>.Default, 16);
-            _queryIdByQuery = new Dictionary<Query<TComponentTypeSet>, QueryId>(queryEqualityComparer);
+            _queryIdByQuery = new CacheFriendlyDictionary<Query<TComponentTypeSet>, QueryId>(new ProxyComparer<Query<TComponentTypeSet>>(queryEqualityComparer), 16);
         }
 
         public QueryId AddQuery(Query<TComponentTypeSet> query)
