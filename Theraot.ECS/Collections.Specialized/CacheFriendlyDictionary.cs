@@ -276,6 +276,35 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
+        public List<TKey> SetAll(IList<TKey> keys, IList<TValue> values)
+        {
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+            if (values.Count != keys.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(values), "Count does not match");
+            }
+
+            var result = new List<TKey>();
+            for (var index = 0; index < keys.Count; index++)
+            {
+                var key = keys[index];
+                var value = values[index];
+                if (Set(key, value))
+                {
+                    result.Add(key);
+                }
+            }
+
+            return result;
+        }
+
         public List<TKey> SetAll(IEnumerable<KeyValuePair<TKey, TValue>> source)
         {
             if (source == null)

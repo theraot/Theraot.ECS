@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Theraot.ECS;
 
@@ -244,11 +243,8 @@ namespace Tests
             scope.SetComponents
             (
                 entityA,
-                new Dictionary<TComponentType, object>
-                {
-                    {typeA, 100 },
-                    {typeB, 100 }
-                }
+                new[] { typeA, typeB },
+                new object[] { 100, 100 }
             );
             var entitiesB = scope.GetEntities(query).ToArray();
             Assert.AreEqual(1, entitiesB.Length);
@@ -264,11 +260,8 @@ namespace Tests
             scope.SetComponents
             (
                 entityA,
-                new Dictionary<TComponentType, object>
-                {
-                    {typeA, 100 },
-                    {typeB, 100 }
-                }
+                new[] { typeA, typeB },
+                new object[] { 100, 100 }
             );
             var entitiesB = scope.GetEntities(query).ToArray();
             Assert.AreEqual(1, entitiesB.Length);
@@ -287,11 +280,8 @@ namespace Tests
             scope.SetComponents
             (
                 entityA,
-                new Dictionary<TComponentType, object>
-                {
-                    {typeA, 100 },
-                    {typeB, 100 }
-                }
+                new[] { typeA, typeB },
+                new object[] { 100, 100 }
             );
             var entitiesB = scope.GetEntities(query).ToArray();
             Assert.AreEqual(1, entitiesB.Length);
@@ -322,11 +312,8 @@ namespace Tests
             scope.SetComponents
             (
                 entityA,
-                new Dictionary<TComponentType, object>
-                {
-                    {typeA, 100 },
-                    {typeB, 100 }
-                }
+                new[] { typeA, typeB },
+                new object[] { 100, 100 }
             );
             var entitiesB = scope.GetEntities(query).ToArray();
             Assert.AreEqual(1, entitiesB.Length);
@@ -342,11 +329,8 @@ namespace Tests
             scope.SetComponents
             (
                 entityA,
-                new Dictionary<TComponentType, object>
-                {
-                    {typeA, 100 },
-                    {typeB, 100 }
-                }
+                new[] { typeA, typeB },
+                new object[] { 100, 100 }
             );
             var entitiesB = scope.GetEntities(query).ToArray();
             Assert.AreEqual(1, entitiesB.Length);
@@ -365,11 +349,8 @@ namespace Tests
             scope.SetComponents
             (
                 entityA,
-                new Dictionary<TComponentType, object>
-                {
-                    {typeA, 100 },
-                    {typeB, 100 }
-                }
+                new[] { typeA, typeB },
+                new object[] { 100, 100 }
             );
             var entitiesB = scope.GetEntities(query).ToArray();
             Assert.AreEqual(1, entitiesB.Length);
@@ -413,11 +394,8 @@ namespace Tests
             scope.SetComponents
             (
                 entityA,
-                new Dictionary<TComponentType, object>
-                {
-                    {typeA, 100 },
-                    {typeB, 100 }
-                }
+                new[] { typeA, typeB },
+                new object[] { 100, 100 }
             );
             var entitiesB = scope.GetEntities(query).ToArray();
             Assert.AreEqual(0, entitiesB.Length);
@@ -433,11 +411,8 @@ namespace Tests
             scope.SetComponents
             (
                 entityA,
-                new Dictionary<TComponentType, object>
-                {
-                    {typeA, 100 },
-                    {typeB, 100 }
-                }
+                new[] { typeA, typeB },
+                new object[] { 100, 100 }
             );
             var entitiesB = scope.GetEntities(query).ToArray();
             Assert.AreEqual(0, entitiesB.Length);
@@ -457,11 +432,8 @@ namespace Tests
             scope.SetComponents
             (
                 entityA,
-                new Dictionary<TComponentType, object>
-                {
-                    {typeA, 100 },
-                    {typeB, 100 }
-                }
+                new[] { typeA, typeB },
+                new object[] { 100, 100 }
             );
             var entitiesB = scope.GetEntities(query).ToArray();
             Assert.AreEqual(0, entitiesB.Length);
@@ -494,11 +466,8 @@ namespace Tests
             scope.SetComponents
                 (
                     entity,
-                    new Dictionary<TComponentType, object>
-                    {
-                        {componentTypeA, objA },
-                        {componentTypeB, objB }
-                    }
+                    new[] { componentTypeA, componentTypeB },
+                    new[] { objA, objB }
                 );
             Assert.IsTrue(scope.TryGetComponent<object>(entity, componentTypeA, out var componentA));
             Assert.AreEqual(objA, componentA);
@@ -557,12 +526,8 @@ namespace Tests
             scope.SetComponents
             (
                 entity,
-                new Dictionary<TComponentType, object>
-                {
-                    {componentTypeA, objA },
-                    {componentTypeB, objB },
-                    {componentTypeC, objC }
-                }
+                new[] { componentTypeA, componentTypeB, componentTypeC },
+                new[] { objA, objB, objC }
             );
             Assert.IsTrue(scope.TryGetComponent<object>(entity, componentTypeA, out var componentA));
             Assert.AreEqual(objA, componentA);

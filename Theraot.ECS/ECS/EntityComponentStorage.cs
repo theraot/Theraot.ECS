@@ -32,11 +32,11 @@ namespace Theraot.ECS
             return true;
         }
 
-        public bool SetComponents(IEnumerable<KeyValuePair<TComponentType, Component>> components, out List<TComponentType> addedComponents)
+        public bool SetComponents(IList<TComponentType> componentTypes, IList<Component> components, out List<TComponentType> addedComponents)
         {
             var allComponents = _dictionary;
             var allComponentsTypes = ComponentTypes;
-            addedComponents = allComponents.SetAll(components);
+            addedComponents = allComponents.SetAll(componentTypes, components);
             if (addedComponents.Count == 0)
             {
                 return false;
