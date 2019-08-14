@@ -25,7 +25,6 @@ namespace Theraot.Collections.Specialized
             Count = 0;
             _keys = new TKey[initialCapacity];
             _values = new TValue[initialCapacity];
-            _comparer = Comparer<TKey>.Default;
         }
 
         public int Capacity
@@ -171,8 +170,7 @@ namespace Theraot.Collections.Specialized
 
             for (var index = 0; index < Count; index++)
             {
-                var entry = new DictionaryEntry(_keys[index], _values[index]);
-                array.SetValue(entry, index + arrayIndex);
+                array[index + arrayIndex] = new KeyValuePair<TKey, TValue>(_keys[index], _values[index]);
             }
         }
 
@@ -441,12 +439,12 @@ namespace Theraot.Collections.Specialized
 
             void ICollection<TKey>.Add(TKey item)
             {
-                throw new NotSupportedException("This operation is not supported on CacheFriendlyDictionary nested types because they require modifying the original CacheFriendlyDictionary.");
+                throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
             void ICollection<TKey>.Clear()
             {
-                throw new NotSupportedException("This operation is not supported on CacheFriendlyDictionary nested types because they require modifying the original CacheFriendlyDictionary.");
+                throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
             public bool Contains(TKey item)
@@ -494,17 +492,17 @@ namespace Theraot.Collections.Specialized
 
             void IList<TKey>.Insert(int index, TKey item)
             {
-                throw new NotSupportedException("This operation is not supported on CacheFriendlyDictionary nested types because they require modifying the original CacheFriendlyDictionary.");
+                throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
             public bool Remove(TKey item)
             {
-                throw new NotSupportedException("This operation is not supported on CacheFriendlyDictionary nested types because they require modifying the original CacheFriendlyDictionary.");
+                throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
             void IList<TKey>.RemoveAt(int index)
             {
-                throw new NotSupportedException("This operation is not supported on CacheFriendlyDictionary nested types because they require modifying the original CacheFriendlyDictionary.");
+                throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
         }
 
@@ -537,17 +535,17 @@ namespace Theraot.Collections.Specialized
             TValue IList<TValue>.this[int index]
             {
                 get => this[index];
-                set => throw new NotSupportedException("This operation is not supported on CacheFriendlyDictionary nested types because they require modifying the original CacheFriendlyDictionary.");
+                set => throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
             void ICollection<TValue>.Add(TValue value)
             {
-                throw new NotSupportedException("This operation is not supported on CacheFriendlyDictionary nested types because they require modifying the original CacheFriendlyDictionary.");
+                throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
             void ICollection<TValue>.Clear()
             {
-                throw new NotSupportedException("This operation is not supported on CacheFriendlyDictionary nested types because they require modifying the original CacheFriendlyDictionary.");
+                throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
             public bool Contains(TValue value)
@@ -580,17 +578,17 @@ namespace Theraot.Collections.Specialized
 
             public void Insert(int index, TValue value)
             {
-                throw new NotSupportedException("This operation is not supported on CacheFriendlyDictionary nested types because they require modifying the original CacheFriendlyDictionary.");
+                throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
             public bool Remove(TValue value)
             {
-                throw new NotSupportedException("This operation is not supported on CacheFriendlyDictionary nested types because they require modifying the original CacheFriendlyDictionary.");
+                throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
             public void RemoveAt(int index)
             {
-                throw new NotSupportedException("This operation is not supported on CacheFriendlyDictionary nested types because they require modifying the original CacheFriendlyDictionary.");
+                throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
         }
     }
