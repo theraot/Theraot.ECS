@@ -133,20 +133,12 @@ namespace Theraot.Collections.Specialized
             Array.Copy(_values, 0, array, arrayIndex, Count);
         }
 
-        public IEnumerator<KeyValuePair<int, TValue>> GetEnumerator()
-        {
-            for (var index = Count - 1; index >= 0; index--)
-            {
-                yield return new KeyValuePair<int, TValue>(_keys[index], _values[index]);
-            }
-        }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
+        public IEnumerator<TValue> GetEnumerator()
         {
             foreach (var value in _values)
             {
