@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 using ComponentId = System.Int32;
 using Component = System.Object;
@@ -25,30 +26,42 @@ namespace Theraot.ECS
 
         public bool SetComponent<TComponent>(TComponentType componentType, TComponent component)
         {
-            var allComponents = _componentIndex;
-            var allComponentsTypes = ComponentTypes;
-            var componentId = _globalComponentStorage.Add(component);
-            if (!allComponents.Set(componentType, componentId))
+            if
+            (
+                !_componentIndex.Set
+                (
+                    componentType,
+                    _ => _globalComponentStorage.Add(component),
+                    (_, id) => _globalComponentStorage.Set(id, component)
+                )
+            )
             {
                 return false;
             }
 
-            _componentTypeManager.Add(allComponentsTypes, componentType);
+            _componentTypeManager.Add(ComponentTypes, componentType);
             return true;
         }
 
-        public bool SetComponents(IList<TComponentType> componentTypes, IList<Component> components, out List<TComponentType> addedComponents)
+        public bool SetComponents(IDictionary<TComponentType, Component> components, out List<TComponentType> addedComponents)
         {
-            var allComponents = _componentIndex;
-            var allComponentsTypes = ComponentTypes;
-            var componentIds = _globalComponentStorage.AddRange(components);
-            addedComponents = allComponents.SetAll(componentTypes, componentIds);
+            if (components == null)
+            {
+                throw new ArgumentNullException(nameof(components));
+            }
+
+            addedComponents = _componentIndex.SetAll
+            (
+                components.Keys,
+                key => _globalComponentStorage.Add(components[key]),
+                (key, id) => _globalComponentStorage.Set(id, components[key])
+            );
             if (addedComponents.Count == 0)
             {
                 return false;
             }
 
-            _componentTypeManager.Add(allComponentsTypes, addedComponents);
+            _componentTypeManager.Add(ComponentTypes, addedComponents);
             return true;
         }
 
@@ -60,28 +73,25 @@ namespace Theraot.ECS
 
         public bool UnsetComponent(TComponentType componentType)
         {
-            var allComponents = _componentIndex;
-            var allComponentsTypes = ComponentTypes;
-            if (!allComponents.Remove(componentType))
+            if (!_componentIndex.Remove(componentType, out var removedValue))
             {
                 return false;
             }
 
-            _componentTypeManager.Remove(allComponentsTypes, componentType);
+            _globalComponentStorage.Remove(removedValue);
+            _componentTypeManager.Remove(ComponentTypes, componentType);
             return true;
         }
 
-        public bool UnsetComponents(IEnumerable<TComponentType> componentTypes, out List<TComponentType> removedComponents)
+        public bool UnsetComponents(IEnumerable<TComponentType> componentTypes, out List<TComponentType> removedComponentTypes)
         {
-            var allComponents = _componentIndex;
-            var allComponentsTypes = ComponentTypes;
-            removedComponents = allComponents.RemoveAll(componentTypes);
-            if (removedComponents.Count == 0)
+            if (_componentIndex.RemoveAll(componentTypes, out removedComponentTypes, out var removedComponentIds) == 0)
             {
                 return false;
             }
 
-            _componentTypeManager.Remove(allComponentsTypes, removedComponents);
+            _globalComponentStorage.RemoveAll(removedComponentIds);
+            _componentTypeManager.Remove(ComponentTypes, removedComponentTypes);
             return true;
         }
     }

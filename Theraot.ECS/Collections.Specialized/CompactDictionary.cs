@@ -213,7 +213,7 @@ namespace Theraot.Collections.Specialized
             return Array.IndexOf(_values, value, 0, Count);
         }
 
-        public bool Remove(TKey key)
+        bool IDictionary<TKey, TValue>.Remove(TKey key)
         {
             var index = IndexOfKey(key);
             if (index < 0)
@@ -221,6 +221,20 @@ namespace Theraot.Collections.Specialized
                 return false;
             }
 
+            RemoveAtExtracted(index);
+            return true;
+        }
+
+        public bool Remove(TKey key, out TValue removedValue)
+        {
+            var index = IndexOfKey(key);
+            if (index < 0)
+            {
+                removedValue = default;
+                return false;
+            }
+
+            removedValue = _values[index];
             RemoveAtExtracted(index);
             return true;
         }
@@ -237,23 +251,29 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
-        public List<TKey> RemoveAll(IEnumerable<TKey> source)
+        public int RemoveAll(IEnumerable<TKey> source, out List<TKey> removedKeys, out List<TValue> removedValues)
         {
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
 
-            var result = new List<TKey>();
+            removedKeys = new List<TKey>();
+            removedValues = new List<TValue>();
+            var count = 0;
             foreach (var key in source)
             {
-                if (Remove(key))
+                if (!Remove(key, out var removedValue))
                 {
-                    result.Add(key);
+                    continue;
                 }
+
+                removedKeys.Add(key);
+                removedValues.Add(removedValue);
+                count++;
             }
 
-            return result;
+            return count;
         }
 
         public bool Set(TKey key, TValue value)
@@ -271,6 +291,32 @@ namespace Theraot.Collections.Specialized
             }
 
             Insert(~index, key, value);
+            return true;
+        }
+
+        public bool Set(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key), "Key cannot be null.");
+            }
+            if (addValueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(addValueFactory));
+            }
+            if (updateValueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(updateValueFactory));
+            }
+
+            var index = Array.BinarySearch(_keys, 0, Count, key, _comparer);
+            if (index >= 0)
+            {
+                _values[index] = updateValueFactory(key, _values[index]);
+                return false;
+            }
+
+            Insert(~index, key, addValueFactory(key));
             return true;
         }
 
@@ -295,6 +341,33 @@ namespace Theraot.Collections.Specialized
                 var key = keys[index];
                 var value = values[index];
                 if (Set(key, value))
+                {
+                    result.Add(key);
+                }
+            }
+
+            return result;
+        }
+
+        public List<TKey> SetAll(ICollection<TKey> keys, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
+        {
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
+            if (addValueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(addValueFactory));
+            }
+            if (updateValueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(updateValueFactory));
+            }
+
+            var result = new List<TKey>();
+            foreach (var key in keys)
+            {
+                if (Set(key, addValueFactory, updateValueFactory))
                 {
                     result.Add(key);
                 }

@@ -17,10 +17,10 @@ namespace Theraot.ECS
             }
         }
 
-        public void SetComponents(TEntity entity, IList<TComponentType> componentTypes, IList<Component> components)
+        public void SetComponents(TEntity entity, IDictionary<TComponentType, Component> components)
         {
             var componentStorage = _componentsByEntity[entity];
-            if (componentStorage.SetComponents(componentTypes, components, out var addedComponents))
+            if (componentStorage.SetComponents(components, out var addedComponents))
             {
                 UpdateEntitiesByQueryOnAddedComponents(entity, componentStorage.ComponentTypes, addedComponents);
             }
