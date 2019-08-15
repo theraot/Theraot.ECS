@@ -41,7 +41,7 @@ namespace Theraot.ECS
             return entity;
         }
 
-        public Int32 CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
+        public QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
             var allAsICollection = all is ICollection<TComponentType> allCollection ? allCollection : all.ToList();
             var anyAsICollection = any is ICollection<TComponentType> anyCollection ? anyCollection : any.ToList();
@@ -52,7 +52,7 @@ namespace Theraot.ECS
             {
                 if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
                 {
-                    queryIds = new HashSet<Int32>();
+                    queryIds = new HashSet<QueryId>();
                     _queryIdsByComponentType[componentType] = queryIds;
                 }
 
@@ -114,7 +114,7 @@ namespace Theraot.ECS
 
         private IEnumerable<QueryId> GetQueriesByComponentTypes(IEnumerable<TComponentType> componentTypes)
         {
-            var set = new HashSet<int>();
+            var set = new HashSet<QueryId>();
             foreach (var componentType in componentTypes)
             {
                 foreach (var queryId in GetQueriesByComponentType(componentType))
