@@ -7,7 +7,7 @@ using Component = System.Object;
 
 namespace Theraot.ECS
 {
-    public sealed partial class Scope<TEntity, TComponentType, TComponentTypeSet>
+    internal sealed partial class ScopeInternal<TEntity, TComponentType, TComponentTypeSet> : IScope<TEntity, TComponentType>
     {
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {

@@ -7,15 +7,7 @@ using Component = System.Object;
 
 namespace Theraot.ECS
 {
-    public static class Scope
-    {
-        public static IScope<TEntity, TComponentType> CreateScope<TEntity, TComponentType, TComponentTypeSet>(Func<TEntity> entityIdFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
-        {
-            return new Scope<TEntity, TComponentType, TComponentTypeSet>(entityIdFactory, componentTypeManager);
-        }
-    }
-
-    public sealed partial class Scope<TEntity, TComponentType, TComponentTypeSet> : IScope<TEntity, TComponentType>
+    internal sealed partial class ScopeInternal<TEntity, TComponentType, TComponentTypeSet>
     {
         private readonly CompactDictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
 
@@ -31,7 +23,7 @@ namespace Theraot.ECS
 
         private readonly IndexedCollection<Component> _globalComponentStorage;
 
-        internal Scope(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
+        internal ScopeInternal(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
@@ -49,7 +41,7 @@ namespace Theraot.ECS
             return entity;
         }
 
-        public QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
+        public Int32 CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
             var allAsICollection = all is ICollection<TComponentType> allCollection ? allCollection : all.ToList();
             var anyAsICollection = any is ICollection<TComponentType> anyCollection ? anyCollection : any.ToList();
@@ -60,7 +52,7 @@ namespace Theraot.ECS
             {
                 if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
                 {
-                    queryIds = new HashSet<QueryId>();
+                    queryIds = new HashSet<Int32>();
                     _queryIdsByComponentType[componentType] = queryIds;
                 }
 
@@ -91,9 +83,9 @@ namespace Theraot.ECS
             return default;
         }
 
-        public IEnumerable<TEntity> GetEntities(QueryId query)
+        public IEnumerable<TEntity> GetEntities(QueryId queryId)
         {
-            if (_entitiesByQueryId.TryGetValue(query, out var result))
+            if (_entitiesByQueryId.TryGetValue(queryId, out var result))
             {
                 return result;
             }
