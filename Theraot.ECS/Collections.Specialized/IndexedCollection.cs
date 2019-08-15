@@ -86,8 +86,8 @@ namespace Theraot.Collections.Specialized
 
         public int Add(TValue value)
         {
-            var key = ++_key;
-            Insert(key - 1, key, value);
+            var key = _key++;
+            Insert(key, key, value);
             return key;
         }
 
