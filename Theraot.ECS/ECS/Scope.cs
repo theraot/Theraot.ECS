@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Theraot.Collections.Specialized;
 using QueryId = System.Int32;
+using Component = System.Object;
 
 namespace Theraot.ECS
 {
@@ -18,7 +19,7 @@ namespace Theraot.ECS
     {
         private readonly CompactDictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
 
-        private readonly IndexedCollection<HashSet<TEntity>> _entitiesByQueryId;
+        private readonly CompactDictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
 
         private readonly Func<TEntity> _entityFactory;
 
@@ -28,20 +29,23 @@ namespace Theraot.ECS
 
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
+        private readonly IndexedCollection<Component> _globalComponentStorage;
+
         internal Scope(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
             _componentsByEntity = new CompactDictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>>(Comparer<TEntity>.Default, 16);
-            _entitiesByQueryId = new IndexedCollection<HashSet<TEntity>>(16);
+            _entitiesByQueryId = new CompactDictionary<QueryId, HashSet<TEntity>>(Comparer<QueryId>.Default, 16);
             _queryIdsByComponentType = new CompactDictionary<TComponentType, HashSet<QueryId>>(componentTypeManager, 16);
+            _globalComponentStorage = new IndexedCollection<Component>(1024);
         }
 
         public TEntity CreateEntity()
         {
             var entity = _entityFactory();
-            _componentsByEntity[entity] = new EntityComponentStorage<TComponentType, TComponentTypeSet>(_componentTypeManager);
+            _componentsByEntity[entity] = new EntityComponentStorage<TComponentType, TComponentTypeSet>(_componentTypeManager, _globalComponentStorage);
             return entity;
         }
 

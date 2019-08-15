@@ -77,35 +77,34 @@ namespace Theraot.Collections.Specialized
 
                 throw new KeyNotFoundException();
             }
-            set
-            {
-                var index = Array.BinarySearch(_keys, 0, Count, key);
-                if (index >= 0)
-                {
-                    _values[index] = value;
-                    return;
-                }
-                Insert(~index, key, value);
-            }
         }
 
-        public void Add(TValue value)
+        void ICollection<TValue>.Add(TValue value)
         {
-            Insert(_key, _key, value);
-            _key++;
+            Add(value);
         }
 
-        public void AddRange(IList<TValue> values)
+        public int Add(TValue value)
+        {
+            var key = ++_key;
+            Insert(key - 1, key, value);
+            return key;
+        }
+
+        public List<int> AddRange(IList<TValue> values)
         {
             if (values == null)
             {
                 throw new ArgumentNullException(nameof(values));
             }
 
+            var result = new List<int>(values.Count);
             foreach (var value in values)
             {
-                Add(value);
+                result.Add(Add(value));
             }
+
+            return result;
         }
 
         public void Clear()

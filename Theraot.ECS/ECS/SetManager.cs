@@ -37,7 +37,7 @@ namespace Theraot.ECS
         public int Compare(string x, string y)
         {
             var left = x ?? string.Empty;
-            var right = x ?? string.Empty;
+            var right = y ?? string.Empty;
             return string.CompareOrdinal(left, right);
         }
 
