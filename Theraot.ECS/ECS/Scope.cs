@@ -5,7 +5,7 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    public static partial class Scope
+    public static class Scope
     {
         public static Scope<TEntity, TComponentType> CreateScope<TEntity, TComponentType, TComponentTypeSet>(Func<TEntity> entityIdFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
