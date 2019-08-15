@@ -1,6 +1,7 @@
 ﻿#pragma warning disable RECS0096 // Type parameter is never used
 // ReSharper disable UnusedTypeParameter
 
+using System;
 using System.Collections.Generic;
 using Component = System.Object;
 
@@ -17,10 +18,10 @@ namespace Theraot.ECS
             }
         }
 
-        public void SetComponents(TEntity entity, IDictionary<TComponentType, Component> components)
+        public void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, Component> componentSelector)
         {
             var componentStorage = _componentsByEntity[entity];
-            if (componentStorage.SetComponents(components, out var addedComponents))
+            if (componentStorage.SetComponents(componentTypes, componentSelector, out var addedComponents))
             {
                 UpdateEntitiesByQueryOnAddedComponents(entity, componentStorage.ComponentTypes, addedComponents);
             }

@@ -43,18 +43,22 @@ namespace Theraot.ECS
             return true;
         }
 
-        public bool SetComponents(IDictionary<TComponentType, Component> components, out List<TComponentType> addedComponents)
+        public bool SetComponents(IEnumerable<TComponentType> componentTypes, Func<TComponentType, Component> componentSelector, out List<TComponentType> addedComponents)
         {
-            if (components == null)
+            if (componentTypes == null)
             {
-                throw new ArgumentNullException(nameof(components));
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+            if (componentSelector == null)
+            {
+                throw new ArgumentNullException(nameof(componentSelector));
             }
 
             addedComponents = _componentIndex.SetAll
             (
-                components.Keys,
-                key => _globalComponentStorage.Add(components[key]),
-                (key, id) => _globalComponentStorage.Set(id, components[key])
+                componentTypes,
+                key => _globalComponentStorage.Add(componentSelector(key)),
+                (key, id) => _globalComponentStorage.Set(id, componentSelector(key))
             );
             if (addedComponents.Count == 0)
             {

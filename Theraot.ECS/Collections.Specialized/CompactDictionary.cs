@@ -349,7 +349,7 @@ namespace Theraot.Collections.Specialized
             return result;
         }
 
-        public List<TKey> SetAll(ICollection<TKey> keys, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
+        public List<TKey> SetAll(IEnumerable<TKey> keys, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
         {
             if (keys == null)
             {

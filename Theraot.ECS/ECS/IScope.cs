@@ -17,7 +17,7 @@ namespace Theraot.ECS
 
         void SetComponent<TComponent>(TEntity entity, TComponentType type, TComponent component);
 
-        void SetComponents(TEntity entity, IDictionary<TComponentType, Component> components);
+        void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, Component> componentSelector);
 
         bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component);
 
@@ -56,12 +56,22 @@ namespace Theraot.ECS
                 throw new ArgumentOutOfRangeException(nameof(components), "Count does not match");
             }
 
-            var dictionary = new Dictionary<TComponentType, Component>(components.Count);
-            for (var index = 0; index < components.Count; index++)
+            var index = 0;
+            scope.SetComponents(entity, componentTypes, _ => components[index++]);
+        }
+
+        public static void SetComponents<TEntity, TComponentType>(this IScope<TEntity, TComponentType> scope, TEntity entity, Dictionary<TComponentType, Component> components)
+        {
+            if (scope == null)
             {
-                dictionary.Add(componentTypes[index], components[index]);
+                throw new ArgumentNullException(nameof(scope));
             }
-            scope.SetComponents(entity, dictionary);
+            if (components == null)
+            {
+                throw new ArgumentNullException(nameof(components));
+            }
+
+            scope.SetComponents(entity, components.Keys, type => components[type]);
         }
     }
 }
