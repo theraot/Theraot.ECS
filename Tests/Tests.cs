@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Theraot.ECS;
 
@@ -188,7 +189,7 @@ namespace Tests
         private static void GetMissingComponent<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType type)
         {
             var entityA = scope.CreateEntity();
-            Assert.AreEqual(null, scope.GetComponent<object>(entityA, type));
+            Assert.Throws<KeyNotFoundException>(() => scope.GetComponent<object>(entityA, type));
         }
 
         private static void Guid<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType type)
