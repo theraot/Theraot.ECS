@@ -80,7 +80,8 @@ namespace Theraot.ECS
             {
                 return (TComponent)result;
             }
-            return default;
+
+            throw new KeyNotFoundException();
         }
 
         public IEnumerable<TEntity> GetEntities(QueryId queryId)
