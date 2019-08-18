@@ -35,6 +35,35 @@ namespace Theraot.ECS
             );
         }
 
+        public bool Equals(Query<TComponentTypeSet> x, Query<TComponentTypeSet> y)
+        {
+            if (x == y)
+            {
+                return true;
+            }
+            if (x == null || y == null)
+            {
+                return false;
+            }
+
+            return _componentTypeManager.ContainsAll(x.All, y.All)
+                   && _componentTypeManager.ContainsAll(y.All, x.All)
+                   && _componentTypeManager.ContainsAll(x.Any, y.Any)
+                   && _componentTypeManager.ContainsAll(y.Any, x.Any)
+                   && _componentTypeManager.ContainsAll(x.None, y.None)
+                   && _componentTypeManager.ContainsAll(y.None, x.None);
+        }
+
+        public int GetHashCode(Query<TComponentTypeSet> obj)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            return obj.All.GetHashCode() ^ obj.Any.GetHashCode() ^ obj.None.GetHashCode();
+        }
+
         public QueryCheckResult QueryCheck(TComponentTypeSet allComponentsTypes, QueryId queryId)
         {
             if (allComponentsTypes == null)
@@ -160,19 +189,24 @@ namespace Theraot.ECS
             return _componentTypeManager.IsEmpty(none) || !_componentTypeManager.Overlaps(none, allComponentsTypes); //
         }
 
-        private bool CheckNotAll(TComponentType removedComponentType, TComponentTypeSet all)
-        {
-            return _componentTypeManager.Contains(all, removedComponentType); //
-        }
-
         private bool CheckNotAll(IEnumerable<TComponentType> removedComponentTypes, TComponentTypeSet all)
         {
             return _componentTypeManager.Overlaps(all, removedComponentTypes); //
         }
 
+        private bool CheckNotAll(TComponentType removedComponentType, TComponentTypeSet all)
+        {
+            return _componentTypeManager.Contains(all, removedComponentType); //
+        }
+
         private bool CheckNotAny(TComponentTypeSet allComponentsTypes, TComponentTypeSet any)
         {
             return !_componentTypeManager.IsEmpty(any) && !_componentTypeManager.Overlaps(any, allComponentsTypes); //
+        }
+
+        private bool CheckNotNone(IEnumerable<TComponentType> addedComponentTypes, TComponentTypeSet none)
+        {
+            return _componentTypeManager.Overlaps(none, addedComponentTypes); //
         }
 
         private bool CheckNotNone(TComponentType addedComponentType, TComponentTypeSet none)
@@ -183,40 +217,6 @@ namespace Theraot.ECS
         private bool CheckNotNone(TComponentTypeSet allComponentsTypes, TComponentTypeSet none)
         {
             return _componentTypeManager.Overlaps(none, allComponentsTypes); //
-        }
-
-        private bool CheckNotNone(IEnumerable<TComponentType> addedComponentTypes, TComponentTypeSet none)
-        {
-            return _componentTypeManager.Overlaps(none, addedComponentTypes); //
-        }
-
-        public bool Equals(Query<TComponentTypeSet> x, Query<TComponentTypeSet> y)
-        {
-            if (x == y)
-            {
-                return true;
-            }
-            if (x == null || y == null)
-            {
-                return false;
-            }
-
-            return _componentTypeManager.ContainsAll(x.All, y.All)
-                   && _componentTypeManager.ContainsAll(y.All, x.All)
-                   && _componentTypeManager.ContainsAll(x.Any, y.Any)
-                   && _componentTypeManager.ContainsAll(y.Any, x.Any)
-                   && _componentTypeManager.ContainsAll(x.None, y.None)
-                   && _componentTypeManager.ContainsAll(y.None, x.None);
-        }
-
-        public int GetHashCode(Query<TComponentTypeSet> obj)
-        {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
-
-            return obj.All.GetHashCode() ^ obj.Any.GetHashCode() ^ obj.None.GetHashCode();
         }
     }
 }
