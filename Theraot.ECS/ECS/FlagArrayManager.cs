@@ -40,11 +40,6 @@ namespace Theraot.ECS
             }
         }
 
-        public int Compare(ComponentType x, ComponentType y)
-        {
-            return x.CompareTo(y);
-        }
-
         public bool Contains(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             if (componentTypeSet == null)
@@ -66,6 +61,16 @@ namespace Theraot.ECS
         public ComponentTypeSet Create()
         {
             return new ComponentTypeSet(_capacity);
+        }
+
+        public bool Equals(ComponentType x, ComponentType y)
+        {
+            return x == y;
+        }
+
+        public int GetHashCode(int obj)
+        {
+            return obj;
         }
 
         public bool IsEmpty(ComponentTypeSet componentTypeSet)

@@ -28,6 +28,16 @@ namespace Tests
             return 0;
         }
 
+        public bool Equals(int x, int y)
+        {
+            return x == y;
+        }
+
+        public int GetHashCode(int obj)
+        {
+            return obj;
+        }
+
         public bool IsEmpty(int componentTypeSet)
         {
             return false;
@@ -49,11 +59,6 @@ namespace Tests
 
         public void Remove(int componentTypeSet, int componentType)
         {
-        }
-
-        public int Compare(int x, int y)
-        {
-            return x.CompareTo(y);
         }
     }
 }

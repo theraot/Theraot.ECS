@@ -18,7 +18,7 @@ namespace Theraot.ECS
         {
             _componentTypeManager = componentTypeManager;
             _globalComponentStorage = globalComponentStorage;
-            _componentIndex = new CompactDictionary<TComponentType, ComponentId>(componentTypeManager, 16);
+            _componentIndex = new CompactDictionary<TComponentType, ComponentId>(new ProxyComparer<TComponentType>(componentTypeManager), 16);
             ComponentTypes = _componentTypeManager.Create();
         }
 

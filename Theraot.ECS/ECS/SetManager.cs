@@ -34,13 +34,6 @@ namespace Theraot.ECS
             }
         }
 
-        public int Compare(string x, string y)
-        {
-            var left = x ?? string.Empty;
-            var right = y ?? string.Empty;
-            return string.CompareOrdinal(left, right);
-        }
-
         public bool Contains(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             if (componentTypeSet == null)
@@ -62,6 +55,16 @@ namespace Theraot.ECS
         public ComponentTypeSet Create()
         {
             return new HashSet<ComponentType>();
+        }
+
+        public bool Equals(string x, string y)
+        {
+            return EqualityComparer<string>.Default.Equals(x, y);
+        }
+
+        public int GetHashCode(string obj)
+        {
+            return obj == null ? 0 : obj.GetHashCode();
         }
 
         public bool IsEmpty(ComponentTypeSet componentTypeSet)

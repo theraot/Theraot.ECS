@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Theraot.Collections.Specialized;
 using Component = System.Object;
 using QueryId = System.Int32;
 
@@ -9,17 +8,17 @@ namespace Theraot.ECS
 {
     internal sealed class ScopeInternal<TEntity, TComponentType, TComponentTypeSet> : IScope<TEntity, TComponentType>
     {
-        private readonly CompactDictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
+        private readonly Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
 
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
-        private readonly CompactDictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
+        private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
 
         private readonly Func<TEntity> _entityFactory;
 
         private readonly GlobalComponentStorage _globalComponentStorage;
 
-        private readonly CompactDictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
+        private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
 
         private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
@@ -28,9 +27,9 @@ namespace Theraot.ECS
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
-            _componentsByEntity = new CompactDictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>>(Comparer<TEntity>.Default, 16);
-            _entitiesByQueryId = new CompactDictionary<QueryId, HashSet<TEntity>>(Comparer<QueryId>.Default, 16);
-            _queryIdsByComponentType = new CompactDictionary<TComponentType, HashSet<QueryId>>(componentTypeManager, 16);
+            _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>>();
+            _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
+            _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypeManager);
             _globalComponentStorage = new GlobalComponentStorage();
         }
 
