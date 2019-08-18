@@ -28,7 +28,7 @@ namespace Theraot.ECS
         {
             if (_componentIndex.TryGetValue(componentType, out var componentId))
             {
-                return _globalComponentStorage.Get<TComponent>(componentId, componentType);
+                return _globalComponentStorage.GetComponent<TComponent>(componentId, componentType);
             }
 
             throw new KeyNotFoundException("ComponentType not found on the entity");
@@ -38,7 +38,7 @@ namespace Theraot.ECS
         {
             if (_componentIndex.TryGetValue(componentType, out var componentId))
             {
-                return ref _globalComponentStorage.GetRef<TComponent>(componentId, componentType);
+                return ref _globalComponentStorage.GetComponentRef<TComponent>(componentId, componentType);
             }
 
             throw new KeyNotFoundException("ComponentType not found on the entity");
@@ -51,8 +51,8 @@ namespace Theraot.ECS
                 !_componentIndex.Set
                 (
                     componentType,
-                    key => _globalComponentStorage.Add(component, key),
-                    (key, id) => _globalComponentStorage.Set(id, component, key)
+                    key => _globalComponentStorage.AddComponent(component, key),
+                    (key, id) => _globalComponentStorage.SetComponent(id, component, key)
                 )
             )
             {
@@ -77,11 +77,11 @@ namespace Theraot.ECS
             addedComponents = _componentIndex.SetAll
             (
                 componentTypes,
-                key => _globalComponentStorage.Add(componentSelector(key), key),
+                key => _globalComponentStorage.AddComponent(componentSelector(key), key),
                 (key, id) =>
                 {
                     var component = componentSelector(key);
-                    return _globalComponentStorage.Set(id, component, key);
+                    return _globalComponentStorage.SetComponent(id, component, key);
                 }
             );
             if (addedComponents.Count == 0)
@@ -106,7 +106,7 @@ namespace Theraot.ECS
                 return false;
             }
 
-            _globalComponentStorage.Remove(removedComponentId, componentType);
+            _globalComponentStorage.RemoveComponent(removedComponentId, componentType);
             _componentTypeManager.Remove(ComponentTypes, componentType);
             return true;
         }
@@ -120,7 +120,7 @@ namespace Theraot.ECS
 
             for (var index = 0; index < removedComponentIds.Count; index++)
             {
-                _globalComponentStorage.Remove(removedComponentIds[index], removedComponentTypes[index]);
+                _globalComponentStorage.RemoveComponent(removedComponentIds[index], removedComponentTypes[index]);
             }
             _componentTypeManager.Remove(ComponentTypes, removedComponentTypes);
             return true;
