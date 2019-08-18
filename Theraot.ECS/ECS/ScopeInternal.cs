@@ -76,9 +76,9 @@ namespace Theraot.ECS
 
         public TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType)
         {
-            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetComponent(componentType, out var result))
+            if (_componentsByEntity.TryGetValue(entity, out var components))
             {
-                return (TComponent)result;
+                return (TComponent)components.GetComponent(componentType);
             }
 
             throw new KeyNotFoundException();

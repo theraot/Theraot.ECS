@@ -69,6 +69,16 @@ namespace Theraot.ECS
             return true;
         }
 
+        public Component GetComponent(TComponentType componentType)
+        {
+            if (!_componentIndex.TryGetValue(componentType, out var componentId))
+            {
+                throw new KeyNotFoundException();
+            }
+
+            return _globalComponentStorage[componentId];
+        }
+
         public bool TryGetComponent(TComponentType componentType, out Component component)
         {
             component = default;
