@@ -64,7 +64,12 @@ namespace Theraot.ECS
 
         public int GetHashCode(string obj)
         {
-            return obj == null ? 0 : obj.GetHashCode();
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            return obj.GetHashCode();
         }
 
         public bool IsEmpty(ComponentTypeSet componentTypeSet)
