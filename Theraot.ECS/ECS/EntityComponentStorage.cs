@@ -71,12 +71,12 @@ namespace Theraot.ECS
 
         public Component GetComponent(TComponentType componentType)
         {
-            if (!_componentIndex.TryGetValue(componentType, out var componentId))
+            if (_componentIndex.TryGetValue(componentType, out var componentId))
             {
-                throw new KeyNotFoundException();
+                return _globalComponentStorage[componentId];
             }
 
-            return _globalComponentStorage[componentId];
+            throw new KeyNotFoundException("ComponentType not found on the entity");
         }
 
         public bool TryGetComponent(TComponentType componentType, out Component component)

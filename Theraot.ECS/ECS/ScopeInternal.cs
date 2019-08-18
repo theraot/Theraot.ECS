@@ -81,7 +81,7 @@ namespace Theraot.ECS
                 return (TComponent)components.GetComponent(componentType);
             }
 
-            throw new KeyNotFoundException();
+            throw new KeyNotFoundException("Entity not found");
         }
 
         public IEnumerable<TEntity> GetEntities(QueryId queryId)
