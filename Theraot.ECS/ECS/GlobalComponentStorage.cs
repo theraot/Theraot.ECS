@@ -26,6 +26,12 @@ namespace Theraot.ECS
             return storage[componentId];
         }
 
+        public ref TComponent GetRef<TComponent>(ComponentId componentId)
+        {
+            var storage = GetTypedStorage<TComponent>();
+            return ref storage.GetRef(componentId);
+        }
+
         public void Remove(ComponentId removedComponentId, Type actualType)
         {
             if (TryGetTypedStorage(out var storage, actualType))

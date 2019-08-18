@@ -38,6 +38,17 @@ namespace Theraot.ECS
             throw new KeyNotFoundException("ComponentType not found on the entity");
         }
 
+        public ref TComponent GetComponentRef<TComponent>(TComponentType componentType)
+        {
+            ThrowIfInvalidType(componentType, typeof(TComponent));
+            if (_componentIndex.TryGetValue(componentType, out var componentId))
+            {
+                return ref _globalComponentStorage.GetRef<TComponent>(componentId);
+            }
+
+            throw new KeyNotFoundException("ComponentType not found on the entity");
+        }
+
         public bool SetComponent<TComponent>(TComponentType componentType, TComponent component)
         {
             ThrowIfInvalidType(componentType, typeof(TComponent));
