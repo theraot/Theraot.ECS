@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Theraot.Collections.Specialized;
 using QueryId = System.Int32;
 
 namespace Theraot.ECS
@@ -13,7 +14,7 @@ namespace Theraot.ECS
         public QueryManager(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _componentTypeManager = componentTypeManager;
-            _queryStorage = new QueryStorage<TComponentTypeSet>(this);
+            _queryStorage = new QueryStorage<TComponentTypeSet>(new ProxyComparer<Query<TComponentTypeSet>>(this));
         }
 
         public QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)

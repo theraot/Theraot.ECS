@@ -14,11 +14,11 @@ namespace Theraot.ECS
 
         private readonly GlobalComponentStorage _globalComponentStorage;
 
-        public EntityComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager, GlobalComponentStorage globalComponentStorage)
+        public EntityComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager, GlobalComponentStorage globalComponentStorage, IComparer<TComponentType> componentTypeComparer)
         {
             _componentTypeManager = componentTypeManager;
             _globalComponentStorage = globalComponentStorage;
-            _componentIndex = new CompactDictionary<TComponentType, ComponentId>(new ProxyComparer<TComponentType>(componentTypeManager), 16);
+            _componentIndex = new CompactDictionary<TComponentType, ComponentId>(componentTypeComparer, 16);
             ComponentTypes = _componentTypeManager.Create();
         }
 
