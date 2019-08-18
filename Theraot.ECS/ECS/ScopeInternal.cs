@@ -9,8 +9,6 @@ namespace Theraot.ECS
 {
     internal sealed class ScopeInternal<TEntity, TComponentType, TComponentTypeSet> : IScope<TEntity, TComponentType>
     {
-        private readonly Dictionary<TComponentType, Type> _actualTypeByComponentType;
-
         private readonly Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
 
         private readonly IComparer<TComponentType> _componentTypeComparer;
@@ -27,6 +25,8 @@ namespace Theraot.ECS
 
         private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
+        private readonly TypeMapping<TComponentType> _typeMapping;
+
         internal ScopeInternal(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
@@ -37,13 +37,13 @@ namespace Theraot.ECS
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypeManager);
             _globalComponentStorage = new GlobalComponentStorage();
-            _actualTypeByComponentType = new Dictionary<TComponentType, Type>(componentTypeManager);
+            _typeMapping = new TypeMapping<TComponentType>(componentTypeManager);
         }
 
         public TEntity CreateEntity()
         {
             var entity = _entityFactory();
-            _componentsByEntity[entity] = new EntityComponentStorage<TComponentType, TComponentTypeSet>(_componentTypeManager, _globalComponentStorage, _componentTypeComparer, _actualTypeByComponentType);
+            _componentsByEntity[entity] = new EntityComponentStorage<TComponentType, TComponentTypeSet>(_componentTypeManager, _globalComponentStorage, _componentTypeComparer, _typeMapping);
             return entity;
         }
 
@@ -99,6 +99,11 @@ namespace Theraot.ECS
             return EmptyArray<TEntity>.Instance;
         }
 
+        public Type GetRegisteredComponentType(TComponentType componentType)
+        {
+            return _typeMapping.Get(componentType);
+        }
+
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
             var componentStorage = _componentsByEntity[entity];
@@ -126,6 +131,11 @@ namespace Theraot.ECS
             }
             component = default;
             return false;
+        }
+
+        public bool TryRegisterComponentType(TComponentType componentType, Type actualType)
+        {
+            return _typeMapping.TryRegister(componentType, actualType);
         }
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)

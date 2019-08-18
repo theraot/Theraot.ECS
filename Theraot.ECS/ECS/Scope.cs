@@ -43,6 +43,11 @@ namespace Theraot.ECS
             return _scopeInternal.GetEntities(queryId);
         }
 
+        public Type GetRegisteredComponentType(TComponentType componentType)
+        {
+            return _scopeInternal.GetRegisteredComponentType(componentType);
+        }
+
         public void SetComponent<TComponent>(TEntity entity, TComponentType type, TComponent component)
         {
             _scopeInternal.SetComponent(entity, type, component);
@@ -85,6 +90,11 @@ namespace Theraot.ECS
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
         {
             return _scopeInternal.TryGetComponent(entity, componentType, out component);
+        }
+
+        public bool TryRegisterComponentType(TComponentType componentType, Type actualType)
+        {
+            return _scopeInternal.TryRegisterComponentType(componentType, actualType);
         }
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)

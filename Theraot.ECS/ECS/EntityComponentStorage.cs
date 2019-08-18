@@ -14,13 +14,13 @@ namespace Theraot.ECS
 
         private readonly GlobalComponentStorage _globalComponentStorage;
 
-        private readonly IDictionary<TComponentType, Type> _typeByComponentType;
+        private readonly TypeMapping<TComponentType> _typeMapping;
 
-        public EntityComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager, GlobalComponentStorage globalComponentStorage, IComparer<TComponentType> componentTypeComparer, IDictionary<TComponentType, Type> typeByComponentType)
+        public EntityComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager, GlobalComponentStorage globalComponentStorage, IComparer<TComponentType> componentTypeComparer, TypeMapping<TComponentType> typeMapping)
         {
             _componentTypeManager = componentTypeManager;
             _globalComponentStorage = globalComponentStorage;
-            _typeByComponentType = typeByComponentType;
+            _typeMapping = typeMapping;
             _componentIndex = new CompactDictionary<TComponentType, ComponentId>(componentTypeComparer, 16);
             ComponentTypes = _componentTypeManager.Create();
         }
@@ -98,7 +98,7 @@ namespace Theraot.ECS
                 return false;
             }
 
-            _globalComponentStorage.Remove(removedComponentId, _typeByComponentType[componentType]);
+            _globalComponentStorage.Remove(removedComponentId, _typeMapping.Get(componentType));
             _componentTypeManager.Remove(ComponentTypes, componentType);
             return true;
         }
@@ -112,7 +112,7 @@ namespace Theraot.ECS
 
             for (var index = 0; index < removedComponentIds.Count; index++)
             {
-                _globalComponentStorage.Remove(removedComponentIds[index], _typeByComponentType[removedComponentTypes[index]]);
+                _globalComponentStorage.Remove(removedComponentIds[index], _typeMapping.Get(removedComponentTypes[index]));
             }
             _componentTypeManager.Remove(ComponentTypes, removedComponentTypes);
             return true;
@@ -132,21 +132,10 @@ namespace Theraot.ECS
 
         private void ThrowIfInvalidType(TComponentType componentType, Type actualType)
         {
-            if (!ValidateType(componentType, actualType))
+            if (!_typeMapping.TryRegister(componentType, actualType))
             {
                 throw new ArgumentException($"{actualType} does not match {componentType}");
             }
-        }
-
-        private bool ValidateType(TComponentType componentType, Type actualType)
-        {
-            if (_typeByComponentType.TryGetValue(componentType, out var type))
-            {
-                return type == actualType;
-            }
-
-            _typeByComponentType.Add(componentType, actualType);
-            return true;
         }
     }
 }

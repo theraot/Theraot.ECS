@@ -15,11 +15,15 @@ namespace Theraot.ECS
 
         IEnumerable<TEntity> GetEntities(QueryId queryId);
 
+        Type GetRegisteredComponentType(TComponentType componentType);
+
         void SetComponent<TComponent>(TEntity entity, TComponentType type, TComponent component);
 
         void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, Component> componentSelector);
 
         bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component);
+
+        bool TryRegisterComponentType(TComponentType componentType, Type actualType);
 
         void UnsetComponent(TEntity entity, TComponentType componentType);
 
