@@ -11,7 +11,7 @@ using Theraot.ECS;
 namespace Theraot.Collections.Specialized
 {
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
-    public sealed class IndexedCollection<TValue> : ICollection<TValue>, ICloneable
+    public sealed class IndexedCollection<TValue> : ICollection<TValue>, ICloneable, IHasIndexedRemove
     {
         private int _key;
         private int[] _keys;

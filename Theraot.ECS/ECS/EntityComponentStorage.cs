@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
-using ComponentId = System.Int32;
 using Component = System.Object;
+using ComponentId = System.Int32;
 
 namespace Theraot.ECS
 {
@@ -14,18 +14,33 @@ namespace Theraot.ECS
 
         private readonly GlobalComponentStorage _globalComponentStorage;
 
-        public EntityComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager, GlobalComponentStorage globalComponentStorage, IComparer<TComponentType> componentTypeComparer)
+        private readonly IDictionary<TComponentType, Type> _typeByComponentType;
+
+        public EntityComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager, GlobalComponentStorage globalComponentStorage, IComparer<TComponentType> componentTypeComparer, IDictionary<TComponentType, Type> typeByComponentType)
         {
             _componentTypeManager = componentTypeManager;
             _globalComponentStorage = globalComponentStorage;
+            _typeByComponentType = typeByComponentType;
             _componentIndex = new CompactDictionary<TComponentType, ComponentId>(componentTypeComparer, 16);
             ComponentTypes = _componentTypeManager.Create();
         }
 
         public TComponentTypeSet ComponentTypes { get; }
 
+        public TComponent GetComponent<TComponent>(TComponentType componentType)
+        {
+            ThrowIfInvalidType(componentType, typeof(TComponent));
+            if (_componentIndex.TryGetValue(componentType, out var componentId))
+            {
+                return _globalComponentStorage.Get<TComponent>(componentId);
+            }
+
+            throw new KeyNotFoundException("ComponentType not found on the entity");
+        }
+
         public bool SetComponent<TComponent>(TComponentType componentType, TComponent component)
         {
+            ThrowIfInvalidType(componentType, typeof(TComponent));
             if
             (
                 !_componentIndex.Set
@@ -57,8 +72,8 @@ namespace Theraot.ECS
             addedComponents = _componentIndex.SetAll
             (
                 componentTypes,
-                key => _globalComponentStorage.Add(componentSelector(key)),
-                (key, id) => _globalComponentStorage.Set(id, componentSelector(key))
+                key => Add(key, componentSelector(key)),
+                (key, id) => Set(key, id, componentSelector(key))
             );
             if (addedComponents.Count == 0)
             {
@@ -69,43 +84,68 @@ namespace Theraot.ECS
             return true;
         }
 
-        public TComponent GetComponent<TComponent>(TComponentType componentType)
+        public bool TryGetComponent<TComponent>(TComponentType componentType, out TComponent component)
         {
-            if (_componentIndex.TryGetValue(componentType, out var componentId))
-            {
-                return _globalComponentStorage.Get<TComponent>(componentId);
-            }
-
-            throw new KeyNotFoundException("ComponentType not found on the entity");
-        }
-
-        public bool TryGetComponent(TComponentType componentType, out Component component)
-        {
+            ThrowIfInvalidType(componentType, typeof(TComponent));
             component = default;
             return _componentIndex.TryGetValue(componentType, out var componentId) && _globalComponentStorage.TryGetComponent(componentId, out component);
         }
 
-        public bool UnsetComponent<TComponent>(TComponentType componentType)
+        public bool UnsetComponent(TComponentType componentType)
         {
             if (!_componentIndex.Remove(componentType, out var removedComponentId))
             {
                 return false;
             }
 
-            _globalComponentStorage.Remove<TComponent>(removedComponentId);
+            _globalComponentStorage.Remove(removedComponentId, _typeByComponentType[componentType]);
             _componentTypeManager.Remove(ComponentTypes, componentType);
             return true;
         }
 
-        public bool UnsetComponents<TComponent>(IEnumerable<TComponentType> componentTypes, out List<TComponentType> removedComponentTypes)
+        public bool UnsetComponents(IEnumerable<TComponentType> componentTypes, out List<TComponentType> removedComponentTypes)
         {
             if (_componentIndex.RemoveAll(componentTypes, out removedComponentTypes, out var removedComponentIds) == 0)
             {
                 return false;
             }
 
-            _globalComponentStorage.RemoveAll<TComponent>(removedComponentIds);
+            for (var index = 0; index < removedComponentIds.Count; index++)
+            {
+                _globalComponentStorage.Remove(removedComponentIds[index], _typeByComponentType[removedComponentTypes[index]]);
+            }
             _componentTypeManager.Remove(ComponentTypes, removedComponentTypes);
+            return true;
+        }
+
+        private int Add(TComponentType componentType, Component component)
+        {
+            ThrowIfInvalidType(componentType, component.GetType());
+            return _globalComponentStorage.Add(component);
+        }
+
+        private int Set(TComponentType componentType, int id, Component component)
+        {
+            ThrowIfInvalidType(componentType, component.GetType());
+            return _globalComponentStorage.Set(id, component);
+        }
+
+        private void ThrowIfInvalidType(TComponentType componentType, Type actualType)
+        {
+            if (!ValidateType(componentType, actualType))
+            {
+                throw new ArgumentException($"{actualType} does not match {componentType}");
+            }
+        }
+
+        private bool ValidateType(TComponentType componentType, Type actualType)
+        {
+            if (_typeByComponentType.TryGetValue(componentType, out var type))
+            {
+                return type == actualType;
+            }
+
+            _typeByComponentType.Add(componentType, actualType);
             return true;
         }
     }

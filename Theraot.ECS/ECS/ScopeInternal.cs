@@ -9,6 +9,8 @@ namespace Theraot.ECS
 {
     internal sealed class ScopeInternal<TEntity, TComponentType, TComponentTypeSet> : IScope<TEntity, TComponentType>
     {
+        private readonly Dictionary<TComponentType, Type> _actualTypeByComponentType;
+
         private readonly Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
 
         private readonly IComparer<TComponentType> _componentTypeComparer;
@@ -29,18 +31,19 @@ namespace Theraot.ECS
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
-            _componentTypeComparer = new ProxyComparer<TComponentType>(_componentTypeManager);
+            _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeManager);
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
             _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypeManager);
             _globalComponentStorage = new GlobalComponentStorage();
+            _actualTypeByComponentType = new Dictionary<TComponentType, Type>(componentTypeManager);
         }
 
         public TEntity CreateEntity()
         {
             var entity = _entityFactory();
-            _componentsByEntity[entity] = new EntityComponentStorage<TComponentType, TComponentTypeSet>(_componentTypeManager, _globalComponentStorage, _componentTypeComparer);
+            _componentsByEntity[entity] = new EntityComponentStorage<TComponentType, TComponentTypeSet>(_componentTypeManager, _globalComponentStorage, _componentTypeComparer, _actualTypeByComponentType);
             return entity;
         }
 
@@ -116,28 +119,28 @@ namespace Theraot.ECS
 
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
         {
-            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetComponent(componentType, out var result))
+            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetComponent<TComponent>(componentType, out var result))
             {
-                component = (TComponent)result;
+                component = result;
                 return true;
             }
             component = default;
             return false;
         }
 
-        public void UnsetComponent<TComponent>(TEntity entity, TComponentType componentType)
+        public void UnsetComponent(TEntity entity, TComponentType componentType)
         {
             var componentStorage = _componentsByEntity[entity];
-            if (componentStorage.UnsetComponent<TComponent>(componentType))
+            if (componentStorage.UnsetComponent(componentType))
             {
                 UpdateEntitiesByQueryOnRemoveComponent(entity, componentStorage.ComponentTypes, componentType);
             }
         }
 
-        public void UnsetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes)
+        public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
         {
             var componentStorage = _componentsByEntity[entity];
-            if (componentStorage.UnsetComponents<TComponent>(componentTypes, out var removedComponents))
+            if (componentStorage.UnsetComponents(componentTypes, out var removedComponents))
             {
                 UpdateEntitiesByQueryOnRemoveComponents(entity, componentStorage.ComponentTypes, removedComponents);
             }

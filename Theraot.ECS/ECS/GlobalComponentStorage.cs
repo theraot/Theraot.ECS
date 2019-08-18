@@ -7,11 +7,11 @@ namespace Theraot.ECS
 {
     internal sealed class GlobalComponentStorage
     {
-        private readonly Dictionary<Type, object> _globalComponentIndex;
+        private readonly Dictionary<Type, IHasIndexedRemove> _globalComponentIndex;
 
         public GlobalComponentStorage()
         {
-            _globalComponentIndex = new Dictionary<Type, object>();
+            _globalComponentIndex = new Dictionary<Type, IHasIndexedRemove>();
         }
 
         public ComponentId Add<TComponent>(TComponent component)
@@ -26,19 +26,11 @@ namespace Theraot.ECS
             return storage[componentId];
         }
 
-        public void Remove<TComponent>(ComponentId removedComponentId)
+        public void Remove(ComponentId removedComponentId, Type actualType)
         {
-            if (TryGetTypedStorage<TComponent>(out var storage))
+            if (TryGetTypedStorage(out var storage, actualType))
             {
                 storage.Remove(removedComponentId);
-            }
-        }
-
-        public void RemoveAll<TComponent>(List<ComponentId> removedComponentIds)
-        {
-            if (TryGetTypedStorage<TComponent>(out var storage))
-            {
-                storage.RemoveAll(removedComponentIds);
             }
         }
 
@@ -51,7 +43,7 @@ namespace Theraot.ECS
         public bool TryGetComponent<TComponent>(ComponentId componentId, out TComponent component)
         {
             component = default;
-            return TryGetTypedStorage<TComponent>(out var storage) && storage.TryGetValue(componentId, out component);
+            return TryGetTypedStorage(out var storage, typeof(TComponent)) && storage is IndexedCollection<TComponent> typedStorage && typedStorage.TryGetValue(componentId, out component);
         }
 
         private IndexedCollection<TComponent> GetOrCreateTypedStorage<TComponent>()
@@ -76,16 +68,9 @@ namespace Theraot.ECS
             throw new KeyNotFoundException("Component not stored");
         }
 
-        private bool TryGetTypedStorage<TComponent>(out IndexedCollection<TComponent> storage)
+        private bool TryGetTypedStorage(out IHasIndexedRemove storage, Type actualType)
         {
-            if (_globalComponentIndex.TryGetValue(typeof(TComponent), out var storageObj))
-            {
-                storage = (IndexedCollection<TComponent>)storageObj;
-                return true;
-            }
-
-            storage = default;
-            return false;
+            return _globalComponentIndex.TryGetValue(actualType, out storage);
         }
     }
 }

@@ -87,19 +87,19 @@ namespace Theraot.ECS
             return _scopeInternal.TryGetComponent(entity, componentType, out component);
         }
 
-        public void UnsetComponent<TComponent>(TEntity entity, TComponentType componentType)
+        public void UnsetComponent(TEntity entity, TComponentType componentType)
         {
-            _scopeInternal.UnsetComponent<TComponent>(entity, componentType);
+            _scopeInternal.UnsetComponent(entity, componentType);
         }
 
-        public void UnsetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes)
+        public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
         {
-            _scopeInternal.UnsetComponents<TComponent>(entity, componentTypes);
+            _scopeInternal.UnsetComponents(entity, componentTypes);
         }
 
-        public void UnsetComponents<TComponent>(TEntity entity, params TComponentType[] componentTypes)
+        public void UnsetComponents(TEntity entity, params TComponentType[] componentTypes)
         {
-            UnsetComponents<TComponent>(entity, (IEnumerable<TComponentType>)componentTypes);
+            UnsetComponents(entity, (IEnumerable<TComponentType>)componentTypes);
         }
     }
 }
