@@ -12,9 +12,9 @@ namespace Theraot.ECS
 
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
-        private readonly IndexedCollection<Component> _globalComponentStorage;
+        private readonly GlobalComponentStorage _globalComponentStorage;
 
-        public EntityComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager, IndexedCollection<Component> globalComponentStorage)
+        public EntityComponentStorage(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager, GlobalComponentStorage globalComponentStorage)
         {
             _componentTypeManager = componentTypeManager;
             _globalComponentStorage = globalComponentStorage;
@@ -73,7 +73,7 @@ namespace Theraot.ECS
         {
             if (_componentIndex.TryGetValue(componentType, out var componentId))
             {
-                return _globalComponentStorage[componentId];
+                return _globalComponentStorage.Get(componentId);
             }
 
             throw new KeyNotFoundException("ComponentType not found on the entity");
@@ -82,17 +82,17 @@ namespace Theraot.ECS
         public bool TryGetComponent(TComponentType componentType, out Component component)
         {
             component = default;
-            return _componentIndex.TryGetValue(componentType, out var componentId) && _globalComponentStorage.TryGetValue(componentId, out component);
+            return _componentIndex.TryGetValue(componentType, out var componentId) && _globalComponentStorage.TryGetComponent(componentId, out component);
         }
 
         public bool UnsetComponent(TComponentType componentType)
         {
-            if (!_componentIndex.Remove(componentType, out var removedValue))
+            if (!_componentIndex.Remove(componentType, out var removedComponentId))
             {
                 return false;
             }
 
-            _globalComponentStorage.Remove(removedValue);
+            _globalComponentStorage.Remove(removedComponentId);
             _componentTypeManager.Remove(ComponentTypes, componentType);
             return true;
         }

@@ -17,7 +17,7 @@ namespace Theraot.ECS
 
         private readonly Func<TEntity> _entityFactory;
 
-        private readonly IndexedCollection<Component> _globalComponentStorage;
+        private readonly GlobalComponentStorage _globalComponentStorage;
 
         private readonly CompactDictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
 
@@ -31,7 +31,7 @@ namespace Theraot.ECS
             _componentsByEntity = new CompactDictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>>(Comparer<TEntity>.Default, 16);
             _entitiesByQueryId = new CompactDictionary<QueryId, HashSet<TEntity>>(Comparer<QueryId>.Default, 16);
             _queryIdsByComponentType = new CompactDictionary<TComponentType, HashSet<QueryId>>(componentTypeManager, 16);
-            _globalComponentStorage = new IndexedCollection<Component>(1024);
+            _globalComponentStorage = new GlobalComponentStorage();
         }
 
         public TEntity CreateEntity()
