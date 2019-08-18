@@ -1,47 +1,91 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 using ComponentId = System.Int32;
-using Component = System.Object;
 
 namespace Theraot.ECS
 {
     internal sealed class GlobalComponentStorage
     {
-        private readonly IndexedCollection<Component> _globalComponentStorage;
+        private readonly Dictionary<Type, object> _globalComponentIndex;
 
         public GlobalComponentStorage()
         {
-            _globalComponentStorage = new IndexedCollection<Component>(1024);
+            _globalComponentIndex = new Dictionary<Type, object>();
         }
 
         public ComponentId Add<TComponent>(TComponent component)
         {
-            return _globalComponentStorage.Add(component);
+            var storage = GetOrCreateTypedStorage<TComponent>();
+            return storage.Add(component);
+        }
+
+        public TComponent Get<TComponent>(ComponentId componentId)
+        {
+            var storage = GetTypedStorage<TComponent>();
+            return storage[componentId];
+        }
+
+        public void Remove<TComponent>(ComponentId removedComponentId)
+        {
+            if (TryGetTypedStorage<TComponent>(out var storage))
+            {
+                storage.Remove(removedComponentId);
+            }
+        }
+
+        public void RemoveAll<TComponent>(List<ComponentId> removedComponentIds)
+        {
+            if (TryGetTypedStorage<TComponent>(out var storage))
+            {
+                storage.RemoveAll(removedComponentIds);
+            }
         }
 
         public ComponentId Set<TComponent>(ComponentId id, TComponent component)
         {
-            return _globalComponentStorage.Set(id, component);
+            var storage = GetOrCreateTypedStorage<TComponent>();
+            return storage.Set(id, component);
         }
 
-        public Component Get(ComponentId componentId)
+        public bool TryGetComponent<TComponent>(ComponentId componentId, out TComponent component)
         {
-            return _globalComponentStorage[componentId];
+            component = default;
+            return TryGetTypedStorage<TComponent>(out var storage) && storage.TryGetValue(componentId, out component);
         }
 
-        public bool TryGetComponent(ComponentId componentId, out Component component)
+        private IndexedCollection<TComponent> GetOrCreateTypedStorage<TComponent>()
         {
-            return _globalComponentStorage.TryGetValue(componentId, out component);
+            if (_globalComponentIndex.TryGetValue(typeof(TComponent), out var storageObj))
+            {
+                return (IndexedCollection<TComponent>)storageObj;
+            }
+
+            var storage = new IndexedCollection<TComponent>(1024);
+            _globalComponentIndex[typeof(TComponent)] = storage;
+            return storage;
         }
 
-        public void Remove(ComponentId removedComponentId)
+        private IndexedCollection<TComponent> GetTypedStorage<TComponent>()
         {
-            _globalComponentStorage.Remove(removedComponentId);
+            if (_globalComponentIndex.TryGetValue(typeof(TComponent), out var storageObj))
+            {
+                return (IndexedCollection<TComponent>)storageObj;
+            }
+
+            throw new KeyNotFoundException("Component not stored");
         }
 
-        public void RemoveAll(List<ComponentId> removedComponentIds)
+        private bool TryGetTypedStorage<TComponent>(out IndexedCollection<TComponent> storage)
         {
-            _globalComponentStorage.RemoveAll(removedComponentIds);
+            if (_globalComponentIndex.TryGetValue(typeof(TComponent), out var storageObj))
+            {
+                storage = (IndexedCollection<TComponent>)storageObj;
+                return true;
+            }
+
+            storage = default;
+            return false;
         }
     }
 }

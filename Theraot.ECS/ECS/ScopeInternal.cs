@@ -81,7 +81,7 @@ namespace Theraot.ECS
         {
             if (_componentsByEntity.TryGetValue(entity, out var components))
             {
-                return (TComponent)components.GetComponent(componentType);
+                return components.GetComponent<TComponent>(componentType);
             }
 
             throw new KeyNotFoundException("Entity not found");
@@ -125,19 +125,19 @@ namespace Theraot.ECS
             return false;
         }
 
-        public void UnsetComponent(TEntity entity, TComponentType componentType)
+        public void UnsetComponent<TComponent>(TEntity entity, TComponentType componentType)
         {
             var componentStorage = _componentsByEntity[entity];
-            if (componentStorage.UnsetComponent(componentType))
+            if (componentStorage.UnsetComponent<TComponent>(componentType))
             {
                 UpdateEntitiesByQueryOnRemoveComponent(entity, componentStorage.ComponentTypes, componentType);
             }
         }
 
-        public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
+        public void UnsetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes)
         {
             var componentStorage = _componentsByEntity[entity];
-            if (componentStorage.UnsetComponents(componentTypes, out var removedComponents))
+            if (componentStorage.UnsetComponents<TComponent>(componentTypes, out var removedComponents))
             {
                 UpdateEntitiesByQueryOnRemoveComponents(entity, componentStorage.ComponentTypes, removedComponents);
             }

@@ -69,11 +69,11 @@ namespace Theraot.ECS
             return true;
         }
 
-        public Component GetComponent(TComponentType componentType)
+        public TComponent GetComponent<TComponent>(TComponentType componentType)
         {
             if (_componentIndex.TryGetValue(componentType, out var componentId))
             {
-                return _globalComponentStorage.Get(componentId);
+                return _globalComponentStorage.Get<TComponent>(componentId);
             }
 
             throw new KeyNotFoundException("ComponentType not found on the entity");
@@ -85,26 +85,26 @@ namespace Theraot.ECS
             return _componentIndex.TryGetValue(componentType, out var componentId) && _globalComponentStorage.TryGetComponent(componentId, out component);
         }
 
-        public bool UnsetComponent(TComponentType componentType)
+        public bool UnsetComponent<TComponent>(TComponentType componentType)
         {
             if (!_componentIndex.Remove(componentType, out var removedComponentId))
             {
                 return false;
             }
 
-            _globalComponentStorage.Remove(removedComponentId);
+            _globalComponentStorage.Remove<TComponent>(removedComponentId);
             _componentTypeManager.Remove(ComponentTypes, componentType);
             return true;
         }
 
-        public bool UnsetComponents(IEnumerable<TComponentType> componentTypes, out List<TComponentType> removedComponentTypes)
+        public bool UnsetComponents<TComponent>(IEnumerable<TComponentType> componentTypes, out List<TComponentType> removedComponentTypes)
         {
             if (_componentIndex.RemoveAll(componentTypes, out removedComponentTypes, out var removedComponentIds) == 0)
             {
                 return false;
             }
 
-            _globalComponentStorage.RemoveAll(removedComponentIds);
+            _globalComponentStorage.RemoveAll<TComponent>(removedComponentIds);
             _componentTypeManager.Remove(ComponentTypes, removedComponentTypes);
             return true;
         }
