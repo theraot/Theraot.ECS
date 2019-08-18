@@ -76,7 +76,7 @@ namespace Theraot.ECS
 
         public TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType)
         {
-            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(componentType, out var result))
+            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetComponent(componentType, out var result))
             {
                 return (TComponent)result;
             }
@@ -112,7 +112,7 @@ namespace Theraot.ECS
 
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
         {
-            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetValue(componentType, out var result))
+            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetComponent(componentType, out var result))
             {
                 component = (TComponent)result;
                 return true;

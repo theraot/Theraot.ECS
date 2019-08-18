@@ -69,7 +69,7 @@ namespace Theraot.ECS
             return true;
         }
 
-        public bool TryGetValue(TComponentType componentType, out Component component)
+        public bool TryGetComponent(TComponentType componentType, out Component component)
         {
             component = default;
             return _componentIndex.TryGetValue(componentType, out var componentId) && _globalComponentStorage.TryGetValue(componentId, out component);
