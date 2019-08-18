@@ -7,14 +7,14 @@ namespace Theraot.ECS
 {
     internal sealed class GlobalComponentStorage<TComponentType>
     {
-        private readonly Dictionary<Type, IHasIndexedRemove> _globalComponentIndex;
+        private readonly Dictionary<TComponentType, Type> _actualTypeByComponentType;
 
-        private readonly TypeMapping<TComponentType> _typeMapping;
+        private readonly Dictionary<Type, IHasIndexedRemove> _globalComponentIndex;
 
         public GlobalComponentStorage(IEqualityComparer<TComponentType> componentTypeEqualityComparer)
         {
             _globalComponentIndex = new Dictionary<Type, IHasIndexedRemove>();
-            _typeMapping = new TypeMapping<TComponentType>(componentTypeEqualityComparer);
+            _actualTypeByComponentType = new Dictionary<TComponentType, Type>(componentTypeEqualityComparer);
         }
 
         public ComponentId Add<TComponent>(TComponent component, TComponentType componentType)
@@ -40,12 +40,12 @@ namespace Theraot.ECS
 
         public Type GetRegisteredComponentType(TComponentType componentType)
         {
-            return _typeMapping.Get(componentType);
+            return _actualTypeByComponentType[componentType];
         }
 
         public void Remove(ComponentId removedComponentId, TComponentType componentType)
         {
-            if (TryGetTypedStorage(out var storage, _typeMapping.Get(componentType)))
+            if (TryGetTypedStorage(out var storage, _actualTypeByComponentType[componentType]))
             {
                 storage.Remove(removedComponentId);
             }
@@ -67,7 +67,13 @@ namespace Theraot.ECS
 
         public bool TryRegisterComponentType(TComponentType componentType, Type actualType)
         {
-            return _typeMapping.TryRegister(componentType, actualType);
+            if (_actualTypeByComponentType.TryGetValue(componentType, out var type))
+            {
+                return type == actualType;
+            }
+
+            _actualTypeByComponentType.Add(componentType, actualType);
+            return true;
         }
 
         private IndexedCollection<TComponent> GetOrCreateTypedStorage<TComponent>()
@@ -94,7 +100,7 @@ namespace Theraot.ECS
 
         private void ThrowIfInvalidType(TComponentType componentType, Type actualType)
         {
-            if (!_typeMapping.TryRegister(componentType, actualType))
+            if (!TryRegisterComponentType(componentType, actualType))
             {
                 throw new ArgumentException($"{actualType} does not match {componentType}");
             }
