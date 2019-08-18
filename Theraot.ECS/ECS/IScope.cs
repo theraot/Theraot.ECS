@@ -25,7 +25,7 @@ namespace Theraot.ECS
 
         bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component);
 
-        bool TryRegisterComponentType(TComponentType componentType, Type actualType);
+        bool TryRegisterComponentType<TComponent>(TComponentType componentType);
 
         void UnsetComponent(TEntity entity, TComponentType componentType);
 

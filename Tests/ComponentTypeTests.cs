@@ -23,7 +23,7 @@ namespace Tests
         {
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new SetManager());
-            scope.TryRegisterComponentType("test", typeof(int));
+            scope.TryRegisterComponentType<int>("test");
             var entityA = scope.CreateEntity();
             Assert.AreEqual(typeof(int), scope.GetRegisteredComponentType("test"));
             Assert.Throws<ArgumentException>(() => scope.SetComponent(entityA, "test", "hello"));

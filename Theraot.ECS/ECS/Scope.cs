@@ -97,9 +97,9 @@ namespace Theraot.ECS
             return _scopeInternal.TryGetComponent(entity, componentType, out component);
         }
 
-        public bool TryRegisterComponentType(TComponentType componentType, Type actualType)
+        public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
         {
-            return _scopeInternal.TryRegisterComponentType(componentType, actualType);
+            return _scopeInternal.TryRegisterComponentType<TComponent>(componentType);
         }
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)

@@ -140,9 +140,9 @@ namespace Theraot.ECS
             return false;
         }
 
-        public bool TryRegisterComponentType(TComponentType componentType, Type actualType)
+        public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
         {
-            return _globalComponentStorage.TryRegisterComponentType(componentType, actualType);
+            return _globalComponentStorage.TryRegisterComponentType<TComponent>(componentType);
         }
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)
