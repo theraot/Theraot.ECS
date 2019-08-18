@@ -146,6 +146,17 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        public ref TValue GetRef(int key)
+        {
+            var index = IndexOfKey(key);
+            if (index >= 0)
+            {
+                return ref _values[index];
+            }
+
+            throw new KeyNotFoundException();
+        }
+
         public int IndexOfValue(TValue value)
         {
             return Array.IndexOf(_values, value, 0, Count);
