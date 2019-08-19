@@ -3,7 +3,7 @@ using Theraot.ECS;
 
 namespace Tests
 {
-    internal class DummyManager : IComponentTypeManager<int, int>
+    internal class DummyManager : IComponentTypeManager<int, int>, IEqualityComparer<int>
     {
         public IEqualityComparer<int> ComponentTypEqualityComparer => this;
 

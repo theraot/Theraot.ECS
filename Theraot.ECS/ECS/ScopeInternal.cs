@@ -29,12 +29,13 @@ namespace Theraot.ECS
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
-            _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeManager);
+            var componentTypEqualityComparer = componentTypeManager.ComponentTypEqualityComparer;
+            _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypEqualityComparer);
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
             _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>>();
             _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
-            _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypeManager);
-            _globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypeManager);
+            _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypEqualityComparer);
+            _globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypEqualityComparer);
         }
 
         public TEntity CreateEntity()
