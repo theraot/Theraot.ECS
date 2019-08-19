@@ -43,7 +43,7 @@ namespace Theraot.ECS
             return ref _scopeInternal.GetComponentRef<TComponent>(entity, componentType);
         }
 
-        public IEnumerable<TEntity> GetEntities(QueryId queryId)
+        public EntityCollection<TEntity> GetEntities(QueryId queryId)
         {
             return _scopeInternal.GetEntities(queryId);
         }

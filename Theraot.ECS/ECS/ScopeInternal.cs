@@ -15,7 +15,7 @@ namespace Theraot.ECS
 
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
-        private readonly Dictionary<QueryId, HashSet<TEntity>> _entitiesByQueryId;
+        private readonly Dictionary<QueryId, EntityCollection<TEntity>> _entitiesByQueryId;
 
         private readonly Func<TEntity> _entityFactory;
 
@@ -33,7 +33,7 @@ namespace Theraot.ECS
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypEqualityComparer);
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
             _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>>();
-            _entitiesByQueryId = new Dictionary<QueryId, HashSet<TEntity>>();
+            _entitiesByQueryId = new Dictionary<QueryId, EntityCollection<TEntity>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypEqualityComparer);
             _globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypEqualityComparer);
         }
@@ -51,7 +51,7 @@ namespace Theraot.ECS
             var anyAsICollection = any is ICollection<TComponentType> anyCollection ? anyCollection : any.ToList();
             var noneAsICollection = none is ICollection<TComponentType> noneCollection ? noneCollection : none.ToList();
             var queryId = _queryManager.CreateQuery(allAsICollection, anyAsICollection, noneAsICollection);
-            var set = _entitiesByQueryId[queryId] = new HashSet<TEntity>();
+            var set = _entitiesByQueryId[queryId] = new EntityCollection<TEntity>();
             foreach (var componentType in allAsICollection.Concat(anyAsICollection).Concat(noneAsICollection))
             {
                 if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
@@ -98,13 +98,14 @@ namespace Theraot.ECS
             throw new KeyNotFoundException("Entity not found");
         }
 
-        public IEnumerable<TEntity> GetEntities(QueryId queryId)
+        public EntityCollection<TEntity> GetEntities(QueryId queryId)
         {
             if (_entitiesByQueryId.TryGetValue(queryId, out var result))
             {
                 return result;
             }
-            return EmptyArray<TEntity>.Instance;
+
+            throw new KeyNotFoundException("Query not found");
         }
 
         public Type GetRegisteredComponentType(TComponentType componentType)
