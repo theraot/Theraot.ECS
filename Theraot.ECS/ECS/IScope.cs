@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Component = System.Object;
-using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
@@ -9,13 +8,11 @@ namespace Theraot.ECS
     {
         TEntity CreateEntity();
 
-        QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
-
         TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType);
 
         ref TComponent GetComponentRef<TComponent>(TEntity entity, TComponentType componentType);
 
-        EntityCollection<TEntity> GetEntities(QueryId queryId);
+        EntityCollection<TEntity> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
 
         Type GetRegisteredComponentType(TComponentType componentType);
 

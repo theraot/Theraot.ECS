@@ -10,18 +10,18 @@ namespace Tests
         {
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new FlagArrayManager(8));
-            var queryA = scope.CreateQuery(new[] { 1, 5 }, new[] { 6 }, new[] { 7 });
-            var queryB = scope.CreateQuery(new[] { 1, 5 }, new[] { 6 }, new[] { 7 });
-            var queryC = scope.CreateQuery(new[] { 0, 5 }, new[] { 6 }, new[] { 7 });
-            var queryE = scope.CreateQuery(new[] { 2, 5 }, new[] { 6 }, new[] { 7 });
-            var queryD = scope.CreateQuery(new[] { 0, 5 }, new[] { 6 }, new[] { 7 });
-            var queryF = scope.CreateQuery(new[] { 2, 5 }, new[] { 6 }, new[] { 7 });
-            Assert.AreEqual(queryA, queryB);
-            Assert.AreEqual(queryC, queryD);
-            Assert.AreEqual(queryE, queryF);
-            Assert.AreNotEqual(queryA, queryC);
-            Assert.AreNotEqual(queryA, queryE);
-            Assert.AreNotEqual(queryC, queryE);
+            var entitiesA = scope.GetEntityCollection(new[] { 1, 5 }, new[] { 6 }, new[] { 7 });
+            var entitiesB = scope.GetEntityCollection(new[] { 1, 5 }, new[] { 6 }, new[] { 7 });
+            var entitiesC = scope.GetEntityCollection(new[] { 0, 5 }, new[] { 6 }, new[] { 7 });
+            var entitiesE = scope.GetEntityCollection(new[] { 2, 5 }, new[] { 6 }, new[] { 7 });
+            var entitiesD = scope.GetEntityCollection(new[] { 0, 5 }, new[] { 6 }, new[] { 7 });
+            var entitiesF = scope.GetEntityCollection(new[] { 2, 5 }, new[] { 6 }, new[] { 7 });
+            Assert.AreSame(entitiesA, entitiesB);
+            Assert.AreSame(entitiesC, entitiesD);
+            Assert.AreSame(entitiesE, entitiesF);
+            Assert.AreNotSame(entitiesA, entitiesC);
+            Assert.AreNotSame(entitiesA, entitiesE);
+            Assert.AreNotSame(entitiesC, entitiesE);
         }
     }
 }

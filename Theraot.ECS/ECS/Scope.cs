@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Component = System.Object;
-using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
@@ -28,11 +27,6 @@ namespace Theraot.ECS
             return _scopeInternal.CreateEntity();
         }
 
-        public QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
-        {
-            return _scopeInternal.CreateQuery(all, any, none);
-        }
-
         public TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType)
         {
             return _scopeInternal.GetComponent<TComponent>(entity, componentType);
@@ -43,9 +37,9 @@ namespace Theraot.ECS
             return ref _scopeInternal.GetComponentRef<TComponent>(entity, componentType);
         }
 
-        public EntityCollection<TEntity> GetEntities(QueryId queryId)
+        public EntityCollection<TEntity> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
-            return _scopeInternal.GetEntities(queryId);
+            return _scopeInternal.GetEntityCollection(all, any, none);
         }
 
         public Type GetRegisteredComponentType(TComponentType componentType)

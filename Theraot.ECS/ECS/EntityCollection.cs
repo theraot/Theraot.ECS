@@ -30,7 +30,7 @@ namespace Theraot.ECS
             _hashSet.Add(entity);
         }
 
-        public void Remove(TEntity entity)
+        internal void Remove(TEntity entity)
         {
             _hashSet.Remove(entity);
         }

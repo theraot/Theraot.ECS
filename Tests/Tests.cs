@@ -33,13 +33,6 @@ namespace Tests
         }
 
         [Test]
-        public void NotExistingQuery()
-        {
-            NotExistingQuery(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(1)));
-            NotExistingQuery(Scope.CreateScope(IncrementingInt(), new SetManager()));
-        }
-
-        [Test]
         public void QueryAfterEntities()
         {
             QueryAfterEntities(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(1)), 0);
@@ -206,18 +199,12 @@ namespace Tests
             return () => value++;
         }
 
-        private static void NotExistingQuery<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope)
-        {
-            Assert.AreEqual(0, scope.GetEntities(0).ToArray().Length);
-        }
-
         private static void QueryAfterEntities<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType type)
         {
             var entityA = scope.CreateEntity();
             var entityB = scope.CreateEntity();
             scope.SetComponent(entityA, type, 100);
-            var query = scope.CreateQuery(new[] { type }, Array.Empty<TComponentType>(), Array.Empty<TComponentType>());
-            var entities = scope.GetEntities(query).ToArray();
+            var entities = scope.GetEntityCollection(new[] { type }, Array.Empty<TComponentType>(), Array.Empty<TComponentType>()).ToArray();
             Assert.AreEqual(1, entities.Length);
             Assert.AreEqual(entityA, entities[0]);
             Assert.AreNotEqual(entityB, entities[0]);
@@ -226,11 +213,11 @@ namespace Tests
         private static void QueryAllUpdateOnAddedComponent<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType type)
         {
             var entityA = scope.CreateEntity();
-            var query = scope.CreateQuery(new[] { type }, Array.Empty<TComponentType>(), Array.Empty<TComponentType>());
-            var entitiesA = scope.GetEntities(query).ToArray();
+            var entities = scope.GetEntityCollection(new[] { type }, Array.Empty<TComponentType>(), Array.Empty<TComponentType>());
+            var entitiesA = entities.ToArray();
             Assert.AreEqual(0, entitiesA.Length);
             scope.SetComponent(entityA, type, 100);
-            var entitiesB = scope.GetEntities(query).ToArray();
+            var entitiesB = entities.ToArray();
             Assert.AreEqual(1, entitiesB.Length);
             Assert.AreEqual(entityA, entitiesB[0]);
         }
@@ -238,8 +225,8 @@ namespace Tests
         private static void QueryAllUpdateOnAddedComponents<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType typeA, TComponentType typeB)
         {
             var entityA = scope.CreateEntity();
-            var query = scope.CreateQuery(new[] { typeA }, Array.Empty<TComponentType>(), Array.Empty<TComponentType>());
-            var entitiesA = scope.GetEntities(query).ToArray();
+            var entities = scope.GetEntityCollection(new[] { typeA }, Array.Empty<TComponentType>(), Array.Empty<TComponentType>());
+            var entitiesA = entities.ToArray();
             Assert.AreEqual(0, entitiesA.Length);
             scope.SetComponents
             (
@@ -247,7 +234,7 @@ namespace Tests
                 new[] { typeA, typeB },
                 new object[] { 100, 100 }
             );
-            var entitiesB = scope.GetEntities(query).ToArray();
+            var entitiesB = entities.ToArray();
             Assert.AreEqual(1, entitiesB.Length);
             Assert.AreEqual(entityA, entitiesB[0]);
         }
@@ -255,8 +242,8 @@ namespace Tests
         private static void QueryAllUpdateOnRemoveComponent<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType typeA, TComponentType typeB)
         {
             var entityA = scope.CreateEntity();
-            var query = scope.CreateQuery(new[] { typeA }, Array.Empty<TComponentType>(), Array.Empty<TComponentType>());
-            var entitiesA = scope.GetEntities(query).ToArray();
+            var entities = scope.GetEntityCollection(new[] { typeA }, Array.Empty<TComponentType>(), Array.Empty<TComponentType>());
+            var entitiesA = entities.ToArray();
             Assert.AreEqual(0, entitiesA.Length);
             scope.SetComponents
             (
@@ -264,19 +251,19 @@ namespace Tests
                 new[] { typeA, typeB },
                 new object[] { 100, 100 }
             );
-            var entitiesB = scope.GetEntities(query).ToArray();
+            var entitiesB = entities.ToArray();
             Assert.AreEqual(1, entitiesB.Length);
             Assert.AreEqual(entityA, entitiesB[0]);
             scope.UnsetComponent(entityA, typeA);
-            var entitiesC = scope.GetEntities(query).ToArray();
+            var entitiesC = entities.ToArray();
             Assert.AreEqual(0, entitiesC.Length);
         }
 
         private static void QueryAllUpdateOnRemoveComponents<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType typeA, TComponentType typeB)
         {
             var entityA = scope.CreateEntity();
-            var query = scope.CreateQuery(new[] { typeA }, Array.Empty<TComponentType>(), Array.Empty<TComponentType>());
-            var entitiesA = scope.GetEntities(query).ToArray();
+            var entities = scope.GetEntityCollection(new[] { typeA }, Array.Empty<TComponentType>(), Array.Empty<TComponentType>());
+            var entitiesA = entities.ToArray();
             Assert.AreEqual(0, entitiesA.Length);
             scope.SetComponents
             (
@@ -284,22 +271,22 @@ namespace Tests
                 new[] { typeA, typeB },
                 new object[] { 100, 100 }
             );
-            var entitiesB = scope.GetEntities(query).ToArray();
+            var entitiesB = entities.ToArray();
             Assert.AreEqual(1, entitiesB.Length);
             Assert.AreEqual(entityA, entitiesB[0]);
             scope.UnsetComponents(entityA, typeA, typeB);
-            var entitiesC = scope.GetEntities(query).ToArray();
+            var entitiesC = entities.ToArray();
             Assert.AreEqual(0, entitiesC.Length);
         }
 
         private static void QueryAnyUpdateOnAddedComponent<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType type)
         {
             var entityA = scope.CreateEntity();
-            var query = scope.CreateQuery(Array.Empty<TComponentType>(), new[] { type }, Array.Empty<TComponentType>());
-            var entitiesA = scope.GetEntities(query).ToArray();
+            var entities = scope.GetEntityCollection(Array.Empty<TComponentType>(), new[] { type }, Array.Empty<TComponentType>());
+            var entitiesA = entities.ToArray();
             Assert.AreEqual(0, entitiesA.Length);
             scope.SetComponent(entityA, type, 100);
-            var entitiesB = scope.GetEntities(query).ToArray();
+            var entitiesB = entities.ToArray();
             Assert.AreEqual(1, entitiesB.Length);
             Assert.AreEqual(entityA, entitiesB[0]);
         }
@@ -307,8 +294,8 @@ namespace Tests
         private static void QueryAnyUpdateOnAddedComponents<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType typeA, TComponentType typeB)
         {
             var entityA = scope.CreateEntity();
-            var query = scope.CreateQuery(Array.Empty<TComponentType>(), new[] { typeA }, Array.Empty<TComponentType>());
-            var entitiesA = scope.GetEntities(query).ToArray();
+            var entities = scope.GetEntityCollection(Array.Empty<TComponentType>(), new[] { typeA }, Array.Empty<TComponentType>());
+            var entitiesA = entities.ToArray();
             Assert.AreEqual(0, entitiesA.Length);
             scope.SetComponents
             (
@@ -316,7 +303,7 @@ namespace Tests
                 new[] { typeA, typeB },
                 new object[] { 100, 100 }
             );
-            var entitiesB = scope.GetEntities(query).ToArray();
+            var entitiesB = entities.ToArray();
             Assert.AreEqual(1, entitiesB.Length);
             Assert.AreEqual(entityA, entitiesB[0]);
         }
@@ -324,8 +311,8 @@ namespace Tests
         private static void QueryAnyUpdateOnRemovedComponent<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType typeA, TComponentType typeB)
         {
             var entityA = scope.CreateEntity();
-            var query = scope.CreateQuery(Array.Empty<TComponentType>(), new[] { typeA }, Array.Empty<TComponentType>());
-            var entitiesA = scope.GetEntities(query).ToArray();
+            var entities = scope.GetEntityCollection(Array.Empty<TComponentType>(), new[] { typeA }, Array.Empty<TComponentType>());
+            var entitiesA = entities.ToArray();
             Assert.AreEqual(0, entitiesA.Length);
             scope.SetComponents
             (
@@ -333,19 +320,19 @@ namespace Tests
                 new[] { typeA, typeB },
                 new object[] { 100, 100 }
             );
-            var entitiesB = scope.GetEntities(query).ToArray();
+            var entitiesB = entities.ToArray();
             Assert.AreEqual(1, entitiesB.Length);
             Assert.AreEqual(entityA, entitiesB[0]);
             scope.UnsetComponent(entityA, typeA);
-            var entitiesC = scope.GetEntities(query).ToArray();
+            var entitiesC = entities.ToArray();
             Assert.AreEqual(0, entitiesC.Length);
         }
 
         private static void QueryAnyUpdateOnRemovedComponents<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType typeA, TComponentType typeB)
         {
             var entityA = scope.CreateEntity();
-            var query = scope.CreateQuery(Array.Empty<TComponentType>(), new[] { typeA }, Array.Empty<TComponentType>());
-            var entitiesA = scope.GetEntities(query).ToArray();
+            var entities = scope.GetEntityCollection(Array.Empty<TComponentType>(), new[] { typeA }, Array.Empty<TComponentType>());
+            var entitiesA = entities.ToArray();
             Assert.AreEqual(0, entitiesA.Length);
             scope.SetComponents
             (
@@ -353,43 +340,43 @@ namespace Tests
                 new[] { typeA, typeB },
                 new object[] { 100, 100 }
             );
-            var entitiesB = scope.GetEntities(query).ToArray();
+            var entitiesB = entities.ToArray();
             Assert.AreEqual(1, entitiesB.Length);
             Assert.AreEqual(entityA, entitiesB[0]);
             scope.UnsetComponents(entityA, typeA, typeB);
-            var entitiesC = scope.GetEntities(query).ToArray();
+            var entitiesC = entities.ToArray();
             Assert.AreEqual(0, entitiesC.Length);
         }
 
         private static void QueryBeforeEntities<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType type)
         {
-            var query = scope.CreateQuery(new[] { type }, Array.Empty<TComponentType>(), Array.Empty<TComponentType>());
+            var entities = scope.GetEntityCollection(new[] { type }, Array.Empty<TComponentType>(), Array.Empty<TComponentType>());
             var entityA = scope.CreateEntity();
             var entityB = scope.CreateEntity();
             scope.SetComponent(entityA, type, 100);
-            var entities = scope.GetEntities(query).ToArray();
-            Assert.AreEqual(1, entities.Length);
-            Assert.AreEqual(entityA, entities[0]);
-            Assert.AreNotEqual(entityB, entities[0]);
+            var entitiesA = entities.ToArray();
+            Assert.AreEqual(1, entitiesA.Length);
+            Assert.AreEqual(entityA, entitiesA[0]);
+            Assert.AreNotEqual(entityB, entitiesA[0]);
         }
 
         private static void QueryNoneUpdateOnAddedComponent<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType type)
         {
             var entityA = scope.CreateEntity();
-            var query = scope.CreateQuery(Array.Empty<TComponentType>(), Array.Empty<TComponentType>(), new[] { type });
-            var entitiesA = scope.GetEntities(query).ToArray();
+            var entities = scope.GetEntityCollection(Array.Empty<TComponentType>(), Array.Empty<TComponentType>(), new[] { type });
+            var entitiesA = entities.ToArray();
             Assert.AreEqual(1, entitiesA.Length);
             Assert.AreEqual(entityA, entitiesA[0]);
             scope.SetComponent(entityA, type, 100);
-            var entitiesB = scope.GetEntities(query).ToArray();
+            var entitiesB = entities.ToArray();
             Assert.AreEqual(0, entitiesB.Length);
         }
 
         private static void QueryNoneUpdateOnAddedComponents<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType typeA, TComponentType typeB)
         {
             var entityA = scope.CreateEntity();
-            var query = scope.CreateQuery(Array.Empty<TComponentType>(), Array.Empty<TComponentType>(), new[] { typeA });
-            var entitiesA = scope.GetEntities(query).ToArray();
+            var entities = scope.GetEntityCollection(Array.Empty<TComponentType>(), Array.Empty<TComponentType>(), new[] { typeA });
+            var entitiesA = entities.ToArray();
             Assert.AreEqual(1, entitiesA.Length);
             Assert.AreEqual(entityA, entitiesA[0]);
             scope.SetComponents
@@ -398,15 +385,15 @@ namespace Tests
                 new[] { typeA, typeB },
                 new object[] { 100, 100 }
             );
-            var entitiesB = scope.GetEntities(query).ToArray();
+            var entitiesB = entities.ToArray();
             Assert.AreEqual(0, entitiesB.Length);
         }
 
         private static void QueryNoneUpdateOnRemovedComponent<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType typeA, TComponentType typeB)
         {
             var entityA = scope.CreateEntity();
-            var query = scope.CreateQuery(Array.Empty<TComponentType>(), Array.Empty<TComponentType>(), new[] { typeA });
-            var entitiesA = scope.GetEntities(query).ToArray();
+            var entities = scope.GetEntityCollection(Array.Empty<TComponentType>(), Array.Empty<TComponentType>(), new[] { typeA });
+            var entitiesA = entities.ToArray();
             Assert.AreEqual(1, entitiesA.Length);
             Assert.AreEqual(entityA, entitiesA[0]);
             scope.SetComponents
@@ -415,10 +402,10 @@ namespace Tests
                 new[] { typeA, typeB },
                 new object[] { 100, 100 }
             );
-            var entitiesB = scope.GetEntities(query).ToArray();
+            var entitiesB = entities.ToArray();
             Assert.AreEqual(0, entitiesB.Length);
             scope.UnsetComponent(entityA, typeA);
-            var entitiesC = scope.GetEntities(query).ToArray();
+            var entitiesC = entities.ToArray();
             Assert.AreEqual(1, entitiesC.Length);
             Assert.AreEqual(entityA, entitiesC[0]);
         }
@@ -426,8 +413,8 @@ namespace Tests
         private static void QueryNoneUpdateOnRemovedComponents<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType typeA, TComponentType typeB)
         {
             var entityA = scope.CreateEntity();
-            var query = scope.CreateQuery(Array.Empty<TComponentType>(), Array.Empty<TComponentType>(), new[] { typeA });
-            var entitiesA = scope.GetEntities(query).ToArray();
+            var entities = scope.GetEntityCollection(Array.Empty<TComponentType>(), Array.Empty<TComponentType>(), new[] { typeA });
+            var entitiesA = entities.ToArray();
             Assert.AreEqual(1, entitiesA.Length);
             Assert.AreEqual(entityA, entitiesA[0]);
             scope.SetComponents
@@ -436,10 +423,10 @@ namespace Tests
                 new[] { typeA, typeB },
                 new object[] { 100, 100 }
             );
-            var entitiesB = scope.GetEntities(query).ToArray();
+            var entitiesB = entities.ToArray();
             Assert.AreEqual(0, entitiesB.Length);
             scope.UnsetComponents(entityA, typeA, typeB);
-            var entitiesC = scope.GetEntities(query).ToArray();
+            var entitiesC = entities.ToArray();
             Assert.AreEqual(1, entitiesC.Length);
             Assert.AreEqual(entityA, entitiesC[0]);
         }

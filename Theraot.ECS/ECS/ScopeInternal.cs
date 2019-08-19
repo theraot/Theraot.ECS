@@ -45,39 +45,6 @@ namespace Theraot.ECS
             return entity;
         }
 
-        public QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
-        {
-            var allAsICollection = all is ICollection<TComponentType> allCollection ? allCollection : all.ToList();
-            var anyAsICollection = any is ICollection<TComponentType> anyCollection ? anyCollection : any.ToList();
-            var noneAsICollection = none is ICollection<TComponentType> noneCollection ? noneCollection : none.ToList();
-            var queryId = _queryManager.CreateQuery(allAsICollection, anyAsICollection, noneAsICollection);
-            var set = _entitiesByQueryId[queryId] = new EntityCollection<TEntity>();
-            foreach (var componentType in allAsICollection.Concat(anyAsICollection).Concat(noneAsICollection))
-            {
-                if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
-                {
-                    queryIds = new HashSet<QueryId>();
-                    _queryIdsByComponentType[componentType] = queryIds;
-                }
-
-                queryIds.Add(queryId);
-            }
-
-            if (_componentsByEntity.Count == 0)
-            {
-                return queryId;
-            }
-            foreach (var entity in _componentsByEntity.Keys)
-            {
-                var componentTypes = _componentsByEntity[entity].ComponentTypes;
-                if (_queryManager.QueryCheck(componentTypes, queryId) == QueryCheckResult.Add)
-                {
-                    set.Add(entity);
-                }
-            }
-            return queryId;
-        }
-
         public TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType)
         {
             if (_componentsByEntity.TryGetValue(entity, out var components))
@@ -98,14 +65,41 @@ namespace Theraot.ECS
             throw new KeyNotFoundException("Entity not found");
         }
 
-        public EntityCollection<TEntity> GetEntities(QueryId queryId)
+        public EntityCollection<TEntity> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
-            if (_entitiesByQueryId.TryGetValue(queryId, out var result))
+            var allAsICollection = all is ICollection<TComponentType> allCollection ? allCollection : all.ToList();
+            var anyAsICollection = any is ICollection<TComponentType> anyCollection ? anyCollection : any.ToList();
+            var noneAsICollection = none is ICollection<TComponentType> noneCollection ? noneCollection : none.ToList();
+            var queryId = _queryManager.CreateQuery(allAsICollection, anyAsICollection, noneAsICollection);
+            if (_entitiesByQueryId.TryGetValue(queryId, out var entityCollection))
             {
-                return result;
+                return entityCollection;
+            }
+            entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity>();
+            foreach (var componentType in allAsICollection.Concat(anyAsICollection).Concat(noneAsICollection))
+            {
+                if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
+                {
+                    queryIds = new HashSet<QueryId>();
+                    _queryIdsByComponentType[componentType] = queryIds;
+                }
+
+                queryIds.Add(queryId);
             }
 
-            throw new KeyNotFoundException("Query not found");
+            if (_componentsByEntity.Count == 0)
+            {
+                return entityCollection;
+            }
+            foreach (var entity in _componentsByEntity.Keys)
+            {
+                var componentTypes = _componentsByEntity[entity].ComponentTypes;
+                if (_queryManager.QueryCheck(componentTypes, queryId) == QueryCheckResult.Add)
+                {
+                    entityCollection.Add(entity);
+                }
+            }
+            return entityCollection;
         }
 
         public Type GetRegisteredComponentType(TComponentType componentType)
