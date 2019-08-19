@@ -77,7 +77,7 @@ namespace Theraot.ECS
             {
                 if (type != actualType)
                 {
-                    throw new ArgumentException($"{actualType} does not match {componentType}");
+                    throw new ArgumentException($"{actualType} does not match the component type {componentType}");
                 }
             }
             else
