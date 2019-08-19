@@ -20,13 +20,14 @@ namespace Theraot.ECS
 
         public QueryId AddQuery(Query<TComponentTypeSet> query)
         {
-            var queryId = _queryId;
-            if (!_queryIdByQuery.TryAdd(query, queryId))
+            if (_queryIdByQuery.TryGetValue(query, out var found))
             {
-                return _queryIdByQuery[query];
+                return found;
             }
-            _queryId++;
+            var queryId = _queryId;
+            _queryIdByQuery.Add(query, queryId);
             _queryByQueryId[queryId] = query;
+            _queryId++;
             return queryId;
         }
 
