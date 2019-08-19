@@ -2,6 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+// ReSharper disable MemberCanBePrivate.Local
+
 using System;
 using System.Collections;
 using System.Collections.Generic;

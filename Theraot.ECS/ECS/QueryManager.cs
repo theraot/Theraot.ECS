@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+
+using System;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 using QueryId = System.Int32;
