@@ -6,7 +6,7 @@ using ComponentTypeSet = Theraot.Collections.Specialized.FlagArray;
 
 namespace Theraot.ECS
 {
-    public sealed class FlagArrayManager : IComponentTypeManager<ComponentType, ComponentTypeSet>
+    public sealed class FlagArrayManager : IComponentTypeManager<ComponentType, ComponentTypeSet>, IEqualityComparer<ComponentType>, IEqualityComparer<ComponentTypeSet>
     {
         private readonly int _capacity;
 
@@ -14,6 +14,10 @@ namespace Theraot.ECS
         {
             _capacity = capacity;
         }
+
+        public IEqualityComparer<int> ComponentTypEqualityComparer => this;
+
+        public IEqualityComparer<ComponentTypeSet> ComponentTypSetEqualityComparer => this;
 
         public void Add(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
@@ -66,6 +70,21 @@ namespace Theraot.ECS
         public bool Equals(ComponentType x, ComponentType y)
         {
             return x == y;
+        }
+
+        public bool Equals(ComponentTypeSet x, ComponentTypeSet y)
+        {
+            return x == y;
+        }
+
+        public int GetHashCode(ComponentTypeSet obj)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            return obj.GetHashCode();
         }
 
         public int GetHashCode(int obj)

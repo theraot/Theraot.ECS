@@ -5,6 +5,10 @@ namespace Tests
 {
     internal class DummyManager : IComponentTypeManager<int, int>
     {
+        public IEqualityComparer<int> ComponentTypEqualityComparer => this;
+
+        public IEqualityComparer<int> ComponentTypSetEqualityComparer => this;
+
         public void Add(int componentTypeSet, IEnumerable<int> componentTypes)
         {
         }

@@ -46,12 +46,11 @@ namespace Theraot.ECS
                 return false;
             }
 
-            return _componentTypeManager.ContainsAll(x.All, y.All)
-                   && _componentTypeManager.ContainsAll(y.All, x.All)
-                   && _componentTypeManager.ContainsAll(x.Any, y.Any)
-                   && _componentTypeManager.ContainsAll(y.Any, x.Any)
-                   && _componentTypeManager.ContainsAll(x.None, y.None)
-                   && _componentTypeManager.ContainsAll(y.None, x.None);
+            var componentTypSetEqualityComparer = _componentTypeManager.ComponentTypSetEqualityComparer;
+
+            return componentTypSetEqualityComparer.Equals(x.All, y.All)
+                   && componentTypSetEqualityComparer.Equals(x.Any, y.Any)
+                   && componentTypSetEqualityComparer.Equals(x.None, y.None);
         }
 
         public int GetHashCode(Query<TComponentTypeSet> obj)
@@ -61,7 +60,11 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            return obj.All.GetHashCode() ^ obj.Any.GetHashCode() ^ obj.None.GetHashCode();
+            var componentTypSetEqualityComparer = _componentTypeManager.ComponentTypSetEqualityComparer;
+
+            return componentTypSetEqualityComparer.GetHashCode(obj.All)
+                   ^ componentTypSetEqualityComparer.GetHashCode(obj.Any)
+                   ^ componentTypSetEqualityComparer.GetHashCode(obj.None);
         }
 
         public QueryCheckResult QueryCheck(TComponentTypeSet allComponentsTypes, QueryId queryId)

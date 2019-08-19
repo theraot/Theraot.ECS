@@ -4,6 +4,10 @@ namespace Theraot.ECS
 {
     public interface IComponentTypeManager<in TComponentType, TComponentTypeSet> : IEqualityComparer<TComponentType>
     {
+        IEqualityComparer<TComponentType> ComponentTypEqualityComparer { get; }
+
+        IEqualityComparer<TComponentTypeSet> ComponentTypSetEqualityComparer { get; }
+
         void Add(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
 
         void Add(TComponentTypeSet componentTypeSet, TComponentType componentType);

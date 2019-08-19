@@ -797,6 +797,26 @@ namespace Theraot.Collections.Specialized
 
     public sealed partial class FlagArray : IEquatable<FlagArray>
     {
+        public static bool operator !=(FlagArray left, FlagArray right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator ==(FlagArray x, FlagArray y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
+
+            if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
+            {
+                return false;
+            }
+
+            return x.SetEquals(y);
+        }
+
         public bool Equals(FlagArray other)
         {
             return SetEquals(other);
