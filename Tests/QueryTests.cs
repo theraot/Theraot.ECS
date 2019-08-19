@@ -3,10 +3,10 @@ using Theraot.ECS;
 
 namespace Tests
 {
-    public class QueryTests
+    public static class QueryTests
     {
         [Test]
-        public void CreatingTheSameQueryMultipleTimes()
+        public static void CreatingTheSameQueryMultipleTimes()
         {
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new FlagArrayManager(8));

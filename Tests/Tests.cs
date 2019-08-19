@@ -6,10 +6,10 @@ using Theraot.ECS;
 
 namespace Tests
 {
-    public class Tests
+    public static class Tests
     {
         [Test]
-        public void CreateEntityAreDifferent()
+        public static void CreateEntityAreDifferent()
         {
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new DummyManager());
@@ -19,161 +19,161 @@ namespace Tests
         }
 
         [Test]
-        public void GetMissingComponent()
+        public static void GetMissingComponent()
         {
             GetMissingComponent(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0);
             GetMissingComponent(Scope.CreateScope(IncrementingInt(), new SetManager()), "a");
         }
 
         [Test]
-        public void Guid()
+        public static void Guid()
         {
             Guid(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(1)), 0);
             Guid(Scope.CreateScope(IncrementingInt(), new SetManager()), "a");
         }
 
         [Test]
-        public void QueryAfterEntities()
+        public static void QueryAfterEntities()
         {
             QueryAfterEntities(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(1)), 0);
             QueryAfterEntities(Scope.CreateScope(IncrementingInt(), new SetManager()), "a");
         }
 
         [Test]
-        public void QueryAllUpdateOnAddedComponent()
+        public static void QueryAllUpdateOnAddedComponent()
         {
             QueryAllUpdateOnAddedComponent(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(1)), 0);
             QueryAllUpdateOnAddedComponent(Scope.CreateScope(IncrementingInt(), new SetManager()), "a");
         }
 
         [Test]
-        public void QueryAllUpdateOnAddedComponents()
+        public static void QueryAllUpdateOnAddedComponents()
         {
             QueryAllUpdateOnAddedComponents(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0, 1);
             QueryAllUpdateOnAddedComponents(Scope.CreateScope(IncrementingInt(), new SetManager()), "a", "b");
         }
 
         [Test]
-        public void QueryAllUpdateOnRemoveComponent()
+        public static void QueryAllUpdateOnRemoveComponent()
         {
             QueryAllUpdateOnRemoveComponent(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0, 1);
             QueryAllUpdateOnRemoveComponent(Scope.CreateScope(IncrementingInt(), new SetManager()), "a", "b");
         }
 
         [Test]
-        public void QueryAllUpdateOnRemoveComponents()
+        public static void QueryAllUpdateOnRemoveComponents()
         {
             QueryAllUpdateOnRemoveComponents(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0, 1);
             QueryAllUpdateOnRemoveComponents(Scope.CreateScope(IncrementingInt(), new SetManager()), "a", "b");
         }
 
         [Test]
-        public void QueryAnyUpdateOnAddedComponent()
+        public static void QueryAnyUpdateOnAddedComponent()
         {
             QueryAnyUpdateOnAddedComponent(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(1)), 0);
             QueryAnyUpdateOnAddedComponent(Scope.CreateScope(IncrementingInt(), new SetManager()), "a");
         }
 
         [Test]
-        public void QueryAnyUpdateOnAddedComponents()
+        public static void QueryAnyUpdateOnAddedComponents()
         {
             QueryAnyUpdateOnAddedComponents(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0, 1);
             QueryAnyUpdateOnAddedComponents(Scope.CreateScope(IncrementingInt(), new SetManager()), "a", "b");
         }
 
         [Test]
-        public void QueryAnyUpdateOnRemovedComponent()
+        public static void QueryAnyUpdateOnRemovedComponent()
         {
             QueryAnyUpdateOnRemovedComponent(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0, 1);
             QueryAnyUpdateOnRemovedComponent(Scope.CreateScope(IncrementingInt(), new SetManager()), "a", "b");
         }
 
         [Test]
-        public void QueryAnyUpdateOnRemovedComponents()
+        public static void QueryAnyUpdateOnRemovedComponents()
         {
             QueryAnyUpdateOnRemovedComponents(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0, 1);
             QueryAnyUpdateOnRemovedComponents(Scope.CreateScope(IncrementingInt(), new SetManager()), "a", "b");
         }
 
         [Test]
-        public void QueryBeforeEntities()
+        public static void QueryBeforeEntities()
         {
             QueryBeforeEntities(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(1)), 0);
             QueryBeforeEntities(Scope.CreateScope(IncrementingInt(), new SetManager()), "a");
         }
 
         [Test]
-        public void QueryNoneUpdateOnAddedComponent()
+        public static void QueryNoneUpdateOnAddedComponent()
         {
             QueryNoneUpdateOnAddedComponent(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(1)), 0);
             QueryNoneUpdateOnAddedComponent(Scope.CreateScope(IncrementingInt(), new SetManager()), "a");
         }
 
         [Test]
-        public void QueryNoneUpdateOnAddedComponents()
+        public static void QueryNoneUpdateOnAddedComponents()
         {
             QueryNoneUpdateOnAddedComponents(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0, 1);
             QueryNoneUpdateOnAddedComponents(Scope.CreateScope(IncrementingInt(), new SetManager()), "a", "b");
         }
 
         [Test]
-        public void QueryNoneUpdateOnRemovedComponent()
+        public static void QueryNoneUpdateOnRemovedComponent()
         {
             QueryNoneUpdateOnRemovedComponent(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0, 1);
             QueryNoneUpdateOnRemovedComponent(Scope.CreateScope(IncrementingInt(), new SetManager()), "a", "b");
         }
 
         [Test]
-        public void QueryNoneUpdateOnRemovedComponents()
+        public static void QueryNoneUpdateOnRemovedComponents()
         {
             QueryNoneUpdateOnRemovedComponents(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0, 1);
             QueryNoneUpdateOnRemovedComponents(Scope.CreateScope(IncrementingInt(), new SetManager()), "a", "b");
         }
 
         [Test]
-        public void RecoverObject()
+        public static void RecoverObject()
         {
             RecoverObject(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(1)), 0);
             RecoverObject(Scope.CreateScope(IncrementingInt(), new SetManager()), "a");
         }
 
         [Test]
-        public void RecoverValueType()
+        public static void RecoverValueType()
         {
             RecoverValueType(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(1)), 0);
             RecoverValueType(Scope.CreateScope(IncrementingInt(), new SetManager()), "a");
         }
 
         [Test]
-        public void SetMultipleComponents()
+        public static void SetMultipleComponents()
         {
             SetMultipleComponents(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0, 1);
             SetMultipleComponents(Scope.CreateScope(IncrementingInt(), new SetManager()), "a", "b");
         }
 
         [Test]
-        public void TryGetComponent()
+        public static void TryGetComponent()
         {
             TryGetComponent(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0, 1);
             TryGetComponent(Scope.CreateScope(IncrementingInt(), new SetManager()), "a", "b");
         }
 
         [Test]
-        public void UnsetComponent()
+        public static void UnsetComponent()
         {
             UnsetComponent(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0, 1);
             UnsetComponent(Scope.CreateScope(IncrementingInt(), new SetManager()), "a", "b");
         }
 
         [Test]
-        public void UnsetMissingComponent()
+        public static void UnsetMissingComponent()
         {
             UnsetMissingComponent(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(2)), 0);
             UnsetMissingComponent(Scope.CreateScope(IncrementingInt(), new SetManager()), "a");
         }
 
         [Test]
-        public void UnsetMultipleComponents()
+        public static void UnsetMultipleComponents()
         {
             UnsetMultipleComponents(Scope.CreateScope(System.Guid.NewGuid, new FlagArrayManager(3)), 0, 1, 2);
             UnsetMultipleComponents(Scope.CreateScope(IncrementingInt(), new SetManager()), "a", "b", "c");

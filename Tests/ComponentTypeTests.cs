@@ -4,10 +4,10 @@ using Theraot.ECS;
 
 namespace Tests
 {
-    public class ComponentTypeTests
+    public static class ComponentTypeTests
     {
         [Test]
-        public void ComponentTypeIsSetForAllEntities()
+        public static void ComponentTypeIsSetForAllEntities()
         {
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new SetManager());
@@ -19,7 +19,7 @@ namespace Tests
         }
 
         [Test]
-        public void RegisterComponentType()
+        public static void RegisterComponentType()
         {
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new SetManager());
@@ -30,7 +30,7 @@ namespace Tests
         }
 
         [Test]
-        public void UnableToChangeComponentType()
+        public static void UnableToChangeComponentType()
         {
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new SetManager());

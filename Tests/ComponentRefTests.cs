@@ -4,10 +4,10 @@ using Theraot.ECS;
 
 namespace Tests
 {
-    public class ComponentRefTests
+    public static class ComponentRefTests
     {
         [Test]
-        public void RefToRemovedComponentIsNotSafe()
+        public static void RefToRemovedComponentIsNotSafe()
         {
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new SetManager());
@@ -25,7 +25,7 @@ namespace Tests
         }
 
         [Test]
-        public void UpdatingTheRefWorks()
+        public static void UpdatingTheRefWorks()
         {
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new SetManager());
@@ -38,7 +38,7 @@ namespace Tests
         }
 
         [Test]
-        public void UpdatingTheRefWorksRegardlessOfAddedComponentsA()
+        public static void UpdatingTheRefWorksRegardlessOfAddedComponentsA()
         {
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new FlagArrayManager(16));
@@ -56,7 +56,7 @@ namespace Tests
         }
 
         [Test]
-        public void UpdatingTheRefWorksRegardlessOfAddedComponentsB()
+        public static void UpdatingTheRefWorksRegardlessOfAddedComponentsB()
         {
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new SetManager());

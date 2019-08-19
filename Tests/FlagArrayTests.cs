@@ -8,10 +8,10 @@ using Theraot.Collections.Specialized;
 
 namespace Tests
 {
-    public class FlagArrayTests
+    public static class FlagArrayTests
     {
         [Test]
-        public void And()
+        public static void And()
         {
             var a = new FlagArray(6)
             { [0] = false, [1] = false, [2] = true, [3] = true, [4] = false, [5] = true };
@@ -27,7 +27,7 @@ namespace Tests
         }
 
         [Test]
-        public void EnumerableConstructor()
+        public static void EnumerableConstructor()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => _ = new FlagArray(new[] { -1 }));
             var a = new FlagArray(new[] { 2, 3, 5 });
@@ -48,7 +48,7 @@ namespace Tests
         }
 
         [Test]
-        public void EnumerableConstructorWithCapacity()
+        public static void EnumerableConstructorWithCapacity()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => _ = new FlagArray(8, new[] { -1 }));
             Assert.Throws<ArgumentOutOfRangeException>(() => _ = new FlagArray(8, new[] { 9 }));
@@ -77,7 +77,7 @@ namespace Tests
         }
 
         [Test]
-        public void IsProperSubsetOf()
+        public static void IsProperSubsetOf()
         {
             BuildSetsAndFlagArrays(out var sets, out var flagArrays);
 
@@ -94,7 +94,7 @@ namespace Tests
         }
 
         [Test]
-        public void IsProperSupersetOf()
+        public static void IsProperSupersetOf()
         {
             BuildSetsAndFlagArrays(out var sets, out var flagArrays);
 
@@ -111,7 +111,7 @@ namespace Tests
         }
 
         [Test]
-        public void IsSubsetOf()
+        public static void IsSubsetOf()
         {
             BuildSetsAndFlagArrays(out var sets, out var flagArrays);
 
@@ -128,7 +128,7 @@ namespace Tests
         }
 
         [Test]
-        public void IsSupersetOf()
+        public static void IsSupersetOf()
         {
             BuildSetsAndFlagArrays(out var sets, out var flagArrays);
 
@@ -145,7 +145,7 @@ namespace Tests
         }
 
         [Test]
-        public void MinusLonger()
+        public static void MinusLonger()
         {
             var a = new FlagArray(4)
             { [0] = false, [1] = true, [2] = false, [3] = true };
@@ -161,7 +161,7 @@ namespace Tests
         }
 
         [Test]
-        public void MinusShorter()
+        public static void MinusShorter()
         {
             var a = new FlagArray(6)
             { [0] = false, [1] = false, [2] = true, [3] = true, [4] = false, [5] = true };
@@ -179,7 +179,7 @@ namespace Tests
         }
 
         [Test]
-        public void Not()
+        public static void Not()
         {
             var b = new FlagArray(4)
             { [0] = false, [1] = true, [2] = false, [3] = true };
@@ -193,7 +193,7 @@ namespace Tests
         }
 
         [Test]
-        public void Or()
+        public static void Or()
         {
             var a = new FlagArray(6)
             { [0] = false, [1] = false, [2] = true, [3] = true, [4] = false, [5] = true };
@@ -211,7 +211,7 @@ namespace Tests
         }
 
         [Test]
-        public void Overlaps()
+        public static void Overlaps()
         {
             BuildSetsAndFlagArrays(out var sets, out var flagArrays);
 
@@ -228,7 +228,7 @@ namespace Tests
         }
 
         [Test]
-        public void SetEquals()
+        public static void SetEquals()
         {
             BuildSetsAndFlagArrays(out var sets, out var flagArrays);
 
@@ -245,7 +245,7 @@ namespace Tests
         }
 
         [Test]
-        public void Xor()
+        public static void Xor()
         {
             var a = new FlagArray(6)
             { [0] = false, [1] = false, [2] = true, [3] = true, [4] = false, [5] = true };
