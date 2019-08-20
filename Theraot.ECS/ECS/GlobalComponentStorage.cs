@@ -48,10 +48,15 @@ namespace Theraot.ECS
             }
         }
 
-        public ComponentId UpdateComponent<TComponent>(ComponentId componentId, TComponent component, TComponentType componentType)
+        public void RemoveComponents(List<ComponentId> componentIds, List<TComponentType> componentTypes)
         {
-            var typedComponentStorage = GetOrCreateStorage<TComponent>(componentType);
-            return ((IndexedCollection<TComponent>)typedComponentStorage).Update(componentId, component);
+            for (var index = 0; index < componentIds.Count; index++)
+            {
+                if (_indexByComponentType.TryGetValue(componentTypes[index], out var actualType))
+                {
+                    _indexByActualType[actualType].Remove(componentIds[index]);
+                }
+            }
         }
 
         public bool TryGetComponent<TComponent>(ComponentId componentId, TComponentType componentType, out TComponent component)
@@ -68,6 +73,12 @@ namespace Theraot.ECS
         public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
         {
             return TryAddStorage<TComponent>(componentType);
+        }
+
+        public ComponentId UpdateComponent<TComponent>(ComponentId componentId, TComponent component, TComponentType componentType)
+        {
+            var typedComponentStorage = GetOrCreateStorage<TComponent>(componentType);
+            return ((IndexedCollection<TComponent>)typedComponentStorage).Update(componentId, component);
         }
 
         private IHasIndexedRemove GetOrCreateStorage<TComponent>(TComponentType componentType)

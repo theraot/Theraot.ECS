@@ -24,16 +24,6 @@ namespace Theraot.ECS
 
         public TComponentTypeSet ComponentTypes { get; }
 
-        public TComponent GetComponent<TComponent>(TComponentType componentType)
-        {
-            if (_componentIndex.TryGetValue(componentType, out var componentId))
-            {
-                return _globalComponentStorage.GetComponent<TComponent>(componentId, componentType);
-            }
-
-            throw new KeyNotFoundException("ComponentType not found on the entity");
-        }
-
         public ref TComponent GetComponentRef<TComponent>(TComponentType componentType)
         {
             if (_componentIndex.TryGetValue(componentType, out var componentId))
@@ -118,10 +108,7 @@ namespace Theraot.ECS
                 return false;
             }
 
-            for (var index = 0; index < removedComponentIds.Count; index++)
-            {
-                _globalComponentStorage.RemoveComponent(removedComponentIds[index], removedComponentTypes[index]);
-            }
+            _globalComponentStorage.RemoveComponents(removedComponentIds, removedComponentTypes);
             _componentTypeManager.Remove(ComponentTypes, removedComponentTypes);
             return true;
         }
