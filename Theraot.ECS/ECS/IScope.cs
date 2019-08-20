@@ -4,33 +4,8 @@ using Component = System.Object;
 
 namespace Theraot.ECS
 {
-    internal interface IComponentRefSource<in TEntity, in TComponentType>
+    internal interface IComponentRefSource<TEntity, in TComponentType>
     {
-        ref TComponent GetComponentRef<TComponent>(TEntity entity, TComponentType componentType);
-    }
-
-    internal interface IScope<TEntity, TComponentType>
-    {
-        TEntity CreateEntity();
-
-        TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType);
-
-        EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
-
-        Type GetRegisteredComponentType(TComponentType componentType);
-
-        void SetComponent<TComponent>(TEntity entity, TComponentType type, TComponent component);
-
-        void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, Component> componentSelector);
-
-        bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component);
-
-        bool TryRegisterComponentType<TComponent>(TComponentType componentType);
-
-        void UnsetComponent(TEntity entity, TComponentType componentType);
-
-        void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes);
-
         void With<TComponent1>
         (
             TEntity entity,
@@ -75,5 +50,28 @@ namespace Theraot.ECS
             TComponentType componentType5,
             ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback
         );
+    }
+
+    internal interface IScope<TEntity, TComponentType> : IComponentRefSource<TEntity, TComponentType>
+    {
+        TEntity CreateEntity();
+
+        TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType);
+
+        EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
+
+        Type GetRegisteredComponentType(TComponentType componentType);
+
+        void SetComponent<TComponent>(TEntity entity, TComponentType type, TComponent component);
+
+        void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, Component> componentSelector);
+
+        bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component);
+
+        bool TryRegisterComponentType<TComponent>(TComponentType componentType);
+
+        void UnsetComponent(TEntity entity, TComponentType componentType);
+
+        void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes);
     }
 }

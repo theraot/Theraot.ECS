@@ -108,26 +108,51 @@ namespace Theraot.ECS
 
         public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
         {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
             _scopeInternal.With(entity, componentType1, callback);
         }
 
         public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
         {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
             _scopeInternal.With(entity, componentType1, componentType2, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
         {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
             _scopeInternal.With(entity, componentType1, componentType2, componentType3, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
         {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
             _scopeInternal.With(entity, componentType1, componentType2, componentType3, componentType4, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
         {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
             _scopeInternal.With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
         }
     }

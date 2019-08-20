@@ -119,11 +119,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                callback
-                (
-                    entity,
-                    ref _componentRefSource.GetComponentRef<TComponent1>(entity, componentType1)
-                );
+                _componentRefSource.With(entity, componentType1, callback);
             }
         }
 
@@ -141,12 +137,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                callback
-                (
-                    entity,
-                    ref _componentRefSource.GetComponentRef<TComponent1>(entity, componentType1),
-                    ref _componentRefSource.GetComponentRef<TComponent2>(entity, componentType2)
-                );
+                _componentRefSource.With(entity, componentType1, componentType2, callback);
             }
         }
 
@@ -165,13 +156,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                callback
-                (
-                    entity,
-                    ref _componentRefSource.GetComponentRef<TComponent1>(entity, componentType1),
-                    ref _componentRefSource.GetComponentRef<TComponent2>(entity, componentType2),
-                    ref _componentRefSource.GetComponentRef<TComponent3>(entity, componentType3)
-                );
+                _componentRefSource.With(entity, componentType1, componentType2, componentType3, callback);
             }
         }
 
@@ -191,14 +176,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                callback
-                (
-                    entity,
-                    ref _componentRefSource.GetComponentRef<TComponent1>(entity, componentType1),
-                    ref _componentRefSource.GetComponentRef<TComponent2>(entity, componentType2),
-                    ref _componentRefSource.GetComponentRef<TComponent3>(entity, componentType3),
-                    ref _componentRefSource.GetComponentRef<TComponent4>(entity, componentType4)
-                );
+                _componentRefSource.With(entity, componentType1, componentType2, componentType3, componentType4, callback);
             }
         }
 
@@ -219,15 +197,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                callback
-                (
-                    entity,
-                    ref _componentRefSource.GetComponentRef<TComponent1>(entity, componentType1),
-                    ref _componentRefSource.GetComponentRef<TComponent2>(entity, componentType2),
-                    ref _componentRefSource.GetComponentRef<TComponent3>(entity, componentType3),
-                    ref _componentRefSource.GetComponentRef<TComponent4>(entity, componentType4),
-                    ref _componentRefSource.GetComponentRef<TComponent5>(entity, componentType5)
-                );
+                _componentRefSource.With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
             }
         }
     }
