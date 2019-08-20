@@ -37,7 +37,7 @@ namespace Theraot.ECS
             return ref _scopeInternal.GetComponentRef<TComponent>(entity, componentType);
         }
 
-        public EntityCollection<TEntity> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
+        public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
             return _scopeInternal.GetEntityCollection(all, any, none);
         }

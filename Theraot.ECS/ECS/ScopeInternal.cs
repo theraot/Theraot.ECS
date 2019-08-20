@@ -15,7 +15,7 @@ namespace Theraot.ECS
 
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
-        private readonly Dictionary<QueryId, EntityCollection<TEntity>> _entitiesByQueryId;
+        private readonly Dictionary<QueryId, EntityCollection<TEntity, TComponentType>> _entitiesByQueryId;
 
         private readonly Func<TEntity> _entityFactory;
 
@@ -33,7 +33,7 @@ namespace Theraot.ECS
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypEqualityComparer);
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
             _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>>();
-            _entitiesByQueryId = new Dictionary<QueryId, EntityCollection<TEntity>>();
+            _entitiesByQueryId = new Dictionary<QueryId, EntityCollection<TEntity, TComponentType>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypEqualityComparer);
             _globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypEqualityComparer);
         }
@@ -65,7 +65,7 @@ namespace Theraot.ECS
             throw new KeyNotFoundException("Entity not found");
         }
 
-        public EntityCollection<TEntity> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
+        public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
             var allAsICollection = all is ICollection<TComponentType> allCollection ? allCollection : all.ToList();
             var anyAsICollection = any is ICollection<TComponentType> anyCollection ? anyCollection : any.ToList();
@@ -75,7 +75,7 @@ namespace Theraot.ECS
             {
                 return entityCollection;
             }
-            entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity>();
+            entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(this);
             foreach (var componentType in allAsICollection.Concat(anyAsICollection).Concat(noneAsICollection))
             {
                 if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))

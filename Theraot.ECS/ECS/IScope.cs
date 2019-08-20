@@ -12,7 +12,7 @@ namespace Theraot.ECS
 
         ref TComponent GetComponentRef<TComponent>(TEntity entity, TComponentType componentType);
 
-        EntityCollection<TEntity> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
+        EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
 
         Type GetRegisteredComponentType(TComponentType componentType);
 
