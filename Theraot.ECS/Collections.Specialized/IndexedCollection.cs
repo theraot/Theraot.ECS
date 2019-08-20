@@ -210,18 +210,6 @@ namespace Theraot.Collections.Specialized
             return result;
         }
 
-        public int Set(int key, TValue value)
-        {
-            var index = IndexOfKey(key);
-            if (index < 0)
-            {
-                throw new KeyNotFoundException();
-            }
-
-            _values[index] = value;
-            return key;
-        }
-
         public void TrimToSize()
         {
             Capacity = Count;
@@ -238,6 +226,18 @@ namespace Theraot.Collections.Specialized
 
             value = default;
             return false;
+        }
+
+        public int Update(int key, TValue value)
+        {
+            var index = IndexOfKey(key);
+            if (index < 0)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            _values[index] = value;
+            return key;
         }
 
         private void EnsureCapacity(int min)

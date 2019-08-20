@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 using ComponentId = System.Int32;
@@ -51,7 +51,7 @@ namespace Theraot.ECS
         public ComponentId SetComponent<TComponent>(ComponentId id, TComponent component, TComponentType componentType)
         {
             var typedComponentStorage = GetOrCreateStorage<TComponent>(componentType);
-            return ((IndexedCollection<TComponent>)typedComponentStorage).Set(id, component);
+            return ((IndexedCollection<TComponent>)typedComponentStorage).Update(componentId, component);
         }
 
         public bool TryGetComponent<TComponent>(ComponentId componentId, TComponentType componentType, out TComponent component)
