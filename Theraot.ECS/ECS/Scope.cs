@@ -32,11 +32,6 @@ namespace Theraot.ECS
             return _scopeInternal.GetComponent<TComponent>(entity, componentType);
         }
 
-        public ref TComponent GetComponentRef<TComponent>(TEntity entity, TComponentType componentType)
-        {
-            return ref _scopeInternal.GetComponentRef<TComponent>(entity, componentType);
-        }
-
         public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
             return _scopeInternal.GetEntityCollection(all, any, none);
@@ -109,6 +104,31 @@ namespace Theraot.ECS
         public void UnsetComponents(TEntity entity, params TComponentType[] componentTypes)
         {
             UnsetComponents(entity, (IEnumerable<TComponentType>)componentTypes);
+        }
+
+        public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
+        {
+            _scopeInternal.With(entity, componentType1, callback);
+        }
+
+        public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
+        {
+            _scopeInternal.With(entity, componentType1, componentType2, callback);
+        }
+
+        public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
+        {
+            _scopeInternal.With(entity, componentType1, componentType2, componentType3, callback);
+        }
+
+        public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
+        {
+            _scopeInternal.With(entity, componentType1, componentType2, componentType3, componentType4, callback);
+        }
+
+        public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
+        {
+            _scopeInternal.With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
         }
     }
 }

@@ -7,12 +7,12 @@ namespace Theraot.ECS
 {
     public sealed partial class EntityCollection<TEntity, TComponentType> : ICollection<TEntity>
     {
-        private readonly IScope<TEntity, TComponentType> _scope;
+        private readonly IComponentRefSource<TEntity, TComponentType> _componentRefSource;
         private readonly HashSet<TEntity> _wrapped;
 
-        internal EntityCollection(IScope<TEntity, TComponentType> scope)
+        internal EntityCollection(IComponentRefSource<TEntity, TComponentType> componentRefSource)
         {
-            _scope = scope;
+            _componentRefSource = componentRefSource;
             _wrapped = new HashSet<TEntity>();
             _removedEntity = new HashSet<EventHandler<CollectionChangeEventArgs<TEntity>>>();
             _addedEntity = new HashSet<EventHandler<CollectionChangeEventArgs<TEntity>>>();
@@ -122,7 +122,7 @@ namespace Theraot.ECS
                 callback
                 (
                     entity,
-                    ref _scope.GetComponentRef<TComponent1>(entity, componentType1)
+                    ref _componentRefSource.GetComponentRef<TComponent1>(entity, componentType1)
                 );
             }
         }
@@ -144,8 +144,8 @@ namespace Theraot.ECS
                 callback
                 (
                     entity,
-                    ref _scope.GetComponentRef<TComponent1>(entity, componentType1),
-                    ref _scope.GetComponentRef<TComponent2>(entity, componentType2)
+                    ref _componentRefSource.GetComponentRef<TComponent1>(entity, componentType1),
+                    ref _componentRefSource.GetComponentRef<TComponent2>(entity, componentType2)
                 );
             }
         }
@@ -168,9 +168,9 @@ namespace Theraot.ECS
                 callback
                 (
                     entity,
-                    ref _scope.GetComponentRef<TComponent1>(entity, componentType1),
-                    ref _scope.GetComponentRef<TComponent2>(entity, componentType2),
-                    ref _scope.GetComponentRef<TComponent3>(entity, componentType3)
+                    ref _componentRefSource.GetComponentRef<TComponent1>(entity, componentType1),
+                    ref _componentRefSource.GetComponentRef<TComponent2>(entity, componentType2),
+                    ref _componentRefSource.GetComponentRef<TComponent3>(entity, componentType3)
                 );
             }
         }
@@ -194,10 +194,10 @@ namespace Theraot.ECS
                 callback
                 (
                     entity,
-                    ref _scope.GetComponentRef<TComponent1>(entity, componentType1),
-                    ref _scope.GetComponentRef<TComponent2>(entity, componentType2),
-                    ref _scope.GetComponentRef<TComponent3>(entity, componentType3),
-                    ref _scope.GetComponentRef<TComponent4>(entity, componentType4)
+                    ref _componentRefSource.GetComponentRef<TComponent1>(entity, componentType1),
+                    ref _componentRefSource.GetComponentRef<TComponent2>(entity, componentType2),
+                    ref _componentRefSource.GetComponentRef<TComponent3>(entity, componentType3),
+                    ref _componentRefSource.GetComponentRef<TComponent4>(entity, componentType4)
                 );
             }
         }
@@ -222,11 +222,11 @@ namespace Theraot.ECS
                 callback
                 (
                     entity,
-                    ref _scope.GetComponentRef<TComponent1>(entity, componentType1),
-                    ref _scope.GetComponentRef<TComponent2>(entity, componentType2),
-                    ref _scope.GetComponentRef<TComponent3>(entity, componentType3),
-                    ref _scope.GetComponentRef<TComponent4>(entity, componentType4),
-                    ref _scope.GetComponentRef<TComponent5>(entity, componentType5)
+                    ref _componentRefSource.GetComponentRef<TComponent1>(entity, componentType1),
+                    ref _componentRefSource.GetComponentRef<TComponent2>(entity, componentType2),
+                    ref _componentRefSource.GetComponentRef<TComponent3>(entity, componentType3),
+                    ref _componentRefSource.GetComponentRef<TComponent4>(entity, componentType4),
+                    ref _componentRefSource.GetComponentRef<TComponent5>(entity, componentType5)
                 );
             }
         }

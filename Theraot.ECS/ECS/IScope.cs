@@ -4,13 +4,16 @@ using Component = System.Object;
 
 namespace Theraot.ECS
 {
+    internal interface IComponentRefSource<in TEntity, in TComponentType>
+    {
+        ref TComponent GetComponentRef<TComponent>(TEntity entity, TComponentType componentType);
+    }
+
     internal interface IScope<TEntity, TComponentType>
     {
         TEntity CreateEntity();
 
         TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType);
-
-        ref TComponent GetComponentRef<TComponent>(TEntity entity, TComponentType componentType);
 
         EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
 
@@ -27,5 +30,50 @@ namespace Theraot.ECS
         void UnsetComponent(TEntity entity, TComponentType componentType);
 
         void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes);
+
+        void With<TComponent1>
+        (
+            TEntity entity,
+            TComponentType componentType1,
+            ActionRef<TEntity, TComponent1> callback
+        );
+
+        void With<TComponent1, TComponent2>
+        (
+            TEntity entity,
+            TComponentType componentType1,
+            TComponentType componentType2,
+            ActionRef<TEntity, TComponent1, TComponent2> callback
+        );
+
+        void With<TComponent1, TComponent2, TComponent3>
+        (
+            TEntity entity,
+            TComponentType componentType1,
+            TComponentType componentType2,
+            TComponentType componentType3,
+            ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback
+        );
+
+        void With<TComponent1, TComponent2, TComponent3, TComponent4>
+        (
+            TEntity entity,
+            TComponentType componentType1,
+            TComponentType componentType2,
+            TComponentType componentType3,
+            TComponentType componentType4,
+            ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback
+        );
+
+        void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>
+        (
+            TEntity entity,
+            TComponentType componentType1,
+            TComponentType componentType2,
+            TComponentType componentType3,
+            TComponentType componentType4,
+            TComponentType componentType5,
+            ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback
+        );
     }
 }
