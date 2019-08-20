@@ -52,7 +52,7 @@ namespace Theraot.ECS
                 (
                     componentType,
                     key => _globalComponentStorage.AddComponent(component, key),
-                    (key, id) => _globalComponentStorage.SetComponent(id, component, key)
+                    (key, id) => _globalComponentStorage.UpdateComponent(id, component, key)
                 )
             )
             {
@@ -81,7 +81,7 @@ namespace Theraot.ECS
                 (key, id) =>
                 {
                     var component = componentSelector(key);
-                    return _globalComponentStorage.SetComponent(id, component, key);
+                    return _globalComponentStorage.UpdateComponent(id, component, key);
                 }
             );
             if (addedComponents.Count == 0)

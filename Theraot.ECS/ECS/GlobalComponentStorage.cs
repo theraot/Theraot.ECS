@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 using ComponentId = System.Int32;
@@ -40,15 +40,15 @@ namespace Theraot.ECS
             return _indexByComponentType[componentType];
         }
 
-        public void RemoveComponent(ComponentId removedComponentId, TComponentType componentType)
+        public void RemoveComponent(ComponentId componentId, TComponentType componentType)
         {
             if (_indexByComponentType.TryGetValue(componentType, out var actualType))
             {
-                _indexByActualType[actualType].Remove(removedComponentId);
+                _indexByActualType[actualType].Remove(componentId);
             }
         }
 
-        public ComponentId SetComponent<TComponent>(ComponentId id, TComponent component, TComponentType componentType)
+        public ComponentId UpdateComponent<TComponent>(ComponentId componentId, TComponent component, TComponentType componentType)
         {
             var typedComponentStorage = GetOrCreateStorage<TComponent>(componentType);
             return ((IndexedCollection<TComponent>)typedComponentStorage).Update(componentId, component);
