@@ -13,7 +13,7 @@ namespace Theraot.ECS
         }
     }
 
-    public sealed class Scope<TEntity, TComponentType> : IScope<TEntity, TComponentType>
+    public sealed partial class Scope<TEntity, TComponentType> : IScope<TEntity, TComponentType>
     {
         private readonly IScope<TEntity, TComponentType> _scopeInternal;
 
@@ -68,10 +68,12 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentTypes));
             }
+
             if (components == null)
             {
                 throw new ArgumentNullException(nameof(components));
             }
+
             if (components.Count != componentTypes.Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(components), "Count does not match");
@@ -105,7 +107,10 @@ namespace Theraot.ECS
         {
             UnsetComponents(entity, (IEnumerable<TComponentType>)componentTypes);
         }
+    }
 
+    public sealed partial class Scope<TEntity, TComponentType>
+    {
         public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
         {
             if (callback == null)

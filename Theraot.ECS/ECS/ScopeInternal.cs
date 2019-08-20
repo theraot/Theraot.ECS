@@ -7,7 +7,7 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    internal sealed class ScopeInternal<TEntity, TComponentType, TComponentTypeSet> : IScope<TEntity, TComponentType>
+    internal sealed partial class ScopeInternal<TEntity, TComponentType, TComponentTypeSet> : IScope<TEntity, TComponentType>
     {
         private readonly Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
 
@@ -149,86 +149,6 @@ namespace Theraot.ECS
             }
         }
 
-        public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
-        {
-            if (!_componentsByEntity.TryGetValue(entity, out var components))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            callback
-            (
-                entity,
-                ref components.GetComponentRef<TComponent1>(componentType1)
-            );
-        }
-
-        public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
-        {
-            if (!_componentsByEntity.TryGetValue(entity, out var components))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            callback
-            (
-                entity,
-                ref components.GetComponentRef<TComponent1>(componentType1),
-                ref components.GetComponentRef<TComponent2>(componentType2)
-            );
-        }
-
-        public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
-        {
-            if (!_componentsByEntity.TryGetValue(entity, out var components))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            callback
-            (
-                entity,
-                ref components.GetComponentRef<TComponent1>(componentType1),
-                ref components.GetComponentRef<TComponent2>(componentType2),
-                ref components.GetComponentRef<TComponent3>(componentType3)
-            );
-        }
-
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
-        {
-            if (!_componentsByEntity.TryGetValue(entity, out var components))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            callback
-            (
-                entity,
-                ref components.GetComponentRef<TComponent1>(componentType1),
-                ref components.GetComponentRef<TComponent2>(componentType2),
-                ref components.GetComponentRef<TComponent3>(componentType3),
-                ref components.GetComponentRef<TComponent4>(componentType4)
-            );
-        }
-
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
-        {
-            if (!_componentsByEntity.TryGetValue(entity, out var components))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            callback
-            (
-                entity,
-                ref components.GetComponentRef<TComponent1>(componentType1),
-                ref components.GetComponentRef<TComponent2>(componentType2),
-                ref components.GetComponentRef<TComponent3>(componentType3),
-                ref components.GetComponentRef<TComponent4>(componentType4),
-                ref components.GetComponentRef<TComponent5>(componentType5)
-            );
-        }
-
         private IEnumerable<QueryId> GetQueriesByComponentType(TComponentType componentType)
         {
             if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
@@ -346,6 +266,89 @@ namespace Theraot.ECS
                         break;
                 }
             }
+        }
+    }
+
+    internal sealed partial class ScopeInternal<TEntity, TComponentType, TComponentTypeSet>
+    {
+        public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
+        {
+            if (!_componentsByEntity.TryGetValue(entity, out var components))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            callback
+            (
+                entity,
+                ref components.GetComponentRef<TComponent1>(componentType1)
+            );
+        }
+
+        public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
+        {
+            if (!_componentsByEntity.TryGetValue(entity, out var components))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            callback
+            (
+                entity,
+                ref components.GetComponentRef<TComponent1>(componentType1),
+                ref components.GetComponentRef<TComponent2>(componentType2)
+            );
+        }
+
+        public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
+        {
+            if (!_componentsByEntity.TryGetValue(entity, out var components))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            callback
+            (
+                entity,
+                ref components.GetComponentRef<TComponent1>(componentType1),
+                ref components.GetComponentRef<TComponent2>(componentType2),
+                ref components.GetComponentRef<TComponent3>(componentType3)
+            );
+        }
+
+        public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
+        {
+            if (!_componentsByEntity.TryGetValue(entity, out var components))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            callback
+            (
+                entity,
+                ref components.GetComponentRef<TComponent1>(componentType1),
+                ref components.GetComponentRef<TComponent2>(componentType2),
+                ref components.GetComponentRef<TComponent3>(componentType3),
+                ref components.GetComponentRef<TComponent4>(componentType4)
+            );
+        }
+
+        public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
+        {
+            if (!_componentsByEntity.TryGetValue(entity, out var components))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            callback
+            (
+                entity,
+                ref components.GetComponentRef<TComponent1>(componentType1),
+                ref components.GetComponentRef<TComponent2>(componentType2),
+                ref components.GetComponentRef<TComponent3>(componentType3),
+                ref components.GetComponentRef<TComponent4>(componentType4),
+                ref components.GetComponentRef<TComponent5>(componentType5)
+            );
         }
     }
 }
