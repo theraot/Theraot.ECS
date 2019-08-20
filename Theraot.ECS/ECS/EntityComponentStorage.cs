@@ -6,7 +6,7 @@ using ComponentId = System.Int32;
 
 namespace Theraot.ECS
 {
-    internal sealed class EntityComponentStorage<TComponentType, TComponentTypeSet>
+    internal sealed class EntityComponentStorage<TComponentType, TComponentTypeSet> : IComponentRef<TComponentType>
     {
         private readonly CompactDictionary<TComponentType, ComponentId> _componentIndex;
 

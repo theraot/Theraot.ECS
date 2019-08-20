@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Theraot.Collections.Specialized;
 using Component = System.Object;
 using QueryId = System.Int32;
 
@@ -9,47 +8,39 @@ namespace Theraot.ECS
 {
     internal sealed partial class ScopeInternal<TEntity, TComponentType, TComponentTypeSet> : IScope<TEntity, TComponentType>
     {
-        private readonly Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
-
-        private readonly IComparer<TComponentType> _componentTypeComparer;
-
-        private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
-
         private readonly Dictionary<QueryId, EntityCollection<TEntity, TComponentType>> _entitiesByQueryId;
 
         private readonly Func<TEntity> _entityFactory;
 
-        private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
+        private readonly ScopeCore<TEntity, TComponentType, TComponentTypeSet> _core;
 
         private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
 
         private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
-        internal ScopeInternal(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
+        internal ScopeInternal(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeEqualityComparer)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
-            _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
-            var componentTypEqualityComparer = componentTypeManager.ComponentTypEqualityComparer;
-            _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypEqualityComparer);
-            _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
-            _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>>();
+            var componentTypeManager = componentTypeEqualityComparer ?? throw new ArgumentNullException(nameof(componentTypeEqualityComparer));
+            var componentTypEqualityComparer = componentTypeEqualityComparer.ComponentTypEqualityComparer;
+            _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeEqualityComparer);
             _entitiesByQueryId = new Dictionary<QueryId, EntityCollection<TEntity, TComponentType>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypEqualityComparer);
-            _globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypEqualityComparer);
+            _core = new ScopeCore<TEntity, TComponentType, TComponentTypeSet>(componentTypEqualityComparer, componentTypeManager);
         }
 
         public TEntity CreateEntity()
         {
             var entity = _entityFactory();
-            _componentsByEntity[entity] = new EntityComponentStorage<TComponentType, TComponentTypeSet>(_componentTypeManager, _globalComponentStorage, _componentTypeComparer);
+            _core.CreateEntity(entity);
             return entity;
         }
 
         public TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType)
         {
-            if (_componentsByEntity.TryGetValue(entity, out var components))
+            if (_core.TryGetComponent<TComponent>(entity, componentType, out var component))
             {
-                return components.GetComponent<TComponent>(componentType);
+                return component;
             }
 
             throw new KeyNotFoundException("Entity not found");
@@ -77,13 +68,13 @@ namespace Theraot.ECS
                 queryIds.Add(queryId);
             }
 
-            if (_componentsByEntity.Count == 0)
+            if (_core.EntityCount == 0)
             {
                 return entityCollection;
             }
-            foreach (var entity in _componentsByEntity.Keys)
+            foreach (var entity in _core.AllEntities)
             {
-                var componentTypes = _componentsByEntity[entity].ComponentTypes;
+                var componentTypes = _core.GetComponentTypes(entity);
                 if (_queryManager.QueryCheck(componentTypes, queryId) == QueryCheckResult.Add)
                 {
                     entityCollection.Add(entity);
@@ -94,58 +85,48 @@ namespace Theraot.ECS
 
         public Type GetRegisteredComponentType(TComponentType componentType)
         {
-            return _globalComponentStorage.GetRegisteredComponentType(componentType);
+            return _core.GetRegisteredComponentType(componentType);
         }
 
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
-            var componentStorage = _componentsByEntity[entity];
-            if (componentStorage.SetComponent(componentType, component))
+            if (_core.SetComponent(entity, componentType, component))
             {
-                UpdateEntitiesByQueryOnAddedComponent(entity, componentStorage.ComponentTypes, componentType);
+                UpdateEntitiesByQueryOnAddedComponent(entity, _core.GetComponentTypes(entity), componentType);
             }
         }
 
         public void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, Component> componentSelector)
         {
-            var componentStorage = _componentsByEntity[entity];
-            if (componentStorage.SetComponents(componentTypes, componentSelector, out var addedComponents))
+            if (_core.SetComponents(entity, componentTypes, componentSelector, out var addedComponents))
             {
-                UpdateEntitiesByQueryOnAddedComponents(entity, componentStorage.ComponentTypes, addedComponents);
+                UpdateEntitiesByQueryOnAddedComponents(entity, _core.GetComponentTypes(entity), addedComponents);
             }
         }
 
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
         {
-            if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetComponent<TComponent>(componentType, out var result))
-            {
-                component = result;
-                return true;
-            }
-            component = default;
-            return false;
+            return _core.TryGetComponent(entity, componentType, out component);
         }
 
         public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
         {
-            return _globalComponentStorage.TryRegisterComponentType<TComponent>(componentType);
+            return _core.TryRegisterComponentType<TComponent>(componentType);
         }
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)
         {
-            var componentStorage = _componentsByEntity[entity];
-            if (componentStorage.UnsetComponent(componentType))
+            if (_core.UnsetComponent(entity, componentType))
             {
-                UpdateEntitiesByQueryOnRemoveComponent(entity, componentStorage.ComponentTypes, componentType);
+                UpdateEntitiesByQueryOnRemoveComponent(entity, _core.GetComponentTypes(entity), componentType);
             }
         }
 
         public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
         {
-            var componentStorage = _componentsByEntity[entity];
-            if (componentStorage.UnsetComponents(componentTypes, out var removedComponents))
+            if (_core.UnsetComponents(entity, componentTypes, out var removedComponents))
             {
-                UpdateEntitiesByQueryOnRemoveComponents(entity, componentStorage.ComponentTypes, removedComponents);
+                UpdateEntitiesByQueryOnRemoveComponents(entity, _core.GetComponentTypes(entity), removedComponents);
             }
         }
 
@@ -273,7 +254,7 @@ namespace Theraot.ECS
     {
         public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
         {
-            if (!_componentsByEntity.TryGetValue(entity, out var components))
+            if (!_core.TryGetComponentRefSource(entity, out var componentRefSource))
             {
                 throw new KeyNotFoundException("Entity not found");
             }
@@ -281,13 +262,13 @@ namespace Theraot.ECS
             callback
             (
                 entity,
-                ref components.GetComponentRef<TComponent1>(componentType1)
+                ref componentRefSource.GetComponentRef<TComponent1>(componentType1)
             );
         }
 
         public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
         {
-            if (!_componentsByEntity.TryGetValue(entity, out var components))
+            if (!_core.TryGetComponentRefSource(entity, out var componentRefSource))
             {
                 throw new KeyNotFoundException("Entity not found");
             }
@@ -295,14 +276,14 @@ namespace Theraot.ECS
             callback
             (
                 entity,
-                ref components.GetComponentRef<TComponent1>(componentType1),
-                ref components.GetComponentRef<TComponent2>(componentType2)
+                ref componentRefSource.GetComponentRef<TComponent1>(componentType1),
+                ref componentRefSource.GetComponentRef<TComponent2>(componentType2)
             );
         }
 
         public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
         {
-            if (!_componentsByEntity.TryGetValue(entity, out var components))
+            if (!_core.TryGetComponentRefSource(entity, out var componentRefSource))
             {
                 throw new KeyNotFoundException("Entity not found");
             }
@@ -310,15 +291,15 @@ namespace Theraot.ECS
             callback
             (
                 entity,
-                ref components.GetComponentRef<TComponent1>(componentType1),
-                ref components.GetComponentRef<TComponent2>(componentType2),
-                ref components.GetComponentRef<TComponent3>(componentType3)
+                ref componentRefSource.GetComponentRef<TComponent1>(componentType1),
+                ref componentRefSource.GetComponentRef<TComponent2>(componentType2),
+                ref componentRefSource.GetComponentRef<TComponent3>(componentType3)
             );
         }
 
         public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
         {
-            if (!_componentsByEntity.TryGetValue(entity, out var components))
+            if (!_core.TryGetComponentRefSource(entity, out var componentRefSource))
             {
                 throw new KeyNotFoundException("Entity not found");
             }
@@ -326,16 +307,16 @@ namespace Theraot.ECS
             callback
             (
                 entity,
-                ref components.GetComponentRef<TComponent1>(componentType1),
-                ref components.GetComponentRef<TComponent2>(componentType2),
-                ref components.GetComponentRef<TComponent3>(componentType3),
-                ref components.GetComponentRef<TComponent4>(componentType4)
+                ref componentRefSource.GetComponentRef<TComponent1>(componentType1),
+                ref componentRefSource.GetComponentRef<TComponent2>(componentType2),
+                ref componentRefSource.GetComponentRef<TComponent3>(componentType3),
+                ref componentRefSource.GetComponentRef<TComponent4>(componentType4)
             );
         }
 
         public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
         {
-            if (!_componentsByEntity.TryGetValue(entity, out var components))
+            if (!_core.TryGetComponentRefSource(entity, out var componentRefSource))
             {
                 throw new KeyNotFoundException("Entity not found");
             }
@@ -343,11 +324,11 @@ namespace Theraot.ECS
             callback
             (
                 entity,
-                ref components.GetComponentRef<TComponent1>(componentType1),
-                ref components.GetComponentRef<TComponent2>(componentType2),
-                ref components.GetComponentRef<TComponent3>(componentType3),
-                ref components.GetComponentRef<TComponent4>(componentType4),
-                ref components.GetComponentRef<TComponent5>(componentType5)
+                ref componentRefSource.GetComponentRef<TComponent1>(componentType1),
+                ref componentRefSource.GetComponentRef<TComponent2>(componentType2),
+                ref componentRefSource.GetComponentRef<TComponent3>(componentType3),
+                ref componentRefSource.GetComponentRef<TComponent4>(componentType4),
+                ref componentRefSource.GetComponentRef<TComponent5>(componentType5)
             );
         }
     }

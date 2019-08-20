@@ -7,12 +7,12 @@ namespace Theraot.ECS
 {
     public sealed partial class EntityCollection<TEntity, TComponentType> : ICollection<TEntity>
     {
-        private readonly IComponentRefSource<TEntity, TComponentType> _componentRefSource;
+        private readonly IComponentRefScope<TEntity, TComponentType> _componentRefScope;
         private readonly HashSet<TEntity> _wrapped;
 
-        internal EntityCollection(IComponentRefSource<TEntity, TComponentType> componentRefSource)
+        internal EntityCollection(IComponentRefScope<TEntity, TComponentType> componentRefScope)
         {
-            _componentRefSource = componentRefSource;
+            _componentRefScope = componentRefScope;
             _wrapped = new HashSet<TEntity>();
             _removedEntity = new HashSet<EventHandler<CollectionChangeEventArgs<TEntity>>>();
             _addedEntity = new HashSet<EventHandler<CollectionChangeEventArgs<TEntity>>>();
@@ -119,7 +119,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                _componentRefSource.With(entity, componentType1, callback);
+                _componentRefScope.With(entity, componentType1, callback);
             }
         }
 
@@ -137,7 +137,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                _componentRefSource.With(entity, componentType1, componentType2, callback);
+                _componentRefScope.With(entity, componentType1, componentType2, callback);
             }
         }
 
@@ -156,7 +156,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                _componentRefSource.With(entity, componentType1, componentType2, componentType3, callback);
+                _componentRefScope.With(entity, componentType1, componentType2, componentType3, callback);
             }
         }
 
@@ -176,7 +176,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                _componentRefSource.With(entity, componentType1, componentType2, componentType3, componentType4, callback);
+                _componentRefScope.With(entity, componentType1, componentType2, componentType3, componentType4, callback);
             }
         }
 
@@ -197,7 +197,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                _componentRefSource.With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
+                _componentRefScope.With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
             }
         }
     }

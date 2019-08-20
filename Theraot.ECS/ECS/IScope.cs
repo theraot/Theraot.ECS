@@ -4,7 +4,7 @@ using Component = System.Object;
 
 namespace Theraot.ECS
 {
-    internal interface IScope<TEntity, TComponentType> : IComponentRefSource<TEntity, TComponentType>
+    internal interface IScope<TEntity, TComponentType> : IComponentRefScope<TEntity, TComponentType>
     {
         TEntity CreateEntity();
 

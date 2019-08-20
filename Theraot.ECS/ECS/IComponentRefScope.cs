@@ -1,6 +1,6 @@
 ﻿namespace Theraot.ECS
 {
-    internal interface IComponentRefSource<TEntity, in TComponentType>
+    internal interface IComponentRefScope<TEntity, in TComponentType>
     {
         void With<TComponent1>
         (
