@@ -41,6 +41,25 @@ namespace Tests
         }
 
         [Test]
+        public static void CopyTo()
+        {
+            var x = new FlagArray(new[] { 5, 9, 15 });
+            var bits1 = new bool[x.Capacity];
+            x.CopyTo(bits1);
+            var test1 = new bool[x.Capacity];
+            test1[5] = true;
+            test1[9] = true;
+            test1[15] = true;
+            Assert.AreEqual(test1, bits1);
+            var bits2 = new bool[15];
+            x.CopyTo(bits2, 5, 10);
+            var test2 = new bool[15];
+            test2[10] = true;
+            test2[14] = true;
+            Assert.AreEqual(test2, bits2);
+        }
+
+        [Test]
         public static void EnumerableConstructor()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => _ = new FlagArray(new[] { -1 }));
@@ -88,6 +107,13 @@ namespace Tests
             Assert.AreEqual(false, b[6]);
             Assert.AreEqual(false, b[7]);
             Assert.AreEqual(8, b.Capacity);
+        }
+
+        [Test]
+        public static void Flags()
+        {
+            var x = new FlagArray(new[] { 5, 9 });
+            Assert.AreEqual(new[] { 5, 9 }, x.Flags);
         }
 
         [Test]
@@ -239,6 +265,27 @@ namespace Tests
                     );
                 }
             }
+        }
+
+        [Test]
+        public static void SetAllAndContains()
+        {
+            var x = new FlagArray(new[] { 5, 9 });
+            Assert.AreEqual(true, x[5]);
+            Assert.AreEqual(true, x[9]);
+            Assert.AreEqual(2, x.Count);
+            Assert.AreEqual(true, x.Contains(true));
+            Assert.AreEqual(true, x.Contains(false));
+            x.SetAll(false);
+            Assert.AreEqual(false, x.Contains(true));
+            Assert.AreEqual(true, x.Contains(false));
+            Assert.AreEqual(false, x[5]);
+            Assert.AreEqual(false, x[9]);
+            Assert.AreEqual(0, x.Count);
+            x.SetAll(true);
+            Assert.AreEqual(true, x.Contains(true));
+            Assert.AreEqual(false, x.Contains(false));
+            Assert.AreEqual(x.Capacity, x.Count);
         }
 
         [Test]
