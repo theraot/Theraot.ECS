@@ -27,6 +27,20 @@ namespace Tests
         }
 
         [Test]
+        public static void Clone()
+        {
+            var x = new FlagArray(16)
+            {
+                [5] = true,
+                [9] = true
+            };
+            var y = x.Clone();
+            Assert.AreEqual(16, y.Capacity);
+            Assert.AreEqual(true, y[5]);
+            Assert.AreEqual(true, y[9]);
+        }
+
+        [Test]
         public static void EnumerableConstructor()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => _ = new FlagArray(new[] { -1 }));

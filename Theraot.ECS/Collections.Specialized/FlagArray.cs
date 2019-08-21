@@ -14,18 +14,6 @@ namespace Theraot.Collections.Specialized
         private const int _sizeOfEntryLog2 = 5;
         private readonly int[] _entries;
 
-        public FlagArray(FlagArray prototype)
-        {
-            if (prototype == null)
-            {
-                throw new ArgumentNullException(nameof(prototype), $"{nameof(prototype)} is null.");
-            }
-            var length = _entries.Length;
-            _entries = new int[length];
-            Capacity = prototype.Capacity;
-            prototype._entries.CopyTo(_entries, 0);
-        }
-
         public FlagArray(IEnumerable<int> indexes)
         {
             if (indexes == null)
@@ -110,6 +98,18 @@ namespace Theraot.Collections.Specialized
             {
                 SetAll(true);
             }
+        }
+
+        private FlagArray(FlagArray prototype)
+        {
+            if (prototype == null)
+            {
+                throw new ArgumentNullException(nameof(prototype), $"{nameof(prototype)} is null.");
+            }
+            var length = prototype._entries.Length;
+            _entries = new int[length];
+            Capacity = prototype.Capacity;
+            prototype._entries.CopyTo(_entries, 0);
         }
 
         public int Capacity { get; }
