@@ -4,7 +4,7 @@ using Theraot.Collections.Specialized;
 
 namespace Theraot.ECS
 {
-    internal class ScopeCore<TEntity, TComponentType, TComponentTypeSet>
+    internal class ScopeCore<TEntity, TComponentType, TComponentTypeSet> : IComponentRefScope<TEntity, TComponentType>
     {
         private readonly Dictionary<TEntity, EntityComponentStorage<TComponentType, TComponentTypeSet>> _componentsByEntity;
 
@@ -57,7 +57,97 @@ namespace Theraot.ECS
             return false;
         }
 
-        public bool TryGetComponentRefSource(TEntity entity, out IComponentRef<TComponentType> componentRef)
+        public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
+        {
+            return _globalComponentStorage.TryRegisterComponentType<TComponent>(componentType);
+        }
+
+        public bool UnsetComponent(TEntity entity, TComponentType componentType)
+        {
+            return _componentsByEntity[entity].UnsetComponent(componentType);
+        }
+
+        public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
+        {
+            if (!TryGetComponentRefSource(entity, out var componentRefSource))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            callback
+            (
+                entity,
+                ref componentRefSource.GetComponentRef<TComponent1>(componentType1)
+            );
+        }
+
+        public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
+        {
+            if (!TryGetComponentRefSource(entity, out var componentRefSource))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            callback
+            (
+                entity,
+                ref componentRefSource.GetComponentRef<TComponent1>(componentType1),
+                ref componentRefSource.GetComponentRef<TComponent2>(componentType2)
+            );
+        }
+
+        public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
+        {
+            if (!TryGetComponentRefSource(entity, out var componentRefSource))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            callback
+            (
+                entity,
+                ref componentRefSource.GetComponentRef<TComponent1>(componentType1),
+                ref componentRefSource.GetComponentRef<TComponent2>(componentType2),
+                ref componentRefSource.GetComponentRef<TComponent3>(componentType3)
+            );
+        }
+
+        public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
+        {
+            if (!TryGetComponentRefSource(entity, out var componentRefSource))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            callback
+            (
+                entity,
+                ref componentRefSource.GetComponentRef<TComponent1>(componentType1),
+                ref componentRefSource.GetComponentRef<TComponent2>(componentType2),
+                ref componentRefSource.GetComponentRef<TComponent3>(componentType3),
+                ref componentRefSource.GetComponentRef<TComponent4>(componentType4)
+            );
+        }
+
+        public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
+        {
+            if (!TryGetComponentRefSource(entity, out var componentRefSource))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            callback
+            (
+                entity,
+                ref componentRefSource.GetComponentRef<TComponent1>(componentType1),
+                ref componentRefSource.GetComponentRef<TComponent2>(componentType2),
+                ref componentRefSource.GetComponentRef<TComponent3>(componentType3),
+                ref componentRefSource.GetComponentRef<TComponent4>(componentType4),
+                ref componentRefSource.GetComponentRef<TComponent5>(componentType5)
+            );
+        }
+
+        private bool TryGetComponentRefSource(TEntity entity, out IComponentRef<TComponentType> componentRef)
         {
             if (_componentsByEntity.TryGetValue(entity, out var result))
             {
@@ -67,16 +157,6 @@ namespace Theraot.ECS
 
             componentRef = default;
             return false;
-        }
-
-        public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
-        {
-            return _globalComponentStorage.TryRegisterComponentType<TComponent>(componentType);
-        }
-
-        public bool UnsetComponent(TEntity entity, TComponentType componentType)
-        {
-            return _componentsByEntity[entity].UnsetComponent(componentType);
         }
     }
 }

@@ -277,82 +277,27 @@ namespace Theraot.ECS
     {
         public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
         {
-            if (!_core.TryGetComponentRefSource(entity, out var componentRefSource))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            callback
-            (
-                entity,
-                ref componentRefSource.GetComponentRef<TComponent1>(componentType1)
-            );
+            _core.With(entity, componentType1, callback);
         }
 
         public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
         {
-            if (!_core.TryGetComponentRefSource(entity, out var componentRefSource))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            callback
-            (
-                entity,
-                ref componentRefSource.GetComponentRef<TComponent1>(componentType1),
-                ref componentRefSource.GetComponentRef<TComponent2>(componentType2)
-            );
+            _core.With(entity, componentType1, componentType2, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
         {
-            if (!_core.TryGetComponentRefSource(entity, out var componentRefSource))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            callback
-            (
-                entity,
-                ref componentRefSource.GetComponentRef<TComponent1>(componentType1),
-                ref componentRefSource.GetComponentRef<TComponent2>(componentType2),
-                ref componentRefSource.GetComponentRef<TComponent3>(componentType3)
-            );
+            _core.With(entity, componentType1, componentType2, componentType3, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
         {
-            if (!_core.TryGetComponentRefSource(entity, out var componentRefSource))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            callback
-            (
-                entity,
-                ref componentRefSource.GetComponentRef<TComponent1>(componentType1),
-                ref componentRefSource.GetComponentRef<TComponent2>(componentType2),
-                ref componentRefSource.GetComponentRef<TComponent3>(componentType3),
-                ref componentRefSource.GetComponentRef<TComponent4>(componentType4)
-            );
+            _core.With(entity, componentType1, componentType2, componentType3, componentType4, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
         {
-            if (!_core.TryGetComponentRefSource(entity, out var componentRefSource))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            callback
-            (
-                entity,
-                ref componentRefSource.GetComponentRef<TComponent1>(componentType1),
-                ref componentRefSource.GetComponentRef<TComponent2>(componentType2),
-                ref componentRefSource.GetComponentRef<TComponent3>(componentType3),
-                ref componentRefSource.GetComponentRef<TComponent4>(componentType4),
-                ref componentRefSource.GetComponentRef<TComponent5>(componentType5)
-            );
+            _core.With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
         }
     }
 }
