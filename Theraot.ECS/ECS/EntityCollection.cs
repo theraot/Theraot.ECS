@@ -14,8 +14,8 @@ namespace Theraot.ECS
         {
             _componentRefScope = componentRefScope;
             _wrapped = new HashSet<TEntity>();
-            _removedEntity = new HashSet<EventHandler<CollectionChangeEventArgs<TEntity>>>();
-            _addedEntity = new HashSet<EventHandler<CollectionChangeEventArgs<TEntity>>>();
+            _removedEntity = new HashSet<EventHandler<EntityCollectionChangeEventArgs<TEntity>>>();
+            _addedEntity = new HashSet<EventHandler<EntityCollectionChangeEventArgs<TEntity>>>();
         }
 
         public int Count => _wrapped.Count;
@@ -53,16 +53,16 @@ namespace Theraot.ECS
 
     public sealed partial class EntityCollection<TEntity, TComponentType>
     {
-        private readonly HashSet<EventHandler<CollectionChangeEventArgs<TEntity>>> _addedEntity;
-        private readonly HashSet<EventHandler<CollectionChangeEventArgs<TEntity>>> _removedEntity;
+        private readonly HashSet<EventHandler<EntityCollectionChangeEventArgs<TEntity>>> _addedEntity;
+        private readonly HashSet<EventHandler<EntityCollectionChangeEventArgs<TEntity>>> _removedEntity;
 
-        public event EventHandler<CollectionChangeEventArgs<TEntity>> AddedEntity
+        public event EventHandler<EntityCollectionChangeEventArgs<TEntity>> AddedEntity
         {
             add => _addedEntity.Add(value);
             remove => _addedEntity.Remove(value);
         }
 
-        public event EventHandler<CollectionChangeEventArgs<TEntity>> RemovedEntity
+        public event EventHandler<EntityCollectionChangeEventArgs<TEntity>> RemovedEntity
         {
             add => _removedEntity.Add(value);
             remove => _removedEntity.Remove(value);
@@ -72,7 +72,7 @@ namespace Theraot.ECS
         {
             foreach (var handler in _addedEntity)
             {
-                handler.Invoke(this, new CollectionChangeEventArgs<TEntity>(CollectionChangeAction.Add, entity));
+                handler.Invoke(this, new EntityCollectionChangeEventArgs<TEntity>(CollectionChangeAction.Add, entity));
             }
         }
 
@@ -80,7 +80,7 @@ namespace Theraot.ECS
         {
             foreach (var handler in _removedEntity)
             {
-                handler.Invoke(this, new CollectionChangeEventArgs<TEntity>(CollectionChangeAction.Remove, entity));
+                handler.Invoke(this, new EntityCollectionChangeEventArgs<TEntity>(CollectionChangeAction.Remove, entity));
             }
         }
     }
