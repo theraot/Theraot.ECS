@@ -91,15 +91,6 @@ namespace Theraot.Collections.Specialized
             Capacity = capacity;
         }
 
-        public FlagArray(int capacity, bool defaultValue)
-            : this(capacity)
-        {
-            if (defaultValue)
-            {
-                SetAll(true);
-            }
-        }
-
         private FlagArray(FlagArray prototype)
         {
             if (prototype == null)
@@ -241,11 +232,6 @@ namespace Theraot.Collections.Specialized
                 }
             }
             return false;
-        }
-
-        public bool Contains(bool item, IEqualityComparer<bool> comparer)
-        {
-            return Enumerable.Contains(this, item, comparer);
         }
 
         public void CopyTo(bool[] array, int arrayIndex)
