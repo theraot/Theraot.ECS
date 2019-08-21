@@ -98,7 +98,21 @@ namespace Theraot.ECS
 
         public void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, Component> componentSelector)
         {
-            if (_core.SetComponents(entity, componentTypes, componentSelector, out var addedComponents))
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+
+            var addedComponents = new List<TComponentType>();
+            foreach (var componentType in componentTypes)
+            {
+                if (_core.SetComponent(entity, componentType, componentSelector(componentType)))
+                {
+                    addedComponents.Add(componentType);
+                }
+            }
+
+            if (addedComponents.Count > 0)
             {
                 UpdateEntitiesByQueryOnAddedComponents(entity, _core.GetComponentTypes(entity), addedComponents);
             }
@@ -124,7 +138,16 @@ namespace Theraot.ECS
 
         public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
         {
-            if (_core.UnsetComponents(entity, componentTypes, out var removedComponents))
+            var removedComponents = new List<TComponentType>();
+            foreach (var componentType in componentTypes)
+            {
+                if (_core.UnsetComponent(entity, componentType))
+                {
+                    removedComponents.Add(componentType);
+                }
+            }
+
+            if (removedComponents.Count > 0)
             {
                 UpdateEntitiesByQueryOnRemoveComponents(entity, _core.GetComponentTypes(entity), removedComponents);
             }

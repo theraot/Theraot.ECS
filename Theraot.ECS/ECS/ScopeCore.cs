@@ -46,11 +46,6 @@ namespace Theraot.ECS
             return _componentsByEntity[entity].SetComponent(componentType, component);
         }
 
-        public bool SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, object> componentSelector, out List<TComponentType> addedComponents)
-        {
-            return _componentsByEntity[entity].SetComponents(componentTypes, componentSelector, out addedComponents);
-        }
-
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
         {
             if (_componentsByEntity.TryGetValue(entity, out var components) && components.TryGetComponent(componentType, out component))
@@ -82,11 +77,6 @@ namespace Theraot.ECS
         public bool UnsetComponent(TEntity entity, TComponentType componentType)
         {
             return _componentsByEntity[entity].UnsetComponent(componentType);
-        }
-
-        public bool UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, out List<TComponentType> removedComponents)
-        {
-            return _componentsByEntity[entity].UnsetComponents(componentTypes, out removedComponents);
         }
     }
 }

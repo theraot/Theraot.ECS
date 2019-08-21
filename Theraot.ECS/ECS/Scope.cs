@@ -54,11 +54,21 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(components));
             }
 
-            SetComponents(entity, components.Keys, type => components[type]);
+            _scopeInternal.SetComponents(entity, components.Keys, type => components[type]);
         }
 
-        public void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, object> componentSelector)
+        public void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, Component> componentSelector)
         {
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+
+            if (componentSelector == null)
+            {
+                throw new ArgumentNullException(nameof(componentSelector));
+            }
+
             _scopeInternal.SetComponents(entity, componentTypes, componentSelector);
         }
 
@@ -80,7 +90,7 @@ namespace Theraot.ECS
             }
 
             var index = 0;
-            SetComponents(entity, componentTypes, _ => components[index++]);
+            _scopeInternal.SetComponents(entity, componentTypes, _ => components[index++]);
         }
 
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
@@ -100,12 +110,17 @@ namespace Theraot.ECS
 
         public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
         {
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+
             _scopeInternal.UnsetComponents(entity, componentTypes);
         }
 
         public void UnsetComponents(TEntity entity, params TComponentType[] componentTypes)
         {
-            UnsetComponents(entity, (IEnumerable<TComponentType>)componentTypes);
+            _scopeInternal.UnsetComponents(entity, componentTypes);
         }
     }
 

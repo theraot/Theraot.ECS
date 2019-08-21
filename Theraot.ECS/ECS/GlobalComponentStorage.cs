@@ -23,12 +23,6 @@ namespace Theraot.ECS
             return ((IndexedCollection<TComponent>)typedComponentStorage).Add(component);
         }
 
-        public TComponent GetComponent<TComponent>(ComponentId componentId, TComponentType componentType)
-        {
-            var typedComponentStorage = GetStorage<TComponent>(componentType);
-            return ((IndexedCollection<TComponent>)typedComponentStorage)[componentId];
-        }
-
         public ref TComponent GetComponentRef<TComponent>(ComponentId componentId, TComponentType componentType)
         {
             var typedComponentStorage = GetStorage<TComponent>(componentType);
@@ -45,17 +39,6 @@ namespace Theraot.ECS
             if (_indexByComponentType.TryGetValue(componentType, out var actualType))
             {
                 _indexByActualType[actualType].Remove(componentId);
-            }
-        }
-
-        public void RemoveComponents(List<ComponentId> componentIds, List<TComponentType> componentTypes)
-        {
-            for (var index = 0; index < componentIds.Count; index++)
-            {
-                if (_indexByComponentType.TryGetValue(componentTypes[index], out var actualType))
-                {
-                    _indexByActualType[actualType].Remove(componentIds[index]);
-                }
             }
         }
 
