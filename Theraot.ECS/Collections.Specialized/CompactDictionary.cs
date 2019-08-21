@@ -190,32 +190,6 @@ namespace Theraot.Collections.Specialized
             return GetEnumerator();
         }
 
-        public IList<TKey> GetKeyList()
-        {
-            return _keyList ?? (_keyList = new KeyList(this));
-        }
-
-        public IList<TValue> GetValueList()
-        {
-            return _valueList ?? (_valueList = new ValueList(this));
-        }
-
-        public int IndexOfKey(TKey key)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key), "Key cannot be null.");
-            }
-
-            var ret = Array.BinarySearch(_keys, 0, Count, key, _comparer);
-            return ret >= 0 ? ret : -1;
-        }
-
-        public int IndexOfValue(TValue value)
-        {
-            return Array.IndexOf(_values, value, 0, Count);
-        }
-
         bool IDictionary<TKey, TValue>.Remove(TKey key)
         {
             var index = IndexOfKey(key);
@@ -449,6 +423,32 @@ namespace Theraot.Collections.Specialized
             }
 
             Capacity = newCapacity;
+        }
+
+        private IList<TKey> GetKeyList()
+        {
+            return _keyList ?? (_keyList = new KeyList(this));
+        }
+
+        private IList<TValue> GetValueList()
+        {
+            return _valueList ?? (_valueList = new ValueList(this));
+        }
+
+        private int IndexOfKey(TKey key)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key), "Key cannot be null.");
+            }
+
+            var ret = Array.BinarySearch(_keys, 0, Count, key, _comparer);
+            return ret >= 0 ? ret : -1;
+        }
+
+        private int IndexOfValue(TValue value)
+        {
+            return Array.IndexOf(_values, value, 0, Count);
         }
 
         private void Insert(int index, TKey key, TValue value)
