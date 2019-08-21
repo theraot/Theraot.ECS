@@ -162,11 +162,6 @@ namespace Theraot.Collections.Specialized
             throw new KeyNotFoundException();
         }
 
-        public int IndexOfValue(TValue value)
-        {
-            return Array.IndexOf(_values, value, 0, Count);
-        }
-
         public bool Remove(int key)
         {
             var index = IndexOfKey(key);
@@ -260,6 +255,11 @@ namespace Theraot.Collections.Specialized
         {
             var ret = Array.BinarySearch(_keys, 0, Count, key);
             return ret >= 0 ? ret : -1;
+        }
+
+        private int IndexOfValue(TValue value)
+        {
+            return Array.IndexOf(_values, value, 0, Count);
         }
 
         private void Insert(int index, int key, TValue value)
