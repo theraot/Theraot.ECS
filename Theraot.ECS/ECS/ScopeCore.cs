@@ -154,9 +154,14 @@ namespace Theraot.ECS
                 ComponentTypes = componentTypes;
             }
         }
+
+        public IComponentRefScope<TEntity, TComponentType> GetComponentRefScope()
+        {
+            return this;
+        }
     }
 
-    internal partial class ScopeCore<TEntity, TComponentType, TComponentTypeSet>
+    internal partial class ScopeCore<TEntity, TComponentType, TComponentTypeSet> : IComponentRefScope<TEntity, TComponentType>
     {
         public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
         {

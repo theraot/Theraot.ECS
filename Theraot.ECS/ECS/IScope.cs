@@ -14,7 +14,12 @@ namespace Theraot.ECS
         // Empty
     }
 
-    internal interface IScopeInternal<TEntity, TComponentType> : IScopeShell<TEntity, TComponentType>
+    internal interface IScopeInternal<TEntity, TComponentType> : IScopeShell<TEntity, TComponentType>, IComponentRefScopeProvider<TEntity, TComponentType>
+    {
+        // Empty
+    }
+
+    internal interface IComponentRefScopeProvider<TEntity, in TComponentType>
     {
         IComponentRefScope<TEntity, TComponentType> GetComponentRefScope();
     }

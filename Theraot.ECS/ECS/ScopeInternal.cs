@@ -42,7 +42,7 @@ namespace Theraot.ECS
 
         public IComponentRefScope<TEntity, TComponentType> GetComponentRefScope()
         {
-            return _core;
+            return _core.GetComponentRefScope();
         }
 
         public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
@@ -55,7 +55,7 @@ namespace Theraot.ECS
             {
                 return entityCollection;
             }
-            entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(_core);
+            entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(GetComponentRefScope());
             foreach (var componentType in allAsICollection.Concat(anyAsICollection).Concat(noneAsICollection))
             {
                 if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
