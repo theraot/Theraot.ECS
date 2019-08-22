@@ -13,7 +13,7 @@ namespace Theraot.ECS
         }
     }
 
-    public sealed partial class Scope<TEntity, TComponentType> : IScope<TEntity, TComponentType>
+    public sealed partial class Scope<TEntity, TComponentType>
     {
         private readonly IScopeInternal<TEntity, TComponentType> _scopeInternal;
 
