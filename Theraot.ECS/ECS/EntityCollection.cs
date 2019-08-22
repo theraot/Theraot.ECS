@@ -8,6 +8,7 @@ namespace Theraot.ECS
     public sealed partial class EntityCollection<TEntity, TComponentType> : ICollection<TEntity>
     {
         private readonly IComponentRefScope<TEntity, TComponentType> _componentRefScope;
+
         private readonly HashSet<TEntity> _wrapped;
 
         internal EntityCollection(IComponentRefScope<TEntity, TComponentType> componentRefScope)
