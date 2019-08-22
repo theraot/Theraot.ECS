@@ -46,15 +46,48 @@ namespace Theraot.ECS
             return _globalComponentStorage.GetRegisteredComponentType(componentType);
         }
 
-        public bool SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
+        public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
             var entityComponentStorage = _componentsByEntity[entity];
-            return entityComponentStorage.ComponentIndex.Set
+            if
             (
-                componentType,
-                key => _globalComponentStorage.AddComponent(component, key),
-                (key, id) => _globalComponentStorage.UpdateComponent(id, component, key)
-            );
+                entityComponentStorage.ComponentIndex.Set
+                (
+                    componentType,
+                    key => _globalComponentStorage.AddComponent(component, key),
+                    (key, id) => _globalComponentStorage.UpdateComponent(id, component, key)
+                )
+            )
+            {
+                OnAddedComponents(entity, new[] { componentType });
+            }
+        }
+
+        public void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, object> componentSelector)
+        {
+            var entityComponentStorage = _componentsByEntity[entity];
+
+            var addedComponentTypes = new List<TComponentType>();
+            foreach (var componentType in componentTypes)
+            {
+                if
+                (
+                    entityComponentStorage.ComponentIndex.Set
+                    (
+                        componentType,
+                        key => _globalComponentStorage.AddComponent(componentSelector(key), key),
+                        (key, id) => _globalComponentStorage.UpdateComponent(id, componentSelector(key), key)
+                    )
+                )
+                {
+                    addedComponentTypes.Add(componentType);
+                }
+            }
+
+            if (addedComponentTypes.Count > 0)
+            {
+                OnAddedComponents(entity, addedComponentTypes);
+            }
         }
 
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
@@ -78,16 +111,37 @@ namespace Theraot.ECS
             return _globalComponentStorage.TryRegisterComponentType<TComponent>(componentType);
         }
 
-        public bool UnsetComponent(TEntity entity, TComponentType componentType)
+        public void UnsetComponent(TEntity entity, TComponentType componentType)
         {
             var entityComponentStorage = _componentsByEntity[entity];
             if (!entityComponentStorage.ComponentIndex.Remove(componentType, out var removedComponentId))
             {
-                return false;
+                return;
             }
 
             _globalComponentStorage.RemoveComponent(removedComponentId, componentType);
-            return true;
+            OnRemovedComponents(entity, new[] { componentType });
+        }
+
+        public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
+        {
+            var removedComponentTypes = new List<TComponentType>();
+            foreach (var componentType in componentTypes)
+            {
+                var entityComponentStorage = _componentsByEntity[entity];
+                if (!entityComponentStorage.ComponentIndex.Remove(componentType, out var removedComponentId))
+                {
+                    continue;
+                }
+
+                _globalComponentStorage.RemoveComponent(removedComponentId, componentType);
+                removedComponentTypes.Add(componentType);
+            }
+
+            if (removedComponentTypes.Count > 0)
+            {
+                OnRemovedComponents(entity, removedComponentTypes);
+            }
         }
 
         private sealed class EntityComponentStorage
@@ -251,7 +305,7 @@ namespace Theraot.ECS
             remove => _removedComponent.Remove(value);
         }
 
-        private void OnAddedComponents(TEntity entity, ICollection<TComponentType> componentTypes)
+        private void OnAddedComponents(TEntity entity, IList<TComponentType> componentTypes)
         {
             foreach (var handler in _addedComponent)
             {
@@ -259,7 +313,7 @@ namespace Theraot.ECS
             }
         }
 
-        private void OnRemovedComponents(TEntity entity, ICollection<TComponentType> componentTypes)
+        private void OnRemovedComponents(TEntity entity, IList<TComponentType> componentTypes)
         {
             foreach (var handler in _removedComponent)
             {
