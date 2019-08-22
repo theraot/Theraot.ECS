@@ -40,16 +40,6 @@ namespace Theraot.ECS
             return entity;
         }
 
-        public TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType)
-        {
-            if (_core.TryGetComponent<TComponent>(entity, componentType, out var component))
-            {
-                return component;
-            }
-
-            throw new KeyNotFoundException("Entity not found");
-        }
-
         public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
             var allAsICollection = EnumerableHelper.AsICollection(all);

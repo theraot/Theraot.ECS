@@ -8,8 +8,6 @@ namespace Theraot.ECS
     {
         TEntity CreateEntity();
 
-        TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType);
-
         EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
 
         Type GetRegisteredComponentType(TComponentType componentType);

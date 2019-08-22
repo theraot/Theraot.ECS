@@ -29,7 +29,12 @@ namespace Theraot.ECS
 
         public TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType)
         {
-            return _scopeInternal.GetComponent<TComponent>(entity, componentType);
+            if (_scopeInternal.TryGetComponent<TComponent>(entity, componentType, out var component))
+            {
+                return component;
+            }
+
+            throw new KeyNotFoundException();
         }
 
         public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
