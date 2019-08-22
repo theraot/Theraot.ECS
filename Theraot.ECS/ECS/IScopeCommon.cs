@@ -4,7 +4,7 @@ using Component = System.Object;
 
 namespace Theraot.ECS
 {
-    internal interface IScopeCommon<TEntity, TComponentType> : IComponentRefScope<TEntity, TComponentType>
+    internal interface IScopeCommon<in TEntity, TComponentType>
     {
         Type GetRegisteredComponentType(TComponentType componentType);
 

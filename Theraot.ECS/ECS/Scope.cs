@@ -15,9 +15,9 @@ namespace Theraot.ECS
 
     public sealed partial class Scope<TEntity, TComponentType> : IScope<TEntity, TComponentType>
     {
-        private readonly IScope<TEntity, TComponentType> _scopeInternal;
+        private readonly IScopeInternal<TEntity, TComponentType> _scopeInternal;
 
-        internal Scope(IScope<TEntity, TComponentType> scopeInternal)
+        internal Scope(IScopeInternal<TEntity, TComponentType> scopeInternal)
         {
             _scopeInternal = scopeInternal;
         }
@@ -138,7 +138,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _scopeInternal.With(entity, componentType1, callback);
+            _scopeInternal.GetComponentRefScope().With(entity, componentType1, callback);
         }
 
         public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
@@ -148,7 +148,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _scopeInternal.With(entity, componentType1, componentType2, callback);
+            _scopeInternal.GetComponentRefScope().With(entity, componentType1, componentType2, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
@@ -158,7 +158,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _scopeInternal.With(entity, componentType1, componentType2, componentType3, callback);
+            _scopeInternal.GetComponentRefScope().With(entity, componentType1, componentType2, componentType3, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
@@ -168,7 +168,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _scopeInternal.With(entity, componentType1, componentType2, componentType3, componentType4, callback);
+            _scopeInternal.GetComponentRefScope().With(entity, componentType1, componentType2, componentType3, componentType4, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
@@ -178,7 +178,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _scopeInternal.With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
+            _scopeInternal.GetComponentRefScope().With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
         }
     }
 }

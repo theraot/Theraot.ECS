@@ -6,7 +6,7 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    internal sealed partial class ScopeInternal<TEntity, TComponentType, TComponentTypeSet> : IScope<TEntity, TComponentType>
+    internal sealed class ScopeInternal<TEntity, TComponentType, TComponentTypeSet> : IScopeInternal<TEntity, TComponentType>
     {
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
@@ -40,6 +40,11 @@ namespace Theraot.ECS
             return entity;
         }
 
+        public IComponentRefScope<TEntity, TComponentType> GetComponentRefScope()
+        {
+            return _core;
+        }
+
         public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
             var allAsICollection = EnumerableHelper.AsICollection(all);
@@ -50,7 +55,7 @@ namespace Theraot.ECS
             {
                 return entityCollection;
             }
-            entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(this);
+            entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(_core);
             foreach (var componentType in allAsICollection.Concat(anyAsICollection).Concat(noneAsICollection))
             {
                 if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
@@ -196,34 +201,6 @@ namespace Theraot.ECS
                         break;
                 }
             }
-        }
-    }
-
-    internal sealed partial class ScopeInternal<TEntity, TComponentType, TComponentTypeSet>
-    {
-        public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
-        {
-            _core.With(entity, componentType1, callback);
-        }
-
-        public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
-        {
-            _core.With(entity, componentType1, componentType2, callback);
-        }
-
-        public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
-        {
-            _core.With(entity, componentType1, componentType2, componentType3, callback);
-        }
-
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
-        {
-            _core.With(entity, componentType1, componentType2, componentType3, componentType4, callback);
-        }
-
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
-        {
-            _core.With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
         }
     }
 }
