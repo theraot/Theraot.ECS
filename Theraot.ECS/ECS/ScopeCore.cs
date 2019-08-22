@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Theraot.Collections.Specialized;
 using ComponentId = System.Int32;
 
@@ -18,6 +19,8 @@ namespace Theraot.ECS
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
             _globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypeEqualityComparer);
             _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage>();
+            _addedComponent = new HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>>();
+            _removedComponent = new HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>>();
         }
 
         public IEnumerable<TEntity> AllEntities => _componentsByEntity.Keys;
@@ -228,6 +231,40 @@ namespace Theraot.ECS
                 ref _globalComponentStorage.GetComponentRef<TComponent4>(componentId3, componentType4),
                 ref _globalComponentStorage.GetComponentRef<TComponent5>(componentId4, componentType5)
             );
+        }
+    }
+
+    internal partial class ScopeCore<TEntity, TComponentType, TComponentTypeSet>
+    {
+        private readonly HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>> _addedComponent;
+        private readonly HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>> _removedComponent;
+
+        public event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> AddedComponents
+        {
+            add => _addedComponent.Add(value);
+            remove => _addedComponent.Remove(value);
+        }
+
+        public event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> RemovedComponents
+        {
+            add => _removedComponent.Add(value);
+            remove => _removedComponent.Remove(value);
+        }
+
+        private void OnAddedComponents(TEntity entity, ICollection<TComponentType> componentTypes)
+        {
+            foreach (var handler in _addedComponent)
+            {
+                handler.Invoke(this, new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeAction.Add, entity, componentTypes));
+            }
+        }
+
+        private void OnRemovedComponents(TEntity entity, ICollection<TComponentType> componentTypes)
+        {
+            foreach (var handler in _removedComponent)
+            {
+                handler.Invoke(this, new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeAction.Remove, entity, componentTypes));
+            }
         }
     }
 }
