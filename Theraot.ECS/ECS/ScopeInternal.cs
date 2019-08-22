@@ -36,7 +36,7 @@ namespace Theraot.ECS
         public TEntity CreateEntity()
         {
             var entity = _entityFactory();
-            _core.CreateEntity(entity, _componentTypeManager.Create());
+            _core.RegisterEntity(entity, _componentTypeManager.Create());
             return entity;
         }
 

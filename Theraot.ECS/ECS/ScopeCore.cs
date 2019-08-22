@@ -6,7 +6,7 @@ using ComponentId = System.Int32;
 
 namespace Theraot.ECS
 {
-    internal partial class ScopeCore<TEntity, TComponentType, TComponentTypeSet>
+    internal partial class ScopeCore<TEntity, TComponentType, TComponentTypeSet> : IScopeCore<TEntity, TComponentType, TComponentTypeSet>
     {
         private readonly Dictionary<TEntity, EntityComponentStorage> _componentsByEntity;
 
@@ -27,15 +27,6 @@ namespace Theraot.ECS
 
         public int EntityCount => _componentsByEntity.Count;
 
-        public void CreateEntity(TEntity entity, TComponentTypeSet componentTypes)
-        {
-            _componentsByEntity[entity] = new EntityComponentStorage
-            (
-                componentTypes,
-                new CompactDictionary<TComponentType, ComponentId>(_componentTypeComparer, 16)
-            );
-        }
-
         public TComponentTypeSet GetComponentTypes(TEntity entity)
         {
             return _componentsByEntity[entity].ComponentTypes;
@@ -44,6 +35,15 @@ namespace Theraot.ECS
         public Type GetRegisteredComponentType(TComponentType componentType)
         {
             return _globalComponentStorage.GetRegisteredComponentType(componentType);
+        }
+
+        public void RegisterEntity(TEntity entity, TComponentTypeSet componentTypes)
+        {
+            _componentsByEntity[entity] = new EntityComponentStorage
+            (
+                componentTypes,
+                new CompactDictionary<TComponentType, ComponentId>(_componentTypeComparer, 16)
+            );
         }
 
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
@@ -158,7 +158,7 @@ namespace Theraot.ECS
         }
     }
 
-    internal partial class ScopeCore<TEntity, TComponentType, TComponentTypeSet> : IComponentRefScope<TEntity, TComponentType>
+    internal partial class ScopeCore<TEntity, TComponentType, TComponentTypeSet>
     {
         public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
         {
