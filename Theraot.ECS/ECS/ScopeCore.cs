@@ -11,13 +11,10 @@ namespace Theraot.ECS
 
         private readonly IComparer<TComponentType> _componentTypeComparer;
 
-        private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
-
         private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
 
-        public ScopeCore(IEqualityComparer<TComponentType> componentTypeEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
+        public ScopeCore(IEqualityComparer<TComponentType> componentTypeEqualityComparer)
         {
-            _componentTypeManager = componentTypeManager;
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
             _globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypeEqualityComparer);
             _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage>();
@@ -27,11 +24,11 @@ namespace Theraot.ECS
 
         public int EntityCount => _componentsByEntity.Count;
 
-        public void CreateEntity(TEntity entity)
+        public void CreateEntity(TEntity entity, TComponentTypeSet componentTypes)
         {
             _componentsByEntity[entity] = new EntityComponentStorage
             (
-                _componentTypeManager.Create(),
+                componentTypes,
                 new CompactDictionary<TComponentType, ComponentId>(_componentTypeComparer, 16)
             );
         }
@@ -49,21 +46,12 @@ namespace Theraot.ECS
         public bool SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
             var entityComponentStorage = _componentsByEntity[entity];
-            if
+            return entityComponentStorage.ComponentIndex.Set
             (
-                !entityComponentStorage.ComponentIndex.Set
-                (
-                    componentType,
-                    key => _globalComponentStorage.AddComponent(component, key),
-                    (key, id) => _globalComponentStorage.UpdateComponent(id, component, key)
-                )
-            )
-            {
-                return false;
-            }
-
-            _componentTypeManager.Add(entityComponentStorage.ComponentTypes, componentType);
-            return true;
+                componentType,
+                key => _globalComponentStorage.AddComponent(component, key),
+                (key, id) => _globalComponentStorage.UpdateComponent(id, component, key)
+            );
         }
 
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
@@ -96,7 +84,6 @@ namespace Theraot.ECS
             }
 
             _globalComponentStorage.RemoveComponent(removedComponentId, componentType);
-            _componentTypeManager.Remove(entityComponentStorage.ComponentTypes, componentType);
             return true;
         }
 

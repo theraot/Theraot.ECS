@@ -57,6 +57,10 @@ namespace Tests
             return false;
         }
 
+        public void Remove(int componentTypeSet, IEnumerable<int> componentTypes)
+        {
+        }
+
         public void Remove(int componentTypeSet, int componentType)
         {
         }

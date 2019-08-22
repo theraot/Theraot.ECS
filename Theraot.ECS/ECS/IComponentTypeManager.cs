@@ -24,6 +24,8 @@ namespace Theraot.ECS
 
         bool Overlaps(TComponentTypeSet componentTypeSetA, TComponentTypeSet componentTypeSetB);
 
+        void Remove(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
+
         void Remove(TComponentTypeSet componentTypeSet, TComponentType componentType);
     }
 }

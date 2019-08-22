@@ -8,31 +8,33 @@ namespace Theraot.ECS
 {
     internal sealed partial class ScopeInternal<TEntity, TComponentType, TComponentTypeSet> : IScope<TEntity, TComponentType>
     {
+        private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
+
+        private readonly ScopeCore<TEntity, TComponentType, TComponentTypeSet> _core;
+
         private readonly Dictionary<QueryId, EntityCollection<TEntity, TComponentType>> _entitiesByQueryId;
 
         private readonly Func<TEntity> _entityFactory;
-
-        private readonly ScopeCore<TEntity, TComponentType, TComponentTypeSet> _core;
 
         private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
 
         private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
-        internal ScopeInternal(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeEqualityComparer)
+        internal ScopeInternal(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
-            var componentTypeManager = componentTypeEqualityComparer ?? throw new ArgumentNullException(nameof(componentTypeEqualityComparer));
-            var componentTypEqualityComparer = componentTypeEqualityComparer.ComponentTypEqualityComparer;
-            _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeEqualityComparer);
+            _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
+            var componentTypEqualityComparer = componentTypeManager.ComponentTypEqualityComparer;
+            _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
             _entitiesByQueryId = new Dictionary<QueryId, EntityCollection<TEntity, TComponentType>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypEqualityComparer);
-            _core = new ScopeCore<TEntity, TComponentType, TComponentTypeSet>(componentTypEqualityComparer, componentTypeManager);
+            _core = new ScopeCore<TEntity, TComponentType, TComponentTypeSet>(componentTypEqualityComparer);
         }
 
         public TEntity CreateEntity()
         {
             var entity = _entityFactory();
-            _core.CreateEntity(entity);
+            _core.CreateEntity(entity, _componentTypeManager.Create());
             return entity;
         }
 
@@ -74,8 +76,8 @@ namespace Theraot.ECS
             }
             foreach (var entity in _core.AllEntities)
             {
-                var componentTypes = _core.GetComponentTypes(entity);
-                if (_queryManager.QueryCheck(componentTypes, queryId) == QueryCheckResult.Add)
+                var allComponentTypes = _core.GetComponentTypes(entity);
+                if (_queryManager.QueryCheck(allComponentTypes, queryId) == QueryCheckResult.Add)
                 {
                     entityCollection.Add(entity);
                 }
@@ -90,10 +92,14 @@ namespace Theraot.ECS
 
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
-            if (_core.SetComponent(entity, componentType, component))
+            if (!_core.SetComponent(entity, componentType, component))
             {
-                UpdateEntitiesByQueryOnAddedComponent(entity, _core.GetComponentTypes(entity), componentType);
+                return;
             }
+
+            var allComponentTypes = _core.GetComponentTypes(entity);
+            _componentTypeManager.Add(allComponentTypes, componentType);
+            UpdateEntitiesByQueryOnAddedComponent(entity, allComponentTypes, componentType);
         }
 
         public void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, Component> componentSelector)
@@ -112,10 +118,14 @@ namespace Theraot.ECS
                 }
             }
 
-            if (addedComponents.Count > 0)
+            if (addedComponents.Count == 0)
             {
-                UpdateEntitiesByQueryOnAddedComponents(entity, _core.GetComponentTypes(entity), addedComponents);
+                return;
             }
+
+            var allComponentTypes = _core.GetComponentTypes(entity);
+            _componentTypeManager.Add(allComponentTypes, addedComponents);
+            UpdateEntitiesByQueryOnAddedComponents(entity, allComponentTypes, addedComponents);
         }
 
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
@@ -130,10 +140,14 @@ namespace Theraot.ECS
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)
         {
-            if (_core.UnsetComponent(entity, componentType))
+            if (!_core.UnsetComponent(entity, componentType))
             {
-                UpdateEntitiesByQueryOnRemoveComponent(entity, _core.GetComponentTypes(entity), componentType);
+                return;
             }
+
+            var allComponentTypes = _core.GetComponentTypes(entity);
+            _componentTypeManager.Remove(allComponentTypes, componentType);
+            UpdateEntitiesByQueryOnRemoveComponent(entity, allComponentTypes, componentType);
         }
 
         public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
@@ -141,16 +155,21 @@ namespace Theraot.ECS
             var removedComponents = new List<TComponentType>();
             foreach (var componentType in componentTypes)
             {
-                if (_core.UnsetComponent(entity, componentType))
+                if (!_core.UnsetComponent(entity, componentType))
                 {
-                    removedComponents.Add(componentType);
+                    continue;
                 }
+                removedComponents.Add(componentType);
             }
 
-            if (removedComponents.Count > 0)
+            if (removedComponents.Count == 0)
             {
-                UpdateEntitiesByQueryOnRemoveComponents(entity, _core.GetComponentTypes(entity), removedComponents);
+                return;
             }
+
+            var allComponentTypes = _core.GetComponentTypes(entity);
+            _componentTypeManager.Remove(allComponentTypes, removedComponents);
+            UpdateEntitiesByQueryOnRemoveComponents(entity, allComponentTypes, removedComponents);
         }
 
         private IEnumerable<QueryId> GetQueriesByComponentType(TComponentType componentType)

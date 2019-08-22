@@ -127,5 +127,22 @@ namespace Theraot.ECS
             }
             componentTypeSet[componentType] = false;
         }
+
+        public void Remove(ComponentTypeSet componentTypeSet, IEnumerable<int> componentTypes)
+        {
+            if (componentTypeSet == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeSet));
+            }
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+
+            foreach (var componentType in componentTypes)
+            {
+                componentTypeSet[componentType] = false;
+            }
+        }
     }
 }
