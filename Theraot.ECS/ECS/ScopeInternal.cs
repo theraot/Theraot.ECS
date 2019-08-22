@@ -50,9 +50,9 @@ namespace Theraot.ECS
 
         public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
-            var allAsICollection = all is ICollection<TComponentType> allCollection ? allCollection : all.ToList();
-            var anyAsICollection = any is ICollection<TComponentType> anyCollection ? anyCollection : any.ToList();
-            var noneAsICollection = none is ICollection<TComponentType> noneCollection ? noneCollection : none.ToList();
+            var allAsICollection = EnumerableHelper.AsICollection(all);
+            var anyAsICollection = EnumerableHelper.AsICollection(any);
+            var noneAsICollection = EnumerableHelper.AsICollection(none);
             var queryId = _queryManager.CreateQuery(allAsICollection, anyAsICollection, noneAsICollection);
             if (_entitiesByQueryId.TryGetValue(queryId, out var entityCollection))
             {
