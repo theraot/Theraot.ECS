@@ -10,7 +10,7 @@ namespace Theraot.ECS
     {
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
-        private readonly ScopeCore<TEntity, TComponentType, TComponentTypeSet> _core;
+        private readonly IScopeCore<TEntity, TComponentType, TComponentTypeSet> _core;
 
         private readonly Dictionary<QueryId, EntityCollection<TEntity, TComponentType>> _entitiesByQueryId;
 
@@ -62,10 +62,6 @@ namespace Theraot.ECS
                 queryIds.Add(queryId);
             }
 
-            if (_core.EntityCount == 0)
-            {
-                return entityCollection;
-            }
             foreach (var entity in _core.AllEntities)
             {
                 var allComponentTypes = _core.GetComponentTypes(entity);

@@ -25,8 +25,6 @@ namespace Theraot.ECS
 
         public IEnumerable<TEntity> AllEntities => _componentsByEntity.Keys;
 
-        public int EntityCount => _componentsByEntity.Count;
-
         public TComponentTypeSet GetComponentTypes(TEntity entity)
         {
             return _componentsByEntity[entity].ComponentTypes;
