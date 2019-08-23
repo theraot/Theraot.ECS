@@ -6,7 +6,7 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    internal sealed class ScopeInternal<TEntity, TComponentType, TComponentTypeSet> : IScopeInternal<TEntity, TComponentType>
+    internal sealed class ScopeMantle<TEntity, TComponentType, TComponentTypeSet> : IScopeMantle<TEntity, TComponentType>
     {
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
@@ -20,7 +20,7 @@ namespace Theraot.ECS
 
         private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
-        internal ScopeInternal(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
+        internal ScopeMantle(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));

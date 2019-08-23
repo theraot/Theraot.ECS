@@ -2,7 +2,7 @@
 
 namespace Theraot.ECS
 {
-    internal interface IScopeInternal<TEntity, TComponentType> : IScopeCommon<TEntity, TComponentType>, IComponentRefScopeProvider<TEntity, TComponentType>
+    internal interface IScopeMantle<TEntity, TComponentType> : IScopeCommon<TEntity, TComponentType>, IComponentRefScopeProvider<TEntity, TComponentType>
     {
         TEntity CreateEntity();
 
