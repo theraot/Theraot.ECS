@@ -7,7 +7,7 @@ namespace Tests
     public static class ComponentRefTests
     {
         [Test]
-        public static void RefToRemovedComponentIsNotSafe()
+        public static void RefToRemovedComponentIsSafe()
         {
             var entityId = 0;
             var scope = Scope.CreateScope(() => entityId++, new SetManager());
@@ -25,10 +25,11 @@ namespace Tests
                     component = 546;
                     Assert.AreEqual(546, scope.GetComponent<int>(entityA, "puff"));
                     scope.UnsetComponent(entityA, "puff");
-                    Assert.Throws<KeyNotFoundException>(() => scope.GetComponent<int>(entityA, "puff"));
-                    Assert.AreEqual(789, component); // Ref points to a different component after it was removed
+                    Assert.AreEqual(546, scope.GetComponent<int>(entityA, "puff"));
+                    Assert.AreEqual(546, component);
                 }
             );
+            Assert.Throws<KeyNotFoundException>(() => scope.GetComponent<int>(entityA, "puff"));
         }
 
         [Test]

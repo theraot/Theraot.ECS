@@ -7,7 +7,34 @@ namespace Theraot
     {
         public static ICollection<T> AsICollection<T>(IEnumerable<T> enumerable)
         {
-            return enumerable is ICollection<T> allCollection ? allCollection : enumerable.ToList();
+            switch (enumerable)
+            {
+                case ICollection<T> allCollection:
+                    return allCollection;
+
+                default:
+                    return enumerable.ToList();
+            }
+        }
+
+        public static IList<T> AsIList<T>(IEnumerable<T> enumerable)
+        {
+            switch (enumerable)
+            {
+                case IList<T> allCollection:
+                    return allCollection;
+
+                case ICollection<T> collection when collection.Count == 0:
+                    return EmptyArray<T>.Instance;
+
+                case ICollection<T> collection:
+                    var result = new T[collection.Count];
+                    collection.CopyTo(result, 0);
+                    return result;
+
+                default:
+                    return enumerable.ToList();
+            }
         }
     }
 }

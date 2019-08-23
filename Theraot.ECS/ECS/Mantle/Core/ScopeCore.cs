@@ -14,6 +14,8 @@ namespace Theraot.ECS.Mantle.Core
 
         private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
 
+        private List<KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>> _log;
+
         public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer)
         {
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
@@ -24,6 +26,11 @@ namespace Theraot.ECS.Mantle.Core
         }
 
         public IEnumerable<TEntity> AllEntities => _componentsByEntity.Keys;
+
+        public IComponentReferenceAccess<TEntity, TComponentType> GetComponentRef()
+        {
+            return this;
+        }
 
         public TComponentTypeSet GetComponentTypes(TEntity entity)
         {
@@ -46,6 +53,11 @@ namespace Theraot.ECS.Mantle.Core
 
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
+            if (BufferSetComponent(entity, componentType, component))
+            {
+                return;
+            }
+
             var entityComponentStorage = _componentsByEntity[entity];
             if
             (
@@ -63,10 +75,16 @@ namespace Theraot.ECS.Mantle.Core
 
         public void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, object> componentSelector)
         {
+            var componentTypeList = EnumerableHelper.AsIList(componentTypes);
+            if (BufferSetComponents(entity, componentTypeList, componentSelector))
+            {
+                return;
+            }
+
             var entityComponentStorage = _componentsByEntity[entity];
 
             var addedComponentTypes = new List<TComponentType>();
-            foreach (var componentType in componentTypes)
+            foreach (var componentType in componentTypeList)
             {
                 if
                 (
@@ -111,6 +129,11 @@ namespace Theraot.ECS.Mantle.Core
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)
         {
+            if (BufferUnsetComponent(entity, componentType))
+            {
+                return;
+            }
+
             var entityComponentStorage = _componentsByEntity[entity];
             if (!entityComponentStorage.ComponentIndex.Remove(componentType, out var removedComponentId))
             {
@@ -123,8 +146,14 @@ namespace Theraot.ECS.Mantle.Core
 
         public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
         {
+            var componentTypeList = EnumerableHelper.AsIList(componentTypes);
+            if (BufferUnsetComponent(entity, componentTypeList))
+            {
+                return;
+            }
+
             var removedComponentTypes = new List<TComponentType>();
-            foreach (var componentType in componentTypes)
+            foreach (var componentType in componentTypeList)
             {
                 var entityComponentStorage = _componentsByEntity[entity];
                 if (!entityComponentStorage.ComponentIndex.Remove(componentType, out var removedComponentId))
@@ -142,6 +171,98 @@ namespace Theraot.ECS.Mantle.Core
             }
         }
 
+        private bool BufferSetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
+        {
+            if (_log == null)
+            {
+                return false;
+            }
+
+            _log.Add
+            (
+                new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
+                (
+                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
+                    (
+                        CollectionChangeAction.Add,
+                        entity,
+                        new[] { componentType }
+                    ),
+                    new Func<TComponentType, object>(_ => component)
+                )
+            );
+            return true;
+        }
+
+        private bool BufferSetComponents(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, object> componentSelector)
+        {
+            if (_log == null)
+            {
+                return false;
+            }
+
+            _log.Add
+            (
+                new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
+                (
+                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
+                    (
+                        CollectionChangeAction.Add,
+                        entity,
+                        componentTypes
+                    ),
+                    componentSelector
+                )
+            );
+            return true;
+        }
+
+        private bool BufferUnsetComponent(TEntity entity, IList<TComponentType> componentTypes)
+        {
+            if (_log == null)
+            {
+                return false;
+            }
+
+            _log.Add
+            (
+                new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
+                (
+                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
+                    (
+                        CollectionChangeAction.Remove,
+                        entity,
+                        componentTypes
+                    ),
+                    null
+                )
+            );
+            return true;
+        }
+
+        private bool BufferUnsetComponent(TEntity entity, TComponentType componentType)
+        {
+            if (_log == null)
+            {
+                return false;
+            }
+
+            _log.Add
+            (
+                new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
+                (
+                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
+                    (
+                        CollectionChangeAction.Remove,
+                        entity,
+                        new[] { componentType }
+                    ),
+                    null
+                )
+            );
+            return true;
+        }
+
         private sealed class EntityComponentStorage
         {
             public readonly CompactDictionary<TComponentType, ComponentId> ComponentIndex;
@@ -153,11 +274,6 @@ namespace Theraot.ECS.Mantle.Core
                 ComponentIndex = componentIndex;
                 ComponentTypes = componentTypes;
             }
-        }
-
-        public IComponentReferenceAccess<TEntity, TComponentType> GetComponentRef()
-        {
-            return this;
         }
     }
 
@@ -175,11 +291,18 @@ namespace Theraot.ECS.Mantle.Core
                 throw new KeyNotFoundException("ComponentType not found on the entity");
             }
 
+            var created = CreateBuffer();
+
             callback
             (
                 entity,
                 ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1)
             );
+
+            if (created)
+            {
+                ExecuteBuffer();
+            }
         }
 
         public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
@@ -196,6 +319,11 @@ namespace Theraot.ECS.Mantle.Core
             )
             {
                 throw new KeyNotFoundException("ComponentType not found on the entity");
+            }
+
+            if (_log == null)
+            {
+                _log = new List<KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>>();
             }
 
             callback
@@ -223,6 +351,11 @@ namespace Theraot.ECS.Mantle.Core
                 throw new KeyNotFoundException("ComponentType not found on the entity");
             }
 
+            if (_log == null)
+            {
+                _log = new List<KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>>();
+            }
+
             callback
             (
                 entity,
@@ -248,6 +381,11 @@ namespace Theraot.ECS.Mantle.Core
             )
             {
                 throw new KeyNotFoundException("ComponentType not found on the entity");
+            }
+
+            if (_log == null)
+            {
+                _log = new List<KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>>();
             }
 
             callback
@@ -279,6 +417,11 @@ namespace Theraot.ECS.Mantle.Core
                 throw new KeyNotFoundException("ComponentType not found on the entity");
             }
 
+            if (_log == null)
+            {
+                _log = new List<KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>>();
+            }
+
             callback
             (
                 entity,
@@ -288,6 +431,40 @@ namespace Theraot.ECS.Mantle.Core
                 ref _globalComponentStorage.GetComponentRef<TComponent4>(componentId3, componentType4),
                 ref _globalComponentStorage.GetComponentRef<TComponent5>(componentId4, componentType5)
             );
+        }
+
+        private bool CreateBuffer()
+        {
+            if (_log != null)
+            {
+                return false;
+            }
+            _log = new List<KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>>();
+            return true;
+        }
+
+        private void ExecuteBuffer()
+        {
+            var log = _log;
+            _log = null;
+            foreach (var pair in log)
+            {
+                var componentTypes = pair.Key.ComponentTypes;
+                var entity = pair.Key.Entity;
+                switch (pair.Key.Action)
+                {
+                    case CollectionChangeAction.Add:
+                        SetComponents(entity, componentTypes, (Func<TComponentType, object>)pair.Value);
+                        break;
+
+                    case CollectionChangeAction.Remove:
+                        UnsetComponents(entity, componentTypes);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
         }
     }
 
