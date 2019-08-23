@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Theraot.ECS
+namespace Theraot
 {
     internal static class EmptyArray<T>
     {

@@ -4,7 +4,7 @@ using System.ComponentModel;
 using Theraot.Collections.Specialized;
 using ComponentId = System.Int32;
 
-namespace Theraot.ECS
+namespace Theraot.ECS.Mantle.Core
 {
     internal partial class ScopeCore<TEntity, TComponentType, TComponentTypeSet> : IScopeCore<TEntity, TComponentType, TComponentTypeSet>
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Theraot.ECS
+namespace Theraot.ECS.Mantle.Core
 {
     internal interface IScopeCore<TEntity, TComponentType, TComponentTypeSet> : IScopeCommon<TEntity, TComponentType>, IComponentRefScopeProvider<TEntity, TComponentType>
     {

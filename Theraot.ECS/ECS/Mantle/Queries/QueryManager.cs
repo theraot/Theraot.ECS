@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 using QueryId = System.Int32;
 
-namespace Theraot.ECS
+namespace Theraot.ECS.Mantle.Queries
 {
     internal sealed class QueryManager<TComponentType, TComponentTypeSet> : IEqualityComparer<Query<TComponentTypeSet>>
     {

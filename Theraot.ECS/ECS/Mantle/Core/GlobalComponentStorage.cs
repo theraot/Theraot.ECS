@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 using ComponentId = System.Int32;
 
-namespace Theraot.ECS
+namespace Theraot.ECS.Mantle.Core
 {
     internal sealed class GlobalComponentStorage<TComponentType>
     {

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Theraot.ECS.Mantle.Core;
+using Theraot.ECS.Mantle.Queries;
 using Component = System.Object;
 using QueryId = System.Int32;
 
-namespace Theraot.ECS
+namespace Theraot.ECS.Mantle
 {
     internal sealed class ScopeMantle<TEntity, TComponentType, TComponentTypeSet> : IScopeMantle<TEntity, TComponentType>
     {

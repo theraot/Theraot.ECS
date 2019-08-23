@@ -1,4 +1,4 @@
-﻿namespace Theraot.ECS
+﻿namespace Theraot.ECS.Mantle.Queries
 {
     internal sealed class Query<TComponentTypeSet>
     {

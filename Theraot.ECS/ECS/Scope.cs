@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Theraot.ECS.Mantle;
 using Component = System.Object;
 
 namespace Theraot.ECS

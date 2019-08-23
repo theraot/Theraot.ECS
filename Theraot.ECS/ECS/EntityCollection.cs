@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Theraot.ECS.Mantle;
 
 namespace Theraot.ECS
 {

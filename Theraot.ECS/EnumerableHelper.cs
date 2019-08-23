@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Theraot.ECS
+namespace Theraot
 {
     internal static class EnumerableHelper
     {
