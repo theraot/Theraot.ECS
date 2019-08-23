@@ -8,11 +8,11 @@ namespace Theraot.ECS
 {
     public sealed partial class EntityCollection<TEntity, TComponentType> : ICollection<TEntity>
     {
-        private readonly IComponentRefScope<TEntity, TComponentType> _componentRefScope;
+        private readonly IComponentReferenceAccess<TEntity, TComponentType> _componentRefScope;
 
         private readonly HashSet<TEntity> _wrapped;
 
-        internal EntityCollection(IComponentRefScope<TEntity, TComponentType> componentRefScope)
+        internal EntityCollection(IComponentReferenceAccess<TEntity, TComponentType> componentRefScope)
         {
             _componentRefScope = componentRefScope;
             _wrapped = new HashSet<TEntity>();

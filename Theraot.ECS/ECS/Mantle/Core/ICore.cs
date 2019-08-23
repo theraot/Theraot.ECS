@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Theraot.ECS.Mantle.Core
 {
-    internal interface IScopeCore<TEntity, TComponentType, TComponentTypeSet> : IScopeCommon<TEntity, TComponentType>, IComponentRefScopeProvider<TEntity, TComponentType>
+    internal interface ICore<TEntity, TComponentType, TComponentTypeSet> : ICommon<TEntity, TComponentType>, IComponentReferenceAccessProvider<TEntity, TComponentType>
     {
         event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> AddedComponents;
 

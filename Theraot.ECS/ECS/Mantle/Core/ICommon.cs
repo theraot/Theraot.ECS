@@ -4,7 +4,7 @@ using Component = System.Object;
 
 namespace Theraot.ECS.Mantle.Core
 {
-    internal interface IScopeCommon<in TEntity, TComponentType>
+    internal interface ICommon<in TEntity, TComponentType>
     {
         Type GetRegisteredComponentType(TComponentType componentType);
 

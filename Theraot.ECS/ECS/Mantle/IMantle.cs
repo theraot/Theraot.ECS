@@ -3,7 +3,7 @@ using Theraot.ECS.Mantle.Core;
 
 namespace Theraot.ECS.Mantle
 {
-    internal interface IScopeMantle<TEntity, TComponentType> : IScopeCommon<TEntity, TComponentType>, IComponentRefScopeProvider<TEntity, TComponentType>
+    internal interface IMantle<TEntity, TComponentType> : ICommon<TEntity, TComponentType>, IComponentReferenceAccessProvider<TEntity, TComponentType>
     {
         TEntity CreateEntity();
 

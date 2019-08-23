@@ -6,7 +6,7 @@ using ComponentId = System.Int32;
 
 namespace Theraot.ECS.Mantle.Core
 {
-    internal partial class ScopeCore<TEntity, TComponentType, TComponentTypeSet> : IScopeCore<TEntity, TComponentType, TComponentTypeSet>
+    internal partial class Core<TEntity, TComponentType, TComponentTypeSet> : ICore<TEntity, TComponentType, TComponentTypeSet>
     {
         private readonly Dictionary<TEntity, EntityComponentStorage> _componentsByEntity;
 
@@ -14,7 +14,7 @@ namespace Theraot.ECS.Mantle.Core
 
         private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
 
-        public ScopeCore(IEqualityComparer<TComponentType> componentTypeEqualityComparer)
+        public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer)
         {
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
             _globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypeEqualityComparer);
@@ -155,13 +155,13 @@ namespace Theraot.ECS.Mantle.Core
             }
         }
 
-        public IComponentRefScope<TEntity, TComponentType> GetComponentRefScope()
+        public IComponentReferenceAccess<TEntity, TComponentType> GetComponentRef()
         {
             return this;
         }
     }
 
-    internal partial class ScopeCore<TEntity, TComponentType, TComponentTypeSet> : IComponentRefScope<TEntity, TComponentType>
+    internal partial class Core<TEntity, TComponentType, TComponentTypeSet> : IComponentReferenceAccess<TEntity, TComponentType>
     {
         public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
         {
@@ -291,7 +291,7 @@ namespace Theraot.ECS.Mantle.Core
         }
     }
 
-    internal partial class ScopeCore<TEntity, TComponentType, TComponentTypeSet>
+    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
     {
         private readonly HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>> _addedComponent;
         private readonly HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>> _removedComponent;

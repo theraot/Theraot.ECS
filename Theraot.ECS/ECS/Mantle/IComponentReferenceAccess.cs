@@ -1,6 +1,6 @@
 ﻿namespace Theraot.ECS.Mantle
 {
-    internal interface IComponentRefScope<TEntity, in TComponentType>
+    internal interface IComponentReferenceAccess<TEntity, in TComponentType>
     {
         void With<TComponent1>
         (

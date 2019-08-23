@@ -8,11 +8,11 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS.Mantle
 {
-    internal sealed class ScopeMantle<TEntity, TComponentType, TComponentTypeSet> : IScopeMantle<TEntity, TComponentType>
+    internal sealed class Mantle<TEntity, TComponentType, TComponentTypeSet> : IMantle<TEntity, TComponentType>
     {
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
-        private readonly IScopeCore<TEntity, TComponentType, TComponentTypeSet> _core;
+        private readonly ICore<TEntity, TComponentType, TComponentTypeSet> _core;
 
         private readonly Dictionary<QueryId, EntityCollection<TEntity, TComponentType>> _entitiesByQueryId;
 
@@ -22,7 +22,7 @@ namespace Theraot.ECS.Mantle
 
         private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
-        internal ScopeMantle(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
+        internal Mantle(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
@@ -30,7 +30,7 @@ namespace Theraot.ECS.Mantle
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
             _entitiesByQueryId = new Dictionary<QueryId, EntityCollection<TEntity, TComponentType>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypEqualityComparer);
-            _core = new ScopeCore<TEntity, TComponentType, TComponentTypeSet>(componentTypEqualityComparer);
+            _core = new Core<TEntity, TComponentType, TComponentTypeSet>(componentTypEqualityComparer);
             _core.AddedComponents += Core_AddedComponents;
             _core.RemovedComponents += Core_RemovedComponents;
         }
@@ -42,9 +42,9 @@ namespace Theraot.ECS.Mantle
             return entity;
         }
 
-        public IComponentRefScope<TEntity, TComponentType> GetComponentRefScope()
+        public IComponentReferenceAccess<TEntity, TComponentType> GetComponentRef()
         {
-            return _core.GetComponentRefScope();
+            return _core.GetComponentRef();
         }
 
         public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
@@ -57,7 +57,7 @@ namespace Theraot.ECS.Mantle
             {
                 return entityCollection;
             }
-            entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(GetComponentRefScope());
+            entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(GetComponentRef());
             foreach (var componentType in allAsICollection.Concat(anyAsICollection).Concat(noneAsICollection))
             {
                 if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
