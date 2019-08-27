@@ -517,10 +517,10 @@ namespace Theraot.Collections.Specialized
         {
             var equals = true;
 
-            int Operate(int left, int right)
+            int Operate(Pair pair)
             {
-                equals &= left == right;
-                return left & ~right;
+                equals &= pair.Left == pair.Right;
+                return pair.Left & ~pair.Right;
             }
 
             foreach (var entry in Operation(Paired(this, other, PairMode.Longer, out _), Operate))
@@ -540,10 +540,10 @@ namespace Theraot.Collections.Specialized
         {
             var equals = true;
 
-            int Operate(int left, int right)
+            int Operate(Pair pair)
             {
-                equals &= left == right;
-                return left & ~right;
+                equals &= pair.Left == pair.Right;
+                return pair.Left & ~pair.Right;
             }
 
             foreach (var entry in Operation(Paired(other, this, PairMode.Longer, out _), Operate))
@@ -594,24 +594,24 @@ namespace Theraot.Collections.Specialized
             return Build(Operation(Paired(this, other, PairMode.Longer, out var capacity), Xor), capacity);
         }
 
-        private static int And(int left, int right)
+        private static int And(Pair pair)
         {
-            return left & right;
+            return pair.Left & pair.Right;
         }
 
-        private static int Minus(int left, int right)
+        private static int Minus(Pair pair)
         {
-            return left & ~right;
+            return pair.Left & ~pair.Right;
         }
 
-        private static int Or(int left, int right)
+        private static int Or(Pair pair)
         {
-            return left | right;
+            return pair.Left | pair.Right;
         }
 
-        private static int Xor(int left, int right)
+        private static int Xor(Pair pair)
         {
-            return left ^ right;
+            return pair.Left ^ pair.Right;
         }
     }
 
@@ -693,11 +693,11 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        private static IEnumerable<int> Operation(IEnumerable<Pair> paired, Func<int, int, int> operation)
+        private static IEnumerable<int> Operation(IEnumerable<Pair> paired, Func<Pair, int> operation)
         {
             foreach (var pair in paired)
             {
-                yield return operation(pair.Left, pair.Right);
+                yield return operation(pair);
             }
         }
 

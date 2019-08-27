@@ -274,7 +274,7 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
-        public bool Set(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
+        public bool Set(TKey key, Func<TKey, TValue> addValueFactory, Func<KeyValuePair<TKey, TValue>, TValue> updateValueFactory)
         {
             if (key == null)
             {
@@ -292,7 +292,7 @@ namespace Theraot.Collections.Specialized
             var index = Array.BinarySearch(_keys, 0, Count, key, _comparer);
             if (index >= 0)
             {
-                _values[index] = updateValueFactory(key, _values[index]);
+                _values[index] = updateValueFactory(new KeyValuePair<TKey, TValue>(key, _values[index]));
                 return false;
             }
 
@@ -329,7 +329,7 @@ namespace Theraot.Collections.Specialized
             return result;
         }
 
-        public List<TKey> SetAll(IEnumerable<TKey> keys, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
+        public List<TKey> SetAll(IEnumerable<TKey> keys, Func<TKey, TValue> addValueFactory, Func<KeyValuePair<TKey, TValue>, TValue> updateValueFactory)
         {
             if (keys == null)
             {

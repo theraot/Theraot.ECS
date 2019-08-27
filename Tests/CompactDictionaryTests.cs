@@ -102,7 +102,7 @@ namespace Tests
                 {"h", 8},
                 {"i", 9}
             };
-            var result3 = dict.SetAll(sourceB.Keys, key => sourceB[key], (_, old) => old * 2);
+            var result3 = dict.SetAll(sourceB.Keys, key => sourceB[key], pair => pair.Value * 2);
             Assert.AreEqual(new[] { "h", "i" }, result3);
             Assert.AreEqual(14, dict["g"]);
             Assert.AreEqual(8, dict["h"]);
