@@ -18,7 +18,7 @@
         : System.EventArgs
 #endif
     {
-        public EntityCollectionChangeBaseEventArgs(CollectionChangeActionEx action, TEntity element)
+        protected EntityCollectionChangeBaseEventArgs(CollectionChangeActionEx action, TEntity element)
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11
             : base((System.ComponentModel.CollectionChangeAction)action, element)
 #endif
