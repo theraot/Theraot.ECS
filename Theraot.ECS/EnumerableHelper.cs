@@ -5,7 +5,7 @@ namespace Theraot
 {
     internal static class EnumerableHelper
     {
-        public static bool Any<T>(IEnumerable<T> source, Func<T, bool> predicate)
+        public static bool Any<T>(IEnumerable<T> source, Predicate<T> predicate)
         {
             foreach (var item in source)
             {
