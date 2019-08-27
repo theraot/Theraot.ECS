@@ -5,113 +5,70 @@ namespace Theraot.ECS.Mantle.Core
 {
     internal class CoreBuffer<TEntity, TComponentType, TComponentTypeSet>
     {
-        private Dictionary<TComponentType, TypedCoreBuffer> _logDictionary;
+        private List<Action<ICore<TEntity, TComponentType, TComponentTypeSet>>> _log;
 
         public bool BufferSetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
-            if (_logDictionary == null)
+            if (_log == null)
             {
                 return false;
             }
 
-            GetLog(componentType).Add(entity, core => core.SetComponent(entity, componentType, component));
+            _log.Add(core => core.SetComponent(entity, componentType, component));
             return true;
         }
 
         public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
-            if (_logDictionary == null)
+            if (_log == null)
             {
                 return false;
             }
 
-            foreach (var componentType in componentTypes)
-            {
-                GetLog(componentType).Add(entity, core => core.SetComponent(entity, componentType, componentSelector(componentType)));
-            }
-
+            _log.Add(core => core.SetComponents(entity, componentTypes, componentSelector));
             return true;
         }
 
         public bool BufferUnsetComponent(TEntity entity, IList<TComponentType> componentTypes)
         {
-            if (_logDictionary == null)
+            if (_log == null)
             {
                 return false;
             }
 
-            foreach (var componentType in componentTypes)
-            {
-                GetLog(componentType).Add(entity, core => core.UnsetComponent(entity, componentType));
-            }
-
+            _log.Add(core => core.UnsetComponents(entity, componentTypes));
             return true;
         }
 
         public bool BufferUnsetComponent(TEntity entity, TComponentType componentType)
         {
-            if (_logDictionary == null)
+            if (_log == null)
             {
                 return false;
             }
 
-            GetLog(componentType).Add(entity, core => core.UnsetComponent(entity, componentType));
+            _log.Add(core => core.UnsetComponent(entity, componentType));
             return true;
         }
 
         public bool CreateBuffer()
         {
-            if (_logDictionary != null)
+            if (_log != null)
             {
                 return false;
             }
 
-            _logDictionary = new Dictionary<TComponentType, TypedCoreBuffer>();
+            _log = new List<Action<ICore<TEntity, TComponentType, TComponentTypeSet>>>();
             return true;
         }
 
         public void ExecuteBuffer(ICore<TEntity, TComponentType, TComponentTypeSet> core)
         {
-            var logDictionary = _logDictionary;
-            _logDictionary = null;
-            foreach (var typeLogPair in logDictionary)
+            var log = _log;
+            _log = null;
+            foreach (var action in log)
             {
-                typeLogPair.Value.ExecuteBuffer(core);
-            }
-        }
-
-        private TypedCoreBuffer GetLog(TComponentType componentType)
-        {
-            if (_logDictionary.TryGetValue(componentType, out var log))
-            {
-                return log;
-            }
-
-            log = new TypedCoreBuffer();
-            _logDictionary[componentType] = log;
-            return log;
-        }
-
-        private class TypedCoreBuffer
-        {
-            private readonly Dictionary<TEntity, Action<ICore<TEntity, TComponentType, TComponentTypeSet>>> _log;
-
-            public TypedCoreBuffer()
-            {
-                _log = new Dictionary<TEntity, Action<ICore<TEntity, TComponentType, TComponentTypeSet>>>();
-            }
-
-            public void Add(TEntity entity, Action<ICore<TEntity, TComponentType, TComponentTypeSet>> action)
-            {
-                _log[entity] = action;
-            }
-
-            public void ExecuteBuffer(ICore<TEntity, TComponentType, TComponentTypeSet> core)
-            {
-                foreach (var operation in _log)
-                {
-                    operation.Value(core);
-                }
+                action(core);
             }
         }
     }
