@@ -98,7 +98,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(obj));
             }
 
-#if TARGETS_NET || LESSTHAN_NETCOREAPP20
+#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
             return obj.GetHashCode();
 #else
             return obj.GetHashCode(StringComparison.OrdinalIgnoreCase);
