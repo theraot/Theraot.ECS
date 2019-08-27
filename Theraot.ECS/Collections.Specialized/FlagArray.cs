@@ -481,14 +481,14 @@ namespace Theraot.Collections.Specialized
 
         private bool GetBit(int index, int mask)
         {
-            return (Volatile.Read(ref _entries[index]) & mask) != 0;
+            return (Interlocked.CompareExchange(ref _entries[index], 0, 0) & mask) != 0;
         }
 
         private void SetBit(int index, int mask)
         {
             while (true)
             {
-                var read = Volatile.Read(ref _entries[index]);
+                var read = Interlocked.CompareExchange(ref _entries[index], 0, 0);
                 if ((read & mask) != 0 || Interlocked.CompareExchange(ref _entries[index], read | mask, read) == read)
                 {
                     return;
@@ -500,7 +500,7 @@ namespace Theraot.Collections.Specialized
         {
             while (true)
             {
-                var read = Volatile.Read(ref _entries[index]);
+                var read = Interlocked.CompareExchange(ref _entries[index], 0, 0);
                 if ((read & mask) == 0 || Interlocked.CompareExchange(ref _entries[index], read & ~mask, read) == read)
                 {
                     return;
@@ -738,7 +738,7 @@ namespace Theraot.Collections.Specialized
 
                 default:
                     capacity = 0;
-                    return Array.Empty<Pair>();
+                    return EmptyArray<Pair>.Instance;
             }
         }
 
