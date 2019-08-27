@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Theraot.ECS.Mantle;
-using Component = System.Object;
 
 namespace Theraot.ECS
 {
@@ -53,7 +52,7 @@ namespace Theraot.ECS
             _mantle.SetComponent(entity, type, component);
         }
 
-        public void SetComponents(TEntity entity, Dictionary<TComponentType, Component> components)
+        public void SetComponents<TComponent>(TEntity entity, Dictionary<TComponentType, TComponent> components)
         {
             if (components == null)
             {
@@ -63,7 +62,7 @@ namespace Theraot.ECS
             _mantle.SetComponents(entity, components.Keys, type => components[type]);
         }
 
-        public void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, Component> componentSelector)
+        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
             if (componentTypes == null)
             {
@@ -78,7 +77,7 @@ namespace Theraot.ECS
             _mantle.SetComponents(entity, componentTypes, componentSelector);
         }
 
-        public void SetComponents(TEntity entity, IList<TComponentType> componentTypes, IList<Component> components)
+        public void SetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, IList<TComponent> components)
         {
             if (componentTypes == null)
             {

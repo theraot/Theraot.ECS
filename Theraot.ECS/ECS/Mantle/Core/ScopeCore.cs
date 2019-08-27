@@ -72,7 +72,7 @@ namespace Theraot.ECS.Mantle.Core
             }
         }
 
-        public void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, object> componentSelector)
+        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
             var componentTypeList = EnumerableHelper.AsIList(componentTypes);
             if (BufferSetComponents(entity, componentTypeList, componentSelector))
@@ -186,13 +186,13 @@ namespace Theraot.ECS.Mantle.Core
                         entity,
                         new[] { componentType }
                     ),
-                    new Func<TComponentType, object>(_ => component)
+                    new Func<TComponentType, TComponent>(_ => component)
                 )
             );
             return true;
         }
 
-        private bool BufferSetComponents(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, object> componentSelector)
+        private bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
             if (_log == null)
             {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Component = System.Object;
 
 namespace Theraot.ECS.Mantle.Core
 {
@@ -10,7 +9,7 @@ namespace Theraot.ECS.Mantle.Core
 
         void SetComponent<TComponent>(TEntity entity, TComponentType type, TComponent component);
 
-        void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, Component> componentSelector);
+        void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector);
 
         bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component);
 

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Theraot.ECS.Mantle.Core;
 using Theraot.ECS.Mantle.Queries;
-using Component = System.Object;
 using QueryId = System.Int32;
 
 namespace Theraot.ECS.Mantle
@@ -89,7 +88,7 @@ namespace Theraot.ECS.Mantle
             _core.SetComponent(entity, componentType, component);
         }
 
-        public void SetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, Component> componentSelector)
+        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
             if (componentTypes == null)
             {
