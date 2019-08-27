@@ -94,36 +94,60 @@ namespace Theraot.ECS.Mantle.Core
 
         private class TypedCoreBuffer
         {
-            private readonly Dictionary<TEntity, object> _added;
-
-            private readonly Dictionary<TEntity, object> _removed;
+            private readonly Dictionary<TEntity, Option> _log;
 
             public TypedCoreBuffer()
             {
-                _added = new Dictionary<TEntity, object>();
-                _removed = new Dictionary<TEntity, object>();
+                _log = new Dictionary<TEntity, Option>();
             }
 
             public void Add(TEntity entity, object payload)
             {
-                _added.Add(entity, payload);
+                _log[entity] = Option.CreateValue(payload);
             }
 
             public void ExecuteBuffer<TComponentTypeSet>(ICore<TEntity, TComponentType, TComponentTypeSet> core, TComponentType componentType)
             {
-                foreach (var operation in _added)
+                foreach (var operation in _log)
                 {
-                    core.SetComponent(operation.Key, componentType, operation.Value);
-                }
-                foreach (var operation in _removed)
-                {
-                    core.UnsetComponent(operation.Key, componentType);
+                    var option = operation.Value;
+                    if (option.Set)
+                    {
+                        core.SetComponent(operation.Key, componentType, option.Value);
+                    }
+                    else
+                    {
+                        core.UnsetComponent(operation.Key, componentType);
+                    }
                 }
             }
 
             public void Remove(TEntity entity)
             {
-                _removed.Add(entity, null);
+                _log[entity] = Option.CreateNotSet();
+            }
+
+            private sealed class Option
+            {
+                public readonly bool Set;
+
+                public readonly object Value;
+
+                private Option(object value, bool set)
+                {
+                    Value = value;
+                    Set = set;
+                }
+
+                public static Option CreateNotSet()
+                {
+                    return new Option(null, false);
+                }
+
+                public static Option CreateValue(object value)
+                {
+                    return new Option(value, true);
+                }
             }
         }
     }
