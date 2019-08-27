@@ -94,49 +94,36 @@ namespace Theraot.ECS.Mantle.Core
 
         private class TypedCoreBuffer
         {
-            private readonly HashSet<Operation> _added;
+            private readonly Dictionary<TEntity, object> _added;
 
-            private readonly HashSet<Operation> _removed;
+            private readonly Dictionary<TEntity, object> _removed;
 
             public TypedCoreBuffer()
             {
-                _added = new HashSet<Operation>();
-                _removed = new HashSet<Operation>();
+                _added = new Dictionary<TEntity, object>();
+                _removed = new Dictionary<TEntity, object>();
             }
 
             public void Add(TEntity entity, object payload)
             {
-                _added.Add(new Operation(entity, payload));
+                _added.Add(entity, payload);
             }
 
             public void ExecuteBuffer<TComponentTypeSet>(ICore<TEntity, TComponentType, TComponentTypeSet> core, TComponentType componentType)
             {
                 foreach (var operation in _added)
                 {
-                    core.SetComponent(operation.Entity, componentType, operation.Component);
+                    core.SetComponent(operation.Key, componentType, operation.Value);
                 }
                 foreach (var operation in _removed)
                 {
-                    core.UnsetComponent(operation.Entity, componentType);
+                    core.UnsetComponent(operation.Key, componentType);
                 }
             }
 
             public void Remove(TEntity entity)
             {
-                _removed.Add(new Operation(entity, null));
-            }
-
-            private sealed class Operation
-            {
-                public readonly object Component;
-
-                public readonly TEntity Entity;
-
-                public Operation(TEntity entity, object component)
-                {
-                    Entity = entity;
-                    Component = component;
-                }
+                _removed.Add(entity, null);
             }
         }
     }
