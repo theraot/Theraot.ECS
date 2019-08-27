@@ -1,4 +1,5 @@
 ﻿#pragma warning disable CA1710 // Los identificadores deben tener un sufijo correcto
+#pragma warning disable CC0031 // Check for null before calling a delegate
 
 using System;
 using System.Collections.Generic;

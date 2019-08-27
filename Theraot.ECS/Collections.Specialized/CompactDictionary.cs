@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
+#pragma warning disable RECS0096 // Type parameter is never used
 // ReSharper disable MemberCanBePrivate.Local
 
 using System;

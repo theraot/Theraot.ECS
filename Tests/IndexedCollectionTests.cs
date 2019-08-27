@@ -25,11 +25,11 @@ namespace Tests
         [Test]
         public static void AddRange()
         {
-            var x = new IndexedCollection<string>(16);
-            Assert.AreEqual(16, x.Capacity);
+            var collection = new IndexedCollection<string>(16);
+            Assert.AreEqual(16, collection.Capacity);
             var abc = new[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
-            var result = x.AddRange(abc);
-            Assert.GreaterOrEqual(x.Capacity, abc.Length);
+            var result = collection.AddRange(abc);
+            Assert.GreaterOrEqual(collection.Capacity, abc.Length);
             var ind = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
             Assert.AreEqual(ind, result);
         }

@@ -1,3 +1,6 @@
+#pragma warning disable CC0031 // Check for null before calling a delegate
+#pragma warning disable RECS0096 // Type parameter is never used
+
 using System;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;

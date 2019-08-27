@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable RECS0096 // Type parameter is never used
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Theraot.ECS.Mantle;
