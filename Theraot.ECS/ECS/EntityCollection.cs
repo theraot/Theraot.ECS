@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using Theraot.ECS.Mantle;
 
 namespace Theraot.ECS
@@ -74,7 +73,7 @@ namespace Theraot.ECS
         {
             foreach (var handler in _addedEntity)
             {
-                handler.Invoke(this, new EntityCollectionChangeEventArgs<TEntity>(CollectionChangeAction.Add, entity));
+                handler.Invoke(this, EntityCollectionChangeEventArgs.CreateAdd(entity));
             }
         }
 
@@ -82,7 +81,7 @@ namespace Theraot.ECS
         {
             foreach (var handler in _removedEntity)
             {
-                handler.Invoke(this, new EntityCollectionChangeEventArgs<TEntity>(CollectionChangeAction.Remove, entity));
+                handler.Invoke(this, EntityCollectionChangeEventArgs.CreateRemove(entity));
             }
         }
     }

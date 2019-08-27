@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using Theraot.Collections.Specialized;
 using ComponentId = System.Int32;
 
@@ -182,9 +181,8 @@ namespace Theraot.ECS.Mantle.Core
             (
                 new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
                 (
-                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
+                    EntityComponentsChangeEventArgs.CreateAdd
                     (
-                        CollectionChangeAction.Add,
                         entity,
                         new[] { componentType }
                     ),
@@ -205,9 +203,8 @@ namespace Theraot.ECS.Mantle.Core
             (
                 new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
                 (
-                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
+                    EntityComponentsChangeEventArgs.CreateAdd
                     (
-                        CollectionChangeAction.Add,
                         entity,
                         componentTypes
                     ),
@@ -228,9 +225,8 @@ namespace Theraot.ECS.Mantle.Core
             (
                 new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
                 (
-                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
+                    EntityComponentsChangeEventArgs.CreateRemove
                     (
-                        CollectionChangeAction.Remove,
                         entity,
                         componentTypes
                     ),
@@ -251,9 +247,8 @@ namespace Theraot.ECS.Mantle.Core
             (
                 new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
                 (
-                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
+                    EntityComponentsChangeEventArgs.CreateRemove
                     (
-                        CollectionChangeAction.Remove,
                         entity,
                         new[] { componentType }
                     ),
@@ -451,18 +446,13 @@ namespace Theraot.ECS.Mantle.Core
             {
                 var componentTypes = pair.Key.ComponentTypes;
                 var entity = pair.Key.Entity;
-                switch (pair.Key.Action)
+                if (pair.Key.IsAdd)
                 {
-                    case CollectionChangeAction.Add:
-                        SetComponents(entity, componentTypes, (Func<TComponentType, object>)pair.Value);
-                        break;
-
-                    case CollectionChangeAction.Remove:
-                        UnsetComponents(entity, componentTypes);
-                        break;
-
-                    default:
-                        break;
+                    SetComponents(entity, componentTypes, (Func<TComponentType, object>)pair.Value);
+                }
+                else
+                {
+                    UnsetComponents(entity, componentTypes);
                 }
             }
         }
@@ -489,7 +479,7 @@ namespace Theraot.ECS.Mantle.Core
         {
             foreach (var handler in _addedComponent)
             {
-                handler.Invoke(this, new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeAction.Add, entity, componentTypes));
+                handler.Invoke(this, EntityComponentsChangeEventArgs.CreateAdd(entity, componentTypes));
             }
         }
 
@@ -497,7 +487,7 @@ namespace Theraot.ECS.Mantle.Core
         {
             foreach (var handler in _removedComponent)
             {
-                handler.Invoke(this, new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeAction.Remove, entity, componentTypes));
+                handler.Invoke(this, EntityComponentsChangeEventArgs.CreateRemove(entity, componentTypes));
             }
         }
     }

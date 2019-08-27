@@ -2,14 +2,25 @@
 
 namespace Theraot.ECS
 {
-    public class EntityCollectionChangeEventArgs<TEntity> : CollectionChangeEventArgs
+    public static class EntityCollectionChangeEventArgs
     {
-        public EntityCollectionChangeEventArgs(CollectionChangeAction action, TEntity entity)
-            : base(action, entity)
+        public static EntityCollectionChangeEventArgs<TEntity> CreateAdd<TEntity>(TEntity entity)
         {
-            Entity = entity;
+            return new EntityCollectionChangeEventArgs<TEntity>(CollectionChangeAction.Add, entity);
         }
 
-        public TEntity Entity { get; }
+        public static EntityCollectionChangeEventArgs<TEntity> CreateRemove<TEntity>(TEntity entity)
+        {
+            return new EntityCollectionChangeEventArgs<TEntity>(CollectionChangeAction.Remove, entity);
+        }
+    }
+
+    public sealed class EntityCollectionChangeEventArgs<TEntity> : EntityCollectionChangeBaseEventArgs<TEntity>
+    {
+        internal EntityCollectionChangeEventArgs(CollectionChangeAction action, TEntity entity)
+            : base(action, entity)
+        {
+            // Empty
+        }
     }
 }
