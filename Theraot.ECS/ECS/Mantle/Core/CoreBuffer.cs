@@ -14,7 +14,7 @@ namespace Theraot.ECS.Mantle.Core
                 return false;
             }
 
-            AddToLog(CollectionChangeActionEx.Add, entity, componentType, component);
+            GetLog(componentType).Add(entity, component);
             return true;
         }
 
@@ -27,7 +27,7 @@ namespace Theraot.ECS.Mantle.Core
 
             foreach (var componentType in componentTypes)
             {
-                AddToLog(CollectionChangeActionEx.Add, entity, componentType, componentSelector(componentType));
+                GetLog(componentType).Add(entity, componentSelector(componentType));
             }
 
             return true;
@@ -42,7 +42,7 @@ namespace Theraot.ECS.Mantle.Core
 
             foreach (var componentType in componentTypes)
             {
-                AddToLog(CollectionChangeActionEx.Remove, entity, componentType, null);
+                GetLog(componentType).Remove(entity);
             }
 
             return true;
@@ -55,7 +55,7 @@ namespace Theraot.ECS.Mantle.Core
                 return false;
             }
 
-            AddToLog(CollectionChangeActionEx.Remove, entity, componentType, null);
+            GetLog(componentType).Remove(entity);
             return true;
         }
 
@@ -80,59 +80,62 @@ namespace Theraot.ECS.Mantle.Core
             }
         }
 
-        private void AddToLog(CollectionChangeActionEx action, TEntity entity, TComponentType componentType, object payload)
+        private TypedCoreBuffer GetLog(TComponentType componentType)
         {
-            if (!_logDictionary.TryGetValue(componentType, out var log))
+            if (_logDictionary.TryGetValue(componentType, out var log))
             {
-                log = new TypedCoreBuffer();
-                _logDictionary[componentType] = log;
+                return log;
             }
 
-            log.Add(entity, payload, action);
+            log = new TypedCoreBuffer();
+            _logDictionary[componentType] = log;
+            return log;
         }
 
         private class TypedCoreBuffer
         {
-            private readonly HashSet<Operation> _log;
+            private readonly HashSet<Operation> _added;
+
+            private readonly HashSet<Operation> _removed;
 
             public TypedCoreBuffer()
             {
-                _log = new HashSet<Operation>();
+                _added = new HashSet<Operation>();
+                _removed = new HashSet<Operation>();
             }
 
-            public void Add(TEntity entity, object payload, CollectionChangeActionEx action)
+            public void Add(TEntity entity, object payload)
             {
-                _log.Add(new Operation(entity, payload, action));
+                _added.Add(new Operation(entity, payload));
             }
 
             public void ExecuteBuffer<TComponentTypeSet>(ICore<TEntity, TComponentType, TComponentTypeSet> core, TComponentType componentType)
             {
-                foreach (var operation in _log)
+                foreach (var operation in _added)
                 {
-                    if (operation.Action == CollectionChangeActionEx.Add)
-                    {
-                        core.SetComponent(operation.Entity, componentType, operation.Component);
-                    }
-                    else
-                    {
-                        core.UnsetComponent(operation.Entity, componentType);
-                    }
+                    core.SetComponent(operation.Entity, componentType, operation.Component);
                 }
+                foreach (var operation in _removed)
+                {
+                    core.UnsetComponent(operation.Entity, componentType);
+                }
+            }
+
+            public void Remove(TEntity entity)
+            {
+                _removed.Add(new Operation(entity, null));
             }
 
             private sealed class Operation
             {
-                public readonly CollectionChangeActionEx Action;
-
                 public readonly object Component;
 
                 public readonly TEntity Entity;
 
-                public Operation(TEntity entity, object component, CollectionChangeActionEx action)
+                public Operation(TEntity entity, object component)
                 {
                     Entity = entity;
                     Component = component;
-                    Action = action;
                 }
             }
         }
