@@ -16,6 +16,8 @@ namespace Theraot.ECS.Mantle.Core
 
         private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
 
+        private readonly CoreBuffer<TEntity, TComponentType> _buffer;
+
         public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer)
         {
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
@@ -23,6 +25,7 @@ namespace Theraot.ECS.Mantle.Core
             _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage>();
             _addedComponent = new HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>>();
             _removedComponent = new HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>>();
+            _buffer = new CoreBuffer<TEntity, TComponentType>();
         }
 
         public IEnumerable<TEntity> AllEntities => _componentsByEntity.Keys;
@@ -53,7 +56,7 @@ namespace Theraot.ECS.Mantle.Core
 
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
-            if (BufferSetComponent(entity, componentType, component))
+            if (_buffer.BufferSetComponent(entity, componentType, component))
             {
                 return;
             }
@@ -76,7 +79,7 @@ namespace Theraot.ECS.Mantle.Core
         public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
             var componentTypeList = EnumerableHelper.AsIList(componentTypes);
-            if (BufferSetComponents(entity, componentTypeList, componentSelector))
+            if (_buffer.BufferSetComponents(entity, componentTypeList, componentSelector))
             {
                 return;
             }
@@ -129,7 +132,7 @@ namespace Theraot.ECS.Mantle.Core
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)
         {
-            if (BufferUnsetComponent(entity, componentType))
+            if (_buffer.BufferUnsetComponent(entity, componentType))
             {
                 return;
             }
@@ -147,7 +150,7 @@ namespace Theraot.ECS.Mantle.Core
         public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
         {
             var componentTypeList = EnumerableHelper.AsIList(componentTypes);
-            if (BufferUnsetComponent(entity, componentTypeList))
+            if (_buffer.BufferUnsetComponent(entity, componentTypeList))
             {
                 return;
             }
@@ -199,7 +202,7 @@ namespace Theraot.ECS.Mantle.Core
                 throw new KeyNotFoundException("ComponentType not found on the entity");
             }
 
-            var created = CreateBuffer();
+            var created = _buffer.CreateBuffer();
 
             callback
             (
@@ -209,7 +212,7 @@ namespace Theraot.ECS.Mantle.Core
 
             if (created)
             {
-                ExecuteBuffer();
+                _buffer.ExecuteBuffer(this);
             }
         }
 
@@ -229,7 +232,7 @@ namespace Theraot.ECS.Mantle.Core
                 throw new KeyNotFoundException("ComponentType not found on the entity");
             }
 
-            var created = CreateBuffer();
+            var created = _buffer.CreateBuffer();
 
             callback
             (
@@ -240,7 +243,7 @@ namespace Theraot.ECS.Mantle.Core
 
             if (created)
             {
-                ExecuteBuffer();
+                _buffer.ExecuteBuffer(this);
             }
         }
 
@@ -261,7 +264,7 @@ namespace Theraot.ECS.Mantle.Core
                 throw new KeyNotFoundException("ComponentType not found on the entity");
             }
 
-            var created = CreateBuffer();
+            var created = _buffer.CreateBuffer();
 
             callback
             (
@@ -273,7 +276,7 @@ namespace Theraot.ECS.Mantle.Core
 
             if (created)
             {
-                ExecuteBuffer();
+                _buffer.ExecuteBuffer(this);
             }
         }
 
@@ -295,7 +298,7 @@ namespace Theraot.ECS.Mantle.Core
                 throw new KeyNotFoundException("ComponentType not found on the entity");
             }
 
-            var created = CreateBuffer();
+            var created = _buffer.CreateBuffer();
 
             callback
             (
@@ -308,7 +311,7 @@ namespace Theraot.ECS.Mantle.Core
 
             if (created)
             {
-                ExecuteBuffer();
+                _buffer.ExecuteBuffer(this);
             }
         }
 
@@ -331,7 +334,7 @@ namespace Theraot.ECS.Mantle.Core
                 throw new KeyNotFoundException("ComponentType not found on the entity");
             }
 
-            var created = CreateBuffer();
+            var created = _buffer.CreateBuffer();
 
             callback
             (
@@ -345,7 +348,7 @@ namespace Theraot.ECS.Mantle.Core
 
             if (created)
             {
-                ExecuteBuffer();
+                _buffer.ExecuteBuffer(this);
             }
         }
     }
@@ -384,11 +387,11 @@ namespace Theraot.ECS.Mantle.Core
         }
     }
 
-    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
+    internal class CoreBuffer<TEntity, TComponentType>
     {
         private List<KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>> _log;
 
-        private bool BufferSetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
+        public bool BufferSetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
             if (_log == null)
             {
@@ -410,7 +413,7 @@ namespace Theraot.ECS.Mantle.Core
             return true;
         }
 
-        private bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
             if (_log == null)
             {
@@ -432,7 +435,7 @@ namespace Theraot.ECS.Mantle.Core
             return true;
         }
 
-        private bool BufferUnsetComponent(TEntity entity, IList<TComponentType> componentTypes)
+        public bool BufferUnsetComponent(TEntity entity, IList<TComponentType> componentTypes)
         {
             if (_log == null)
             {
@@ -454,7 +457,7 @@ namespace Theraot.ECS.Mantle.Core
             return true;
         }
 
-        private bool BufferUnsetComponent(TEntity entity, TComponentType componentType)
+        public bool BufferUnsetComponent(TEntity entity, TComponentType componentType)
         {
             if (_log == null)
             {
@@ -476,7 +479,7 @@ namespace Theraot.ECS.Mantle.Core
             return true;
         }
 
-        private bool CreateBuffer()
+        public bool CreateBuffer()
         {
             if (_log != null)
             {
@@ -486,7 +489,7 @@ namespace Theraot.ECS.Mantle.Core
             return true;
         }
 
-        private void ExecuteBuffer()
+        public void ExecuteBuffer<TComponentTypeSet>(ICore<TEntity, TComponentType, TComponentTypeSet> core)
         {
             var log = _log;
             _log = null;
@@ -496,11 +499,11 @@ namespace Theraot.ECS.Mantle.Core
                 var entity = pair.Key.Entity;
                 if (pair.Key.IsAdd)
                 {
-                    SetComponents(entity, componentTypes, (Func<TComponentType, object>)pair.Value);
+                    core.SetComponents(entity, componentTypes, (Func<TComponentType, object>)pair.Value);
                 }
                 else
                 {
-                    UnsetComponents(entity, componentTypes);
+                    core.UnsetComponents(entity, componentTypes);
                 }
             }
         }
