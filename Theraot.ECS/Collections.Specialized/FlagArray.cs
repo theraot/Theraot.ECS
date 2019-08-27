@@ -7,8 +7,11 @@ using System.Threading;
 
 namespace Theraot.Collections.Specialized
 {
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11
+
     [Serializable]
-    public sealed partial class FlagArray : IList<bool>, ICloneable
+#endif
+    public sealed partial class FlagArray : IList<bool>
     {
         private const int _sizeOfEntry = 32;
         private const int _sizeOfEntryLog2 = 5;
@@ -200,11 +203,6 @@ namespace Theraot.Collections.Specialized
         public FlagArray Clone()
         {
             return new FlagArray(this);
-        }
-
-        object ICloneable.Clone()
-        {
-            return Clone();
         }
 
         public bool Contains(bool item)
@@ -826,4 +824,16 @@ namespace Theraot.Collections.Specialized
             }
         }
     }
+
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
+    public sealed partial class FlagArray : ICloneable
+    {
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+    }
+
+#endif
 }

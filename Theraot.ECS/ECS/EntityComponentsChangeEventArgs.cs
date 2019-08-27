@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace Theraot.ECS
 {
@@ -7,18 +6,18 @@ namespace Theraot.ECS
     {
         public static EntityComponentsChangeEventArgs<TEntity, TComponentType> CreateAdd<TEntity, TComponentType>(TEntity entity, IList<TComponentType> componentTypes)
         {
-            return new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeAction.Add, entity, componentTypes);
+            return new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeActionEx.Add, entity, componentTypes);
         }
 
         public static EntityComponentsChangeEventArgs<TEntity, TComponentType> CreateRemove<TEntity, TComponentType>(TEntity entity, IList<TComponentType> componentTypes)
         {
-            return new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeAction.Remove, entity, componentTypes);
+            return new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeActionEx.Remove, entity, componentTypes);
         }
     }
 
     public class EntityComponentsChangeEventArgs<TEntity, TComponentType> : EntityCollectionChangeBaseEventArgs<TEntity>
     {
-        internal EntityComponentsChangeEventArgs(CollectionChangeAction action, TEntity entity, IList<TComponentType> componentTypes)
+        internal EntityComponentsChangeEventArgs(CollectionChangeActionEx action, TEntity entity, IList<TComponentType> componentTypes)
             : base(action, entity)
         {
             ComponentTypes = componentTypes;

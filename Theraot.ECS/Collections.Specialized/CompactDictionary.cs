@@ -13,7 +13,11 @@ using System.Diagnostics;
 namespace Theraot.Collections.Specialized
 {
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
-    public sealed class CompactDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICloneable
+    public sealed
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+    partial
+#endif
+    class CompactDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private readonly IComparer<TKey> _comparer;
         private KeyList _keyList;
@@ -123,7 +127,7 @@ namespace Theraot.Collections.Specialized
             Count = 0;
         }
 
-        public object Clone()
+        public CompactDictionary<TKey, TValue> Clone()
         {
             var clone = new CompactDictionary<TKey, TValue>(_comparer, Count);
             Array.Copy(_keys, 0, clone._keys, 0, Count);
@@ -667,4 +671,16 @@ namespace Theraot.Collections.Specialized
             }
         }
     }
+
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
+    public sealed partial class CompactDictionary<TKey, TValue> : ICloneable
+    {
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+    }
+
+#endif
 }

@@ -10,7 +10,11 @@ using System.Diagnostics;
 namespace Theraot.Collections.Specialized
 {
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
-    public sealed class IndexedCollection<TValue> : ICollection<TValue>, ICloneable, IHasIndexedRemove
+    public sealed
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+    partial
+#endif
+    class IndexedCollection<TValue> : ICollection<TValue>, IHasIndexedRemove
     {
         private int _key;
         private int[] _keys;
@@ -113,7 +117,7 @@ namespace Theraot.Collections.Specialized
             Count = 0;
         }
 
-        public object Clone()
+        public IndexedCollection<TValue> Clone()
         {
             var clone = new IndexedCollection<TValue>(Count);
             Array.Copy(_keys, 0, clone._keys, 0, Count);
@@ -291,4 +295,16 @@ namespace Theraot.Collections.Specialized
             _values[Count] = default;
         }
     }
+
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
+    public sealed partial class IndexedCollection<TValue> : ICloneable
+    {
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+    }
+
+#endif
 }

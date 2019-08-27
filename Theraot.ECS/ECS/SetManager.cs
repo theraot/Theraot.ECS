@@ -98,7 +98,11 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(obj));
             }
 
+#if TARGETS_NET || LESSTHAN_NETCOREAPP20
             return obj.GetHashCode();
+#else
+            return obj.GetHashCode(StringComparison.OrdinalIgnoreCase);
+#endif
         }
 
         public bool IsEmpty(ComponentTypeSet componentTypeSet)
