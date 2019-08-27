@@ -14,19 +14,7 @@ namespace Theraot.ECS.Mantle.Core
                 return false;
             }
 
-            _log.Add
-            (
-                new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
-                (
-                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
-                    (
-                        CollectionChangeActionEx.Add,
-                        entity,
-                        new[] { componentType }
-                    ),
-                    new Func<TComponentType, TComponent>(_ => component)
-                )
-            );
+            AddToLog(CollectionChangeActionEx.Add, entity, new[] { componentType }, new Func<TComponentType, TComponent>(_ => component));
             return true;
         }
 
@@ -37,19 +25,7 @@ namespace Theraot.ECS.Mantle.Core
                 return false;
             }
 
-            _log.Add
-            (
-                new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
-                (
-                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
-                    (
-                        CollectionChangeActionEx.Add,
-                        entity,
-                        componentTypes
-                    ),
-                    componentSelector
-                )
-            );
+            AddToLog(CollectionChangeActionEx.Add, entity, componentTypes, componentSelector);
             return true;
         }
 
@@ -60,19 +36,7 @@ namespace Theraot.ECS.Mantle.Core
                 return false;
             }
 
-            _log.Add
-            (
-                new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
-                (
-                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
-                    (
-                        CollectionChangeActionEx.Remove,
-                        entity,
-                        componentTypes
-                    ),
-                    null
-                )
-            );
+            AddToLog(CollectionChangeActionEx.Remove, entity, componentTypes, null);
             return true;
         }
 
@@ -83,19 +47,7 @@ namespace Theraot.ECS.Mantle.Core
                 return false;
             }
 
-            _log.Add
-            (
-                new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
-                (
-                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
-                    (
-                        CollectionChangeActionEx.Remove,
-                        entity,
-                        new[] { componentType }
-                    ),
-                    null
-                )
-            );
+            AddToLog(CollectionChangeActionEx.Remove, entity, new[] { componentType }, null);
             return true;
         }
 
@@ -126,6 +78,23 @@ namespace Theraot.ECS.Mantle.Core
                     core.UnsetComponents(entity, componentTypes);
                 }
             }
+        }
+
+        private void AddToLog(CollectionChangeActionEx action, TEntity entity, IList<TComponentType> componentTypes, object payload)
+        {
+            _log.Add
+            (
+                new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
+                (
+                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
+                    (
+                        action,
+                        entity,
+                        componentTypes
+                    ),
+                    payload
+                )
+            );
         }
     }
 }
