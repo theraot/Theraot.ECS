@@ -101,9 +101,9 @@ namespace Theraot.ECS.Mantle.Core
                 _log = new Dictionary<TEntity, Option>();
             }
 
-            public void Add(TEntity entity, object payload)
+            public void Add(TEntity entity, object component)
             {
-                _log[entity] = Option.CreateValue(payload);
+                _log[entity] = Option.CreateValue(component);
             }
 
             public void ExecuteBuffer<TComponentTypeSet>(ICore<TEntity, TComponentType, TComponentTypeSet> core, TComponentType componentType)
