@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace Theraot.Collections.Specialized
@@ -304,7 +303,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
-            var source = this.Take(countLimit);
+            var source = EnumerableHelper.Take(this, countLimit);
             try
             {
                 var index = arrayIndex;

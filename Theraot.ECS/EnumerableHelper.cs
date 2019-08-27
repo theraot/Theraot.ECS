@@ -1,10 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Theraot
 {
     internal static class EnumerableHelper
     {
+        public static bool Any<T>(IEnumerable<T> source, Func<T, bool> predicate)
+        {
+            foreach (var item in source)
+            {
+                if (predicate(item))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static ICollection<T> AsICollection<T>(IEnumerable<T> enumerable)
         {
             switch (enumerable)
@@ -13,7 +26,7 @@ namespace Theraot
                     return allCollection;
 
                 default:
-                    return enumerable.ToList();
+                    return ToIList(enumerable);
             }
         }
 
@@ -33,8 +46,42 @@ namespace Theraot
                     return result;
 
                 default:
-                    return enumerable.ToList();
+                    return ToIList(enumerable);
             }
+        }
+
+        public static IEnumerable<T> Concat<T>(params IEnumerable<T>[] sources)
+        {
+            foreach (var enumerable in sources)
+            {
+                foreach (var item in enumerable)
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        public static IEnumerable<T> Take<T>(IEnumerable<T> source, int count)
+        {
+            foreach (var item in source)
+            {
+                yield return item;
+                if (--count == 0)
+                {
+                    break;
+                }
+            }
+        }
+
+        private static IList<T> ToIList<T>(IEnumerable<T> source)
+        {
+            var result = source is ICollection<T> sourceAsCollection ? new List<T>(sourceAsCollection.Count) : new List<T>();
+            foreach (var item in source)
+            {
+                result.Add(item);
+            }
+
+            return result;
         }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Theraot.ECS.Mantle.Core;
 using Theraot.ECS.Mantle.Queries;
 using Component = System.Object;
@@ -58,7 +57,7 @@ namespace Theraot.ECS.Mantle
                 return entityCollection;
             }
             entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(GetComponentRef());
-            foreach (var componentType in allAsICollection.Concat(anyAsICollection).Concat(noneAsICollection))
+            foreach (var componentType in EnumerableHelper.Concat(allAsICollection, anyAsICollection, noneAsICollection))
             {
                 if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
                 {

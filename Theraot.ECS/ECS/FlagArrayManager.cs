@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ComponentType = System.Int32;
 using ComponentTypeSet = Theraot.Collections.Specialized.FlagArray;
 
@@ -107,7 +106,11 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentTypeSet));
             }
-            return componentTypes.Any(index => componentTypeSet[index]);
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+            return EnumerableHelper.Any(componentTypes, index => componentTypeSet[index]);
         }
 
         public bool Overlaps(ComponentTypeSet componentTypeSetA, ComponentTypeSet componentTypeSetB)
