@@ -5,7 +5,7 @@ namespace Theraot.ECS.Mantle.Core
 {
     internal class CoreBuffer<TEntity, TComponentType>
     {
-        private Dictionary<TComponentType, HashSet<Operation>> _logDictionary;
+        private Dictionary<TComponentType, TypedCoreBuffer> _logDictionary;
 
         public bool BufferSetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
@@ -29,6 +29,7 @@ namespace Theraot.ECS.Mantle.Core
             {
                 AddToLog(CollectionChangeActionEx.Add, entity, componentType, componentSelector(componentType));
             }
+
             return true;
         }
 
@@ -43,6 +44,7 @@ namespace Theraot.ECS.Mantle.Core
             {
                 AddToLog(CollectionChangeActionEx.Remove, entity, componentType, null);
             }
+
             return true;
         }
 
@@ -63,7 +65,8 @@ namespace Theraot.ECS.Mantle.Core
             {
                 return false;
             }
-            _logDictionary = new Dictionary<TComponentType, HashSet<Operation>>();
+
+            _logDictionary = new Dictionary<TComponentType, TypedCoreBuffer>();
             return true;
         }
 
@@ -73,9 +76,39 @@ namespace Theraot.ECS.Mantle.Core
             _logDictionary = null;
             foreach (var typeLogPair in logDictionary)
             {
-                foreach (var operation in typeLogPair.Value)
+                typeLogPair.Value.ExecuteBuffer(core, typeLogPair.Key);
+            }
+        }
+
+        private void AddToLog(CollectionChangeActionEx action, TEntity entity, TComponentType componentType, object payload)
+        {
+            if (!_logDictionary.TryGetValue(componentType, out var log))
+            {
+                log = new TypedCoreBuffer();
+                _logDictionary[componentType] = log;
+            }
+
+            log.Add(entity, payload, action);
+        }
+
+        private class TypedCoreBuffer
+        {
+            private readonly HashSet<Operation> _log;
+
+            public TypedCoreBuffer()
+            {
+                _log = new HashSet<Operation>();
+            }
+
+            public void Add(TEntity entity, object payload, CollectionChangeActionEx action)
+            {
+                _log.Add(new Operation(entity, payload, action));
+            }
+
+            public void ExecuteBuffer<TComponentTypeSet>(ICore<TEntity, TComponentType, TComponentTypeSet> core, TComponentType componentType)
+            {
+                foreach (var operation in _log)
                 {
-                    var componentType = typeLogPair.Key;
                     if (operation.Action == CollectionChangeActionEx.Add)
                     {
                         core.SetComponent(operation.Entity, componentType, operation.Component);
@@ -86,31 +119,21 @@ namespace Theraot.ECS.Mantle.Core
                     }
                 }
             }
-        }
 
-        private void AddToLog(CollectionChangeActionEx action, TEntity entity, TComponentType componentType, object payload)
-        {
-            if (!_logDictionary.TryGetValue(componentType, out var log))
+            private sealed class Operation
             {
-                log = new HashSet<Operation>();
-                _logDictionary[componentType] = log;
-            }
-            log.Add(new Operation(entity, payload, action));
-        }
+                public readonly CollectionChangeActionEx Action;
 
-        private sealed class Operation
-        {
-            public readonly CollectionChangeActionEx Action;
+                public readonly object Component;
 
-            public readonly object Component;
+                public readonly TEntity Entity;
 
-            public readonly TEntity Entity;
-
-            public Operation(TEntity entity, object component, CollectionChangeActionEx action)
-            {
-                Entity = entity;
-                Component = component;
-                Action = action;
+                public Operation(TEntity entity, object component, CollectionChangeActionEx action)
+                {
+                    Entity = entity;
+                    Component = component;
+                    Action = action;
+                }
             }
         }
     }
