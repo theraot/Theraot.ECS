@@ -13,8 +13,6 @@ namespace Theraot.ECS.Mantle.Core
 
         private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
 
-        private List<KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>> _log;
-
         public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer)
         {
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
@@ -170,6 +168,223 @@ namespace Theraot.ECS.Mantle.Core
             }
         }
 
+        private sealed class EntityComponentStorage
+        {
+            public readonly CompactDictionary<TComponentType, ComponentId> ComponentIndex;
+
+            public readonly TComponentTypeSet ComponentTypes;
+
+            public EntityComponentStorage(TComponentTypeSet componentTypes, CompactDictionary<TComponentType, ComponentId> componentIndex)
+            {
+                ComponentIndex = componentIndex;
+                ComponentTypes = componentTypes;
+            }
+        }
+    }
+
+    internal partial class Core<TEntity, TComponentType, TComponentTypeSet> : IComponentReferenceAccess<TEntity, TComponentType>
+    {
+        public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
+        {
+            if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            if (!entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId))
+            {
+                throw new KeyNotFoundException("ComponentType not found on the entity");
+            }
+
+            var created = CreateBuffer();
+
+            callback
+            (
+                entity,
+                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1)
+            );
+
+            if (created)
+            {
+                ExecuteBuffer();
+            }
+        }
+
+        public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
+        {
+            if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            if
+            (
+                !entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId)
+                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType2, out var componentId1)
+            )
+            {
+                throw new KeyNotFoundException("ComponentType not found on the entity");
+            }
+
+            var created = CreateBuffer();
+
+            callback
+            (
+                entity,
+                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1),
+                ref _globalComponentStorage.GetComponentRef<TComponent2>(componentId1, componentType2)
+            );
+
+            if (created)
+            {
+                ExecuteBuffer();
+            }
+        }
+
+        public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
+        {
+            if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            if
+            (
+                !entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId)
+                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType2, out var componentId1)
+                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType3, out var componentId2)
+            )
+            {
+                throw new KeyNotFoundException("ComponentType not found on the entity");
+            }
+
+            var created = CreateBuffer();
+
+            callback
+            (
+                entity,
+                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1),
+                ref _globalComponentStorage.GetComponentRef<TComponent2>(componentId1, componentType2),
+                ref _globalComponentStorage.GetComponentRef<TComponent3>(componentId2, componentType3)
+            );
+
+            if (created)
+            {
+                ExecuteBuffer();
+            }
+        }
+
+        public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
+        {
+            if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            if
+            (
+                !entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId)
+                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType2, out var componentId1)
+                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType3, out var componentId2)
+                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType4, out var componentId3)
+            )
+            {
+                throw new KeyNotFoundException("ComponentType not found on the entity");
+            }
+
+            var created = CreateBuffer();
+
+            callback
+            (
+                entity,
+                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1),
+                ref _globalComponentStorage.GetComponentRef<TComponent2>(componentId1, componentType2),
+                ref _globalComponentStorage.GetComponentRef<TComponent3>(componentId2, componentType3),
+                ref _globalComponentStorage.GetComponentRef<TComponent4>(componentId3, componentType4)
+            );
+
+            if (created)
+            {
+                ExecuteBuffer();
+            }
+        }
+
+        public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
+        {
+            if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
+            {
+                throw new KeyNotFoundException("Entity not found");
+            }
+
+            if
+            (
+                !entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId)
+                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType2, out var componentId1)
+                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType3, out var componentId2)
+                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType4, out var componentId3)
+                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType5, out var componentId4)
+            )
+            {
+                throw new KeyNotFoundException("ComponentType not found on the entity");
+            }
+
+            var created = CreateBuffer();
+
+            callback
+            (
+                entity,
+                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1),
+                ref _globalComponentStorage.GetComponentRef<TComponent2>(componentId1, componentType2),
+                ref _globalComponentStorage.GetComponentRef<TComponent3>(componentId2, componentType3),
+                ref _globalComponentStorage.GetComponentRef<TComponent4>(componentId3, componentType4),
+                ref _globalComponentStorage.GetComponentRef<TComponent5>(componentId4, componentType5)
+            );
+
+            if (created)
+            {
+                ExecuteBuffer();
+            }
+        }
+    }
+
+    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
+    {
+        private readonly HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>> _addedComponent;
+        private readonly HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>> _removedComponent;
+
+        public event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> AddedComponents
+        {
+            add => _addedComponent.Add(value);
+            remove => _addedComponent.Remove(value);
+        }
+
+        public event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> RemovedComponents
+        {
+            add => _removedComponent.Add(value);
+            remove => _removedComponent.Remove(value);
+        }
+
+        private void OnAddedComponents(TEntity entity, IList<TComponentType> componentTypes)
+        {
+            foreach (var handler in _addedComponent)
+            {
+                handler.Invoke(this, EntityComponentsChangeEventArgs.CreateAdd(entity, componentTypes));
+            }
+        }
+
+        private void OnRemovedComponents(TEntity entity, IList<TComponentType> componentTypes)
+        {
+            foreach (var handler in _removedComponent)
+            {
+                handler.Invoke(this, EntityComponentsChangeEventArgs.CreateRemove(entity, componentTypes));
+            }
+        }
+    }
+
+    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
+    {
+        private List<KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>> _log;
+
         private bool BufferSetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
             if (_log == null)
@@ -258,176 +473,6 @@ namespace Theraot.ECS.Mantle.Core
             return true;
         }
 
-        private sealed class EntityComponentStorage
-        {
-            public readonly CompactDictionary<TComponentType, ComponentId> ComponentIndex;
-
-            public readonly TComponentTypeSet ComponentTypes;
-
-            public EntityComponentStorage(TComponentTypeSet componentTypes, CompactDictionary<TComponentType, ComponentId> componentIndex)
-            {
-                ComponentIndex = componentIndex;
-                ComponentTypes = componentTypes;
-            }
-        }
-    }
-
-    internal partial class Core<TEntity, TComponentType, TComponentTypeSet> : IComponentReferenceAccess<TEntity, TComponentType>
-    {
-        public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
-        {
-            if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            if (!entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId))
-            {
-                throw new KeyNotFoundException("ComponentType not found on the entity");
-            }
-
-            var created = CreateBuffer();
-
-            callback
-            (
-                entity,
-                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1)
-            );
-
-            if (created)
-            {
-                ExecuteBuffer();
-            }
-        }
-
-        public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
-        {
-            if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            if
-            (
-                !entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType2, out var componentId1)
-            )
-            {
-                throw new KeyNotFoundException("ComponentType not found on the entity");
-            }
-
-            if (_log == null)
-            {
-                _log = new List<KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>>();
-            }
-
-            callback
-            (
-                entity,
-                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1),
-                ref _globalComponentStorage.GetComponentRef<TComponent2>(componentId1, componentType2)
-            );
-        }
-
-        public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
-        {
-            if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            if
-            (
-                !entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType2, out var componentId1)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType3, out var componentId2)
-            )
-            {
-                throw new KeyNotFoundException("ComponentType not found on the entity");
-            }
-
-            if (_log == null)
-            {
-                _log = new List<KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>>();
-            }
-
-            callback
-            (
-                entity,
-                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1),
-                ref _globalComponentStorage.GetComponentRef<TComponent2>(componentId1, componentType2),
-                ref _globalComponentStorage.GetComponentRef<TComponent3>(componentId2, componentType3)
-            );
-        }
-
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
-        {
-            if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            if
-            (
-                !entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType2, out var componentId1)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType3, out var componentId2)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType4, out var componentId3)
-            )
-            {
-                throw new KeyNotFoundException("ComponentType not found on the entity");
-            }
-
-            if (_log == null)
-            {
-                _log = new List<KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>>();
-            }
-
-            callback
-            (
-                entity,
-                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1),
-                ref _globalComponentStorage.GetComponentRef<TComponent2>(componentId1, componentType2),
-                ref _globalComponentStorage.GetComponentRef<TComponent3>(componentId2, componentType3),
-                ref _globalComponentStorage.GetComponentRef<TComponent4>(componentId3, componentType4)
-            );
-        }
-
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
-        {
-            if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
-            {
-                throw new KeyNotFoundException("Entity not found");
-            }
-
-            if
-            (
-                !entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType2, out var componentId1)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType3, out var componentId2)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType4, out var componentId3)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType5, out var componentId4)
-            )
-            {
-                throw new KeyNotFoundException("ComponentType not found on the entity");
-            }
-
-            if (_log == null)
-            {
-                _log = new List<KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>>();
-            }
-
-            callback
-            (
-                entity,
-                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1),
-                ref _globalComponentStorage.GetComponentRef<TComponent2>(componentId1, componentType2),
-                ref _globalComponentStorage.GetComponentRef<TComponent3>(componentId2, componentType3),
-                ref _globalComponentStorage.GetComponentRef<TComponent4>(componentId3, componentType4),
-                ref _globalComponentStorage.GetComponentRef<TComponent5>(componentId4, componentType5)
-            );
-        }
-
         private bool CreateBuffer()
         {
             if (_log != null)
@@ -454,40 +499,6 @@ namespace Theraot.ECS.Mantle.Core
                 {
                     UnsetComponents(entity, componentTypes);
                 }
-            }
-        }
-    }
-
-    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
-    {
-        private readonly HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>> _addedComponent;
-        private readonly HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>> _removedComponent;
-
-        public event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> AddedComponents
-        {
-            add => _addedComponent.Add(value);
-            remove => _addedComponent.Remove(value);
-        }
-
-        public event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> RemovedComponents
-        {
-            add => _removedComponent.Add(value);
-            remove => _removedComponent.Remove(value);
-        }
-
-        private void OnAddedComponents(TEntity entity, IList<TComponentType> componentTypes)
-        {
-            foreach (var handler in _addedComponent)
-            {
-                handler.Invoke(this, EntityComponentsChangeEventArgs.CreateAdd(entity, componentTypes));
-            }
-        }
-
-        private void OnRemovedComponents(TEntity entity, IList<TComponentType> componentTypes)
-        {
-            foreach (var handler in _removedComponent)
-            {
-                handler.Invoke(this, EntityComponentsChangeEventArgs.CreateRemove(entity, componentTypes));
             }
         }
     }
