@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Theraot.ECS.Mantle.Core
 {
-    internal class CoreBuffer<TEntity, TComponentType>
+    internal class CoreBuffer<TEntity, TComponentType, TComponentTypeSet>
     {
         private Dictionary<TComponentType, TypedCoreBuffer> _logDictionary;
 
@@ -14,7 +14,7 @@ namespace Theraot.ECS.Mantle.Core
                 return false;
             }
 
-            GetLog(componentType).Add(entity, component);
+            GetLog(componentType).Add(entity, core => core.SetComponent(entity, componentType, component));
             return true;
         }
 
@@ -27,7 +27,7 @@ namespace Theraot.ECS.Mantle.Core
 
             foreach (var componentType in componentTypes)
             {
-                GetLog(componentType).Add(entity, componentSelector(componentType));
+                GetLog(componentType).Add(entity, core => core.SetComponent(entity, componentType, componentSelector(componentType)));
             }
 
             return true;
@@ -42,7 +42,7 @@ namespace Theraot.ECS.Mantle.Core
 
             foreach (var componentType in componentTypes)
             {
-                GetLog(componentType).Remove(entity);
+                GetLog(componentType).Add(entity, core => core.UnsetComponent(entity, componentType));
             }
 
             return true;
@@ -55,7 +55,7 @@ namespace Theraot.ECS.Mantle.Core
                 return false;
             }
 
-            GetLog(componentType).Remove(entity);
+            GetLog(componentType).Add(entity, core => core.UnsetComponent(entity, componentType));
             return true;
         }
 
@@ -70,13 +70,13 @@ namespace Theraot.ECS.Mantle.Core
             return true;
         }
 
-        public void ExecuteBuffer<TComponentTypeSet>(ICore<TEntity, TComponentType, TComponentTypeSet> core)
+        public void ExecuteBuffer(ICore<TEntity, TComponentType, TComponentTypeSet> core)
         {
             var logDictionary = _logDictionary;
             _logDictionary = null;
             foreach (var typeLogPair in logDictionary)
             {
-                typeLogPair.Value.ExecuteBuffer(core, typeLogPair.Key);
+                typeLogPair.Value.ExecuteBuffer(core);
             }
         }
 
@@ -94,59 +94,23 @@ namespace Theraot.ECS.Mantle.Core
 
         private class TypedCoreBuffer
         {
-            private readonly Dictionary<TEntity, Option> _log;
+            private readonly Dictionary<TEntity, Action<ICore<TEntity, TComponentType, TComponentTypeSet>>> _log;
 
             public TypedCoreBuffer()
             {
-                _log = new Dictionary<TEntity, Option>();
+                _log = new Dictionary<TEntity, Action<ICore<TEntity, TComponentType, TComponentTypeSet>>>();
             }
 
-            public void Add(TEntity entity, object component)
+            public void Add(TEntity entity, Action<ICore<TEntity, TComponentType, TComponentTypeSet>> action)
             {
-                _log[entity] = Option.CreateValue(component);
+                _log[entity] = action;
             }
 
-            public void ExecuteBuffer<TComponentTypeSet>(ICore<TEntity, TComponentType, TComponentTypeSet> core, TComponentType componentType)
+            public void ExecuteBuffer(ICore<TEntity, TComponentType, TComponentTypeSet> core)
             {
                 foreach (var operation in _log)
                 {
-                    var option = operation.Value;
-                    if (option.Set)
-                    {
-                        core.SetComponent(operation.Key, componentType, option.Value);
-                    }
-                    else
-                    {
-                        core.UnsetComponent(operation.Key, componentType);
-                    }
-                }
-            }
-
-            public void Remove(TEntity entity)
-            {
-                _log[entity] = Option.CreateNotSet();
-            }
-
-            private sealed class Option
-            {
-                public readonly bool Set;
-
-                public readonly object Value;
-
-                private Option(object value, bool set)
-                {
-                    Value = value;
-                    Set = set;
-                }
-
-                public static Option CreateNotSet()
-                {
-                    return new Option(null, false);
-                }
-
-                public static Option CreateValue(object value)
-                {
-                    return new Option(value, true);
+                    operation.Value(core);
                 }
             }
         }

@@ -16,7 +16,7 @@ namespace Theraot.ECS.Mantle.Core
 
         private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
 
-        private readonly CoreBuffer<TEntity, TComponentType> _buffer;
+        private readonly CoreBuffer<TEntity, TComponentType, TComponentTypeSet> _buffer;
 
         public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer)
         {
@@ -25,7 +25,7 @@ namespace Theraot.ECS.Mantle.Core
             _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage>();
             _addedComponent = new HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>>();
             _removedComponent = new HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>>();
-            _buffer = new CoreBuffer<TEntity, TComponentType>();
+            _buffer = new CoreBuffer<TEntity, TComponentType, TComponentTypeSet>();
         }
 
         public IEnumerable<TEntity> AllEntities => _componentsByEntity.Keys;
