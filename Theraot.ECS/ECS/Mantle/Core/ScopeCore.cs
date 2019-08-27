@@ -209,7 +209,7 @@ namespace Theraot.ECS.Mantle.Core
 
             if (created)
             {
-                ExecuteBuffer(this);
+                ExecuteBuffer();
             }
         }
 
@@ -240,7 +240,7 @@ namespace Theraot.ECS.Mantle.Core
 
             if (created)
             {
-                ExecuteBuffer(this);
+                ExecuteBuffer();
             }
         }
 
@@ -273,7 +273,7 @@ namespace Theraot.ECS.Mantle.Core
 
             if (created)
             {
-                ExecuteBuffer(this);
+                ExecuteBuffer();
             }
         }
 
@@ -308,7 +308,7 @@ namespace Theraot.ECS.Mantle.Core
 
             if (created)
             {
-                ExecuteBuffer(this);
+                ExecuteBuffer();
             }
         }
 
@@ -345,7 +345,7 @@ namespace Theraot.ECS.Mantle.Core
 
             if (created)
             {
-                ExecuteBuffer(this);
+                ExecuteBuffer();
             }
         }
     }
@@ -386,7 +386,7 @@ namespace Theraot.ECS.Mantle.Core
 
     internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
     {
-        private List<Action<ICore<TEntity, TComponentType, TComponentTypeSet>>> _log;
+        private List<Action> _log;
 
         public bool BufferSetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
@@ -395,7 +395,7 @@ namespace Theraot.ECS.Mantle.Core
                 return false;
             }
 
-            _log.Add(core => core.SetComponent(entity, componentType, component));
+            _log.Add(() => SetComponent(entity, componentType, component));
             return true;
         }
 
@@ -406,7 +406,7 @@ namespace Theraot.ECS.Mantle.Core
                 return false;
             }
 
-            _log.Add(core => core.SetComponents(entity, componentTypes, componentSelector));
+            _log.Add(() => SetComponents(entity, componentTypes, componentSelector));
             return true;
         }
 
@@ -417,7 +417,7 @@ namespace Theraot.ECS.Mantle.Core
                 return false;
             }
 
-            _log.Add(core => core.UnsetComponents(entity, componentTypes));
+            _log.Add(() => UnsetComponents(entity, componentTypes));
             return true;
         }
 
@@ -428,7 +428,7 @@ namespace Theraot.ECS.Mantle.Core
                 return false;
             }
 
-            _log.Add(core => core.UnsetComponent(entity, componentType));
+            _log.Add(() => UnsetComponent(entity, componentType));
             return true;
         }
 
@@ -439,17 +439,17 @@ namespace Theraot.ECS.Mantle.Core
                 return false;
             }
 
-            _log = new List<Action<ICore<TEntity, TComponentType, TComponentTypeSet>>>();
+            _log = new List<Action>();
             return true;
         }
 
-        public void ExecuteBuffer(ICore<TEntity, TComponentType, TComponentTypeSet> core)
+        public void ExecuteBuffer()
         {
             var log = _log;
             _log = null;
             foreach (var action in log)
             {
-                action(core);
+                action();
             }
         }
     }
