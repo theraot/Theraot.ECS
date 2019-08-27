@@ -2,7 +2,13 @@
 
 namespace Theraot.ECS
 {
+#if LESSTHAN_NET40
+
+    public interface IComponentTypeManager<TComponentType, TComponentTypeSet>
+#else
+
     public interface IComponentTypeManager<in TComponentType, TComponentTypeSet>
+#endif
     {
         IEqualityComparer<TComponentType> ComponentTypEqualityComparer { get; }
 
