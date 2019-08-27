@@ -374,7 +374,7 @@ namespace Theraot.ECS.Mantle.Core
         {
             foreach (var handler in _addedComponent)
             {
-                handler.Invoke(this, EntityComponentsChangeEventArgs.CreateAdd(entity, componentTypes));
+                handler.Invoke(this, new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeActionEx.Add, entity, componentTypes));
             }
         }
 
@@ -382,7 +382,7 @@ namespace Theraot.ECS.Mantle.Core
         {
             foreach (var handler in _removedComponent)
             {
-                handler.Invoke(this, EntityComponentsChangeEventArgs.CreateRemove(entity, componentTypes));
+                handler.Invoke(this, new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeActionEx.Remove, entity, componentTypes));
             }
         }
     }

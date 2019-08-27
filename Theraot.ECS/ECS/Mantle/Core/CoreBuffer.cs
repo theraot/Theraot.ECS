@@ -18,8 +18,9 @@ namespace Theraot.ECS.Mantle.Core
             (
                 new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
                 (
-                    EntityComponentsChangeEventArgs.CreateAdd
+                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
                     (
+                        CollectionChangeActionEx.Add,
                         entity,
                         new[] { componentType }
                     ),
@@ -40,8 +41,9 @@ namespace Theraot.ECS.Mantle.Core
             (
                 new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
                 (
-                    EntityComponentsChangeEventArgs.CreateAdd
+                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
                     (
+                        CollectionChangeActionEx.Add,
                         entity,
                         componentTypes
                     ),
@@ -62,8 +64,9 @@ namespace Theraot.ECS.Mantle.Core
             (
                 new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
                 (
-                    EntityComponentsChangeEventArgs.CreateRemove
+                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
                     (
+                        CollectionChangeActionEx.Remove,
                         entity,
                         componentTypes
                     ),
@@ -84,8 +87,9 @@ namespace Theraot.ECS.Mantle.Core
             (
                 new KeyValuePair<EntityComponentsChangeEventArgs<TEntity, TComponentType>, object>
                 (
-                    EntityComponentsChangeEventArgs.CreateRemove
+                    new EntityComponentsChangeEventArgs<TEntity, TComponentType>
                     (
+                        CollectionChangeActionEx.Remove,
                         entity,
                         new[] { componentType }
                     ),
