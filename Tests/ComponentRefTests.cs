@@ -10,7 +10,7 @@ namespace Tests
         public static void RefToRemovedComponentIsSafe()
         {
             var entityId = 0;
-            var scope = Scope.CreateScope(() => entityId++, new SetManager());
+            var scope = Scope.CreateScope(() => entityId++, EqualityComparer<int>.Default, new SetManager());
             var entityA = scope.CreateEntity();
             scope.SetComponent(entityA, "narf", 123);
             scope.SetComponent(entityA, "puff", 456);
@@ -36,7 +36,7 @@ namespace Tests
         public static void UpdatingTheRefWorks()
         {
             var entityId = 0;
-            var scope = Scope.CreateScope(() => entityId++, new SetManager());
+            var scope = Scope.CreateScope(() => entityId++, EqualityComparer<int>.Default, new SetManager());
             var entityA = scope.CreateEntity();
             scope.SetComponent(entityA, "puff", 123);
             scope.With
@@ -56,7 +56,7 @@ namespace Tests
         public static void UpdatingTheRefWorksRegardlessOfAddedComponentsA()
         {
             var entityId = 0;
-            var scope = Scope.CreateScope(() => entityId++, new FlagArrayManager(16));
+            var scope = Scope.CreateScope(() => entityId++, EqualityComparer<int>.Default, new FlagArrayManager(16));
             var entityA = scope.CreateEntity();
             scope.SetComponent(entityA, 1, 123);
             scope.With
@@ -81,7 +81,7 @@ namespace Tests
         public static void UpdatingTheRefWorksRegardlessOfAddedComponentsB()
         {
             var entityId = 0;
-            var scope = Scope.CreateScope(() => entityId++, new SetManager());
+            var scope = Scope.CreateScope(() => entityId++, EqualityComparer<int>.Default, new SetManager());
             var entityA = scope.CreateEntity();
             scope.SetComponent(entityA, "puff", 123);
             scope.With

@@ -16,19 +16,22 @@ namespace Theraot.ECS.Mantle
 
         private readonly Func<TEntity> _entityFactory;
 
+        private readonly IEqualityComparer<TEntity> _entityEqualityComparer;
+
         private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
 
         private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
-        internal Mantle(Func<TEntity> entityFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
+        internal Mantle(Func<TEntity> entityFactory, IEqualityComparer<TEntity> entityEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
+            _entityEqualityComparer = entityEqualityComparer;
             _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
             var componentTypEqualityComparer = componentTypeManager.ComponentTypEqualityComparer;
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
             _entitiesByQueryId = new Dictionary<QueryId, EntityCollection<TEntity, TComponentType>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypEqualityComparer);
-            _core = new Core<TEntity, TComponentType, TComponentTypeSet>(componentTypEqualityComparer);
+            _core = new Core<TEntity, TComponentType, TComponentTypeSet>(componentTypEqualityComparer, _entityEqualityComparer);
             _core.AddedComponents += Core_AddedComponents;
             _core.RemovedComponents += Core_RemovedComponents;
         }
@@ -55,7 +58,7 @@ namespace Theraot.ECS.Mantle
             {
                 return entityCollection;
             }
-            entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(GetComponentRef());
+            entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(GetComponentRef(), _entityEqualityComparer);
             foreach (var componentType in EnumerableHelper.Concat(allAsICollection, anyAsICollection, noneAsICollection))
             {
                 if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))

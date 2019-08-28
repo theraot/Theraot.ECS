@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using Theraot.ECS;
 
 namespace Tests
@@ -10,7 +11,7 @@ namespace Tests
         public static void ComponentTypeIsSetForAllEntities()
         {
             var entityId = 0;
-            var scope = Scope.CreateScope(() => entityId++, new SetManager());
+            var scope = Scope.CreateScope(() => entityId++, EqualityComparer<int>.Default, new SetManager());
             var entityA = scope.CreateEntity();
             var entityB = scope.CreateEntity();
             scope.SetComponent(entityA, "test", 1);
@@ -22,7 +23,7 @@ namespace Tests
         public static void RegisterComponentType()
         {
             var entityId = 0;
-            var scope = Scope.CreateScope(() => entityId++, new SetManager());
+            var scope = Scope.CreateScope(() => entityId++, EqualityComparer<int>.Default, new SetManager());
             scope.TryRegisterComponentType<int>("test");
             var entityA = scope.CreateEntity();
             Assert.AreEqual(typeof(int), scope.GetRegisteredComponentType("test"));
@@ -33,7 +34,7 @@ namespace Tests
         public static void UnableToChangeComponentType()
         {
             var entityId = 0;
-            var scope = Scope.CreateScope(() => entityId++, new SetManager());
+            var scope = Scope.CreateScope(() => entityId++, EqualityComparer<int>.Default, new SetManager());
             var entityA = scope.CreateEntity();
             scope.SetComponent(entityA, "test", 1);
             Assert.Throws<ArgumentException>(() => scope.SetComponent(entityA, "test", "hello"));

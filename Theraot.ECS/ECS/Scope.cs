@@ -6,9 +6,9 @@ namespace Theraot.ECS
 {
     public static class Scope
     {
-        public static Scope<TEntity, TComponentType> CreateScope<TEntity, TComponentType, TComponentTypeSet>(Func<TEntity> entityIdFactory, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
+        public static Scope<TEntity, TComponentType> CreateScope<TEntity, TComponentType, TComponentTypeSet>(Func<TEntity> entityIdFactory, IEqualityComparer<TEntity> entityEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
-            var mantle = new Mantle<TEntity, TComponentType, TComponentTypeSet>(entityIdFactory, componentTypeManager);
+            var mantle = new Mantle<TEntity, TComponentType, TComponentTypeSet>(entityIdFactory, entityEqualityComparer, componentTypeManager);
             return new Scope<TEntity, TComponentType>(mantle);
         }
     }

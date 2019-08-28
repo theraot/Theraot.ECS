@@ -13,10 +13,10 @@ namespace Theraot.ECS
 
         private readonly HashSet<TEntity> _wrapped;
 
-        internal EntityCollection(IComponentReferenceAccess<TEntity, TComponentType> componentRefScope)
+        internal EntityCollection(IComponentReferenceAccess<TEntity, TComponentType> componentRefScope, IEqualityComparer<TEntity> entityEqualityComparer)
         {
             _componentRefScope = componentRefScope;
-            _wrapped = new HashSet<TEntity>();
+            _wrapped = new HashSet<TEntity>(entityEqualityComparer);
             _removedEntity = new HashSet<EventHandler<EntityCollectionChangeEventArgs<TEntity>>>();
             _addedEntity = new HashSet<EventHandler<EntityCollectionChangeEventArgs<TEntity>>>();
         }

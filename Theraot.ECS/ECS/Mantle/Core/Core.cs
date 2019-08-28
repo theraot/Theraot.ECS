@@ -16,11 +16,11 @@ namespace Theraot.ECS.Mantle.Core
 
         private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
 
-        public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer)
+        public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer)
         {
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
             _globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypeEqualityComparer);
-            _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage>();
+            _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage>(entityEqualityComparer);
             _addedComponent = new HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>>();
             _removedComponent = new HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>>();
         }
