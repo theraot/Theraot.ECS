@@ -14,17 +14,14 @@ namespace Theraot.ECS.Mantle
 
         private readonly Dictionary<QueryId, EntityCollection<TEntity, TComponentType>> _entitiesByQueryId;
 
-        private readonly Func<TEntity> _entityFactory;
-
         private readonly IEqualityComparer<TEntity> _entityEqualityComparer;
 
         private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
 
         private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
-        internal Mantle(Func<TEntity> entityFactory, IEqualityComparer<TEntity> entityEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
+        internal Mantle(IEqualityComparer<TEntity> entityEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
-            _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _entityEqualityComparer = entityEqualityComparer;
             _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
             var componentTypEqualityComparer = componentTypeManager.ComponentTypEqualityComparer;
@@ -34,13 +31,6 @@ namespace Theraot.ECS.Mantle
             _core = new Core<TEntity, TComponentType, TComponentTypeSet>(componentTypEqualityComparer, _entityEqualityComparer);
             _core.AddedComponents += Core_AddedComponents;
             _core.RemovedComponents += Core_RemovedComponents;
-        }
-
-        public TEntity CreateEntity()
-        {
-            var entity = _entityFactory();
-            _core.RegisterEntity(entity, _componentTypeManager.Create());
-            return entity;
         }
 
         public IComponentReferenceAccess<TEntity, TComponentType> GetComponentRef()
@@ -84,6 +74,11 @@ namespace Theraot.ECS.Mantle
         public Type GetRegisteredComponentType(TComponentType componentType)
         {
             return _core.GetRegisteredComponentType(componentType);
+        }
+
+        public void RegisterEntity(TEntity entity)
+        {
+            _core.RegisterEntity(entity, _componentTypeManager.Create());
         }
 
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)

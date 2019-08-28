@@ -8,23 +8,28 @@ namespace Theraot.ECS
     {
         public static Scope<TEntity, TComponentType> CreateScope<TEntity, TComponentType, TComponentTypeSet>(Func<TEntity> entityIdFactory, IEqualityComparer<TEntity> entityEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
-            var mantle = new Mantle<TEntity, TComponentType, TComponentTypeSet>(entityIdFactory, entityEqualityComparer, componentTypeManager);
-            return new Scope<TEntity, TComponentType>(mantle);
+            var mantle = new Mantle<TEntity, TComponentType, TComponentTypeSet>(entityEqualityComparer, componentTypeManager);
+            return new Scope<TEntity, TComponentType>(entityIdFactory, mantle);
         }
     }
 
     public sealed partial class Scope<TEntity, TComponentType>
     {
+        private readonly Func<TEntity> _entityFactory;
+
         private readonly IMantle<TEntity, TComponentType> _mantle;
 
-        internal Scope(IMantle<TEntity, TComponentType> mantle)
+        internal Scope(Func<TEntity> entityFactory, IMantle<TEntity, TComponentType> mantle)
         {
+            _entityFactory = entityFactory;
             _mantle = mantle;
         }
 
         public TEntity CreateEntity()
         {
-            return _mantle.CreateEntity();
+            var entity = _entityFactory();
+            _mantle.RegisterEntity(entity);
+            return entity;
         }
 
         public TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType)
@@ -45,6 +50,11 @@ namespace Theraot.ECS
         public Type GetRegisteredComponentType(TComponentType componentType)
         {
             return _mantle.GetRegisteredComponentType(componentType);
+        }
+
+        public void RegisterEntity(TEntity entity)
+        {
+            _mantle.RegisterEntity(entity);
         }
 
         public void SetComponent<TComponent>(TEntity entity, TComponentType type, TComponent component)
