@@ -7,6 +7,6 @@ namespace Theraot.ECS.Mantle
     {
         EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
 
-        void RegisterEntity(TEntity entity);
+        bool RegisterEntity(TEntity entity);
     }
 }

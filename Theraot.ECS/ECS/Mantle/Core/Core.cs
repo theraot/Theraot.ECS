@@ -42,13 +42,26 @@ namespace Theraot.ECS.Mantle.Core
             return _globalComponentStorage.GetRegisteredComponentType(componentType);
         }
 
-        public void RegisterEntity(TEntity entity, TComponentTypeSet componentTypes)
+        public bool RegisterEntity(TEntity entity, TComponentTypeSet componentTypes)
         {
-            _componentsByEntity[entity] = new EntityComponentStorage
+            if (_componentsByEntity.ContainsKey(entity))
+            {
+                return false;
+            }
+            var neo = new EntityComponentStorage
             (
                 componentTypes,
                 new CompactDictionary<TComponentType, ComponentId>(_componentTypeComparer, 16)
             );
+            try
+            {
+                _componentsByEntity.Add(entity, neo);
+                return true;
+            }
+            catch (ArgumentException)
+            {
+                return false;
+            }
         }
 
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)

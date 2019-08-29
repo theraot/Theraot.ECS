@@ -76,9 +76,9 @@ namespace Theraot.ECS.Mantle
             return _core.GetRegisteredComponentType(componentType);
         }
 
-        public void RegisterEntity(TEntity entity)
+        public bool RegisterEntity(TEntity entity)
         {
-            _core.RegisterEntity(entity, _componentTypeManager.Create());
+            return _core.RegisterEntity(entity, _componentTypeManager.Create());
         }
 
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)

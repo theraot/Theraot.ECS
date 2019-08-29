@@ -13,6 +13,6 @@ namespace Theraot.ECS.Mantle.Core
 
         TComponentTypeSet GetComponentTypes(TEntity entity);
 
-        void RegisterEntity(TEntity entity, TComponentTypeSet componentTypeSet);
+        bool RegisterEntity(TEntity entity, TComponentTypeSet componentTypeSet);
     }
 }
