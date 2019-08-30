@@ -10,10 +10,11 @@ namespace Tests
         [Test]
         public static void ComponentTypeIsSetForAllEntities()
         {
-            var entityId = 0;
-            var scope = Scope.CreateScope(() => entityId++, EqualityComparer<int>.Default, new SetManager());
-            var entityA = scope.CreateEntity();
-            var entityB = scope.CreateEntity();
+            var scope = Scope.CreateScope(EqualityComparer<int>.Default, new SetManager());
+            const int entityA = 0;
+            const int entityB = 0;
+            scope.RegisterEntity(entityA);
+            scope.RegisterEntity(entityB);
             scope.SetComponent(entityA, "test", 1);
             Assert.AreEqual(typeof(int), scope.GetRegisteredComponentType("test"));
             Assert.Throws<ArgumentException>(() => scope.SetComponent(entityB, "test", "hello"));
@@ -22,10 +23,10 @@ namespace Tests
         [Test]
         public static void RegisterComponentType()
         {
-            var entityId = 0;
-            var scope = Scope.CreateScope(() => entityId++, EqualityComparer<int>.Default, new SetManager());
+            var scope = Scope.CreateScope(EqualityComparer<int>.Default, new SetManager());
             scope.TryRegisterComponentType<int>("test");
-            var entityA = scope.CreateEntity();
+            const int entityA = 0;
+            scope.RegisterEntity(entityA);
             Assert.AreEqual(typeof(int), scope.GetRegisteredComponentType("test"));
             Assert.Throws<ArgumentException>(() => scope.SetComponent(entityA, "test", "hello"));
         }
@@ -33,9 +34,9 @@ namespace Tests
         [Test]
         public static void UnableToChangeComponentType()
         {
-            var entityId = 0;
-            var scope = Scope.CreateScope(() => entityId++, EqualityComparer<int>.Default, new SetManager());
-            var entityA = scope.CreateEntity();
+            var scope = Scope.CreateScope(EqualityComparer<int>.Default, new SetManager());
+            const int entityA = 0;
+            scope.RegisterEntity(entityA);
             scope.SetComponent(entityA, "test", 1);
             Assert.Throws<ArgumentException>(() => scope.SetComponent(entityA, "test", "hello"));
         }

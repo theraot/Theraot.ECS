@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using System.Collections.Generic;
 using Theraot.ECS;
 
 namespace Tests
@@ -9,8 +9,7 @@ namespace Tests
         [Test]
         public static void CreatingTheSameQueryMultipleTimes()
         {
-            var entityId = 0;
-            var scope = Scope.CreateScope(() => entityId++, EqualityComparer<int>.Default, new FlagArrayManager(8));
+            var scope = Scope.CreateScope(EqualityComparer<int>.Default, new FlagArrayManager(8));
             var entitiesA = scope.GetEntityCollection(new[] { 1, 5 }, new[] { 6 }, new[] { 7 });
             var entitiesB = scope.GetEntityCollection(new[] { 1, 5 }, new[] { 6 }, new[] { 7 });
             var entitiesC = scope.GetEntityCollection(new[] { 0, 5 }, new[] { 6 }, new[] { 7 });
