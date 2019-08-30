@@ -616,6 +616,66 @@ namespace Theraot.Collections.Specialized
         }
     }
 
+#if LESSTHAN_NET35
+
+    public sealed partial class CompactDictionary<TKey, TValue>
+    {
+        public bool Set(TKey key, Converter<TKey, TValue> addValueFactory, Converter<KeyValuePair<TKey, TValue>, TValue> updateValueFactory)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key), "Key cannot be null.");
+            }
+            if (addValueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(addValueFactory));
+            }
+            if (updateValueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(updateValueFactory));
+            }
+
+            var index = Array.BinarySearch(_keys, 0, Count, key, _comparer);
+            if (index >= 0)
+            {
+                _values[index] = updateValueFactory(new KeyValuePair<TKey, TValue>(key, _values[index]));
+                return false;
+            }
+
+            Insert(~index, key, addValueFactory(key));
+            return true;
+        }
+
+        public List<TKey> SetAll(IEnumerable<TKey> keys, Converter<TKey, TValue> addValueFactory, Converter<KeyValuePair<TKey, TValue>, TValue> updateValueFactory)
+        {
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
+            if (addValueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(addValueFactory));
+            }
+            if (updateValueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(updateValueFactory));
+            }
+
+            var result = new List<TKey>();
+            foreach (var key in keys)
+            {
+                if (Set(key, addValueFactory, updateValueFactory))
+                {
+                    result.Add(key);
+                }
+            }
+
+            return result;
+        }
+    }
+
+#else
+
     public sealed partial class CompactDictionary<TKey, TValue>
     {
         public bool Set(TKey key, Func<TKey, TValue> addValueFactory, Func<KeyValuePair<TKey, TValue>, TValue> updateValueFactory)
@@ -671,6 +731,8 @@ namespace Theraot.Collections.Specialized
             return result;
         }
     }
+
+#endif
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
 

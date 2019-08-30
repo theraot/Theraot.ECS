@@ -18,8 +18,19 @@ namespace Theraot.ECS.Mantle.Core
         void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes);
     }
 
+#if LESSTHAN_NET35
+
+    internal partial interface ICommon<in TEntity, TComponentType>
+    {
+        void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector);
+    }
+
+#else
+
     internal partial interface ICommon<in TEntity, TComponentType>
     {
         void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector);
     }
+
+#endif
 }

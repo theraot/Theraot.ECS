@@ -114,6 +114,28 @@ namespace Theraot.ECS
         }
     }
 
+#if LESSTHAN_NET35
+
+    public sealed partial class Scope<TEntity, TComponentType>
+    {
+        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
+        {
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+
+            if (componentSelector == null)
+            {
+                throw new ArgumentNullException(nameof(componentSelector));
+            }
+
+            _mantle.SetComponents(entity, componentTypes, componentSelector);
+        }
+    }
+
+#else
+
     public sealed partial class Scope<TEntity, TComponentType>
     {
         public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
@@ -131,6 +153,8 @@ namespace Theraot.ECS
             _mantle.SetComponents(entity, componentTypes, componentSelector);
         }
     }
+
+#endif
 
     public sealed partial class Scope<TEntity, TComponentType>
     {

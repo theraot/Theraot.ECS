@@ -194,6 +194,23 @@ namespace Theraot.ECS.Mantle
         }
     }
 
+#if LESSTHAN_NET35
+
+    internal sealed partial class Mantle<TEntity, TComponentType, TComponentTypeSet>
+    {
+        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
+        {
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+
+            _core.SetComponents(entity, componentTypes, componentSelector);
+        }
+    }
+
+#else
+
     internal sealed partial class Mantle<TEntity, TComponentType, TComponentTypeSet>
     {
         public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
@@ -206,4 +223,6 @@ namespace Theraot.ECS.Mantle
             _core.SetComponents(entity, componentTypes, componentSelector);
         }
     }
+
+#endif
 }

@@ -771,6 +771,21 @@ namespace Theraot.Collections.Specialized
         }
     }
 
+#if LESSTHAN_NET35
+
+    public sealed partial class FlagArray
+    {
+        private static IEnumerable<int> Operation(IEnumerable<Pair> paired, Converter<Pair, int> operation)
+        {
+            foreach (var pair in paired)
+            {
+                yield return operation(pair);
+            }
+        }
+    }
+
+#else
+
     public sealed partial class FlagArray
     {
         private static IEnumerable<int> Operation(IEnumerable<Pair> paired, Func<Pair, int> operation)
@@ -781,6 +796,8 @@ namespace Theraot.Collections.Specialized
             }
         }
     }
+
+#endif
 
     public sealed partial class FlagArray : IEquatable<FlagArray>
     {

@@ -165,6 +165,46 @@ namespace Theraot.ECS.Mantle.Core
         }
     }
 
+#if LESSTHAN_NET35
+
+    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
+    {
+        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
+        {
+            var componentTypeList = EnumerableHelper.AsIList(componentTypes);
+            if (BufferSetComponents(entity, componentTypeList, componentSelector))
+            {
+                return;
+            }
+
+            var entityComponentStorage = _componentsByEntity[entity];
+
+            var addedComponentTypes = new List<TComponentType>();
+            foreach (var componentType in componentTypeList)
+            {
+                if
+                (
+                    entityComponentStorage.ComponentIndex.Set
+                    (
+                        componentType,
+                        key => _globalComponentStorage.AddComponent(componentSelector(key), key),
+                        pair => _globalComponentStorage.UpdateComponent(pair.Value, componentSelector(pair.Key), pair.Key)
+                    )
+                )
+                {
+                    addedComponentTypes.Add(componentType);
+                }
+            }
+
+            if (addedComponentTypes.Count > 0)
+            {
+                OnAddedComponents(entity, addedComponentTypes);
+            }
+        }
+    }
+
+#else
+
     internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
     {
         public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
@@ -200,6 +240,8 @@ namespace Theraot.ECS.Mantle.Core
             }
         }
     }
+
+#endif
 
     internal partial class Core<TEntity, TComponentType, TComponentTypeSet> : IComponentReferenceAccess<TEntity, TComponentType>
     {
@@ -459,6 +501,24 @@ namespace Theraot.ECS.Mantle.Core
         }
     }
 
+#if LESSTHAN_NET35
+
+    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
+    {
+        public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
+        {
+            if (_log == null)
+            {
+                return false;
+            }
+
+            _log.Add(() => SetComponents(entity, componentTypes, componentSelector));
+            return true;
+        }
+    }
+
+#else
+
     internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
     {
         public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
@@ -472,4 +532,6 @@ namespace Theraot.ECS.Mantle.Core
             return true;
         }
     }
+
+#endif
 }
