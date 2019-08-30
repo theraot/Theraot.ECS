@@ -6,6 +6,12 @@ using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 using ComponentId = System.Int32;
 
+#if LESSTHAN_NET35
+
+using Action = System.Threading.ThreadStart;
+
+#endif
+
 namespace Theraot.ECS.Mantle.Core
 {
     internal partial class Core<TEntity, TComponentType, TComponentTypeSet> : ICore<TEntity, TComponentType, TComponentTypeSet>

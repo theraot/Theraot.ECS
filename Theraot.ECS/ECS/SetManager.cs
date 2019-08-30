@@ -1,7 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using ComponentType = System.String;
+
+#if LESSTHAN_NET35
+
+using ComponentTypeSet = Theraot.HashSet<string>;
+
+#else
+
 using ComponentTypeSet = System.Collections.Generic.HashSet<string>;
+
+#endif
 
 namespace Theraot.ECS
 {
@@ -9,9 +18,9 @@ namespace Theraot.ECS
     {
         public IEqualityComparer<string> ComponentTypEqualityComparer => this;
 
-        public IEqualityComparer<ComponentTypeSet> ComponentTypSetEqualityComparer => this;
+        IEqualityComparer<ComponentTypeSet> IComponentTypeManager<string, ComponentTypeSet>.ComponentTypSetEqualityComparer => this;
 
-        public void Add(ComponentTypeSet componentTypeSet, ComponentType componentType)
+        void IComponentTypeManager<string, ComponentTypeSet>.Add(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             if (componentTypeSet == null)
             {
@@ -21,7 +30,7 @@ namespace Theraot.ECS
             componentTypeSet.Add(componentType);
         }
 
-        public void Add(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
+        void IComponentTypeManager<string, ComponentTypeSet>.Add(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
         {
             if (componentTypes == null)
             {
@@ -38,7 +47,7 @@ namespace Theraot.ECS
             }
         }
 
-        public bool Contains(ComponentTypeSet componentTypeSet, ComponentType componentType)
+        bool IComponentTypeManager<string, ComponentTypeSet>.Contains(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             if (componentTypeSet == null)
             {
@@ -47,7 +56,7 @@ namespace Theraot.ECS
             return componentTypeSet.Count != 0 && componentTypeSet.Contains(componentType);
         }
 
-        public bool ContainsAll(ComponentTypeSet componentTypeSet, ComponentTypeSet other)
+        bool IComponentTypeManager<string, ComponentTypeSet>.ContainsAll(ComponentTypeSet componentTypeSet, ComponentTypeSet other)
         {
             if (componentTypeSet == null)
             {
@@ -56,12 +65,12 @@ namespace Theraot.ECS
             return componentTypeSet.IsSupersetOf(other);
         }
 
-        public ComponentTypeSet Create()
+        ComponentTypeSet IComponentTypeManager<string, ComponentTypeSet>.Create()
         {
             return new HashSet<ComponentType>();
         }
 
-        public bool Equals(ComponentTypeSet x, ComponentTypeSet y)
+        bool IEqualityComparer<ComponentTypeSet>.Equals(ComponentTypeSet x, ComponentTypeSet y)
         {
             if (x == y)
             {
@@ -81,7 +90,7 @@ namespace Theraot.ECS
             return EqualityComparer<string>.Default.Equals(x, y);
         }
 
-        public int GetHashCode(ComponentTypeSet obj)
+        int IEqualityComparer<ComponentTypeSet>.GetHashCode(ComponentTypeSet obj)
         {
             if (obj == null)
             {
@@ -105,7 +114,7 @@ namespace Theraot.ECS
 #endif
         }
 
-        public bool IsEmpty(ComponentTypeSet componentTypeSet)
+        bool IComponentTypeManager<string, ComponentTypeSet>.IsEmpty(ComponentTypeSet componentTypeSet)
         {
             if (componentTypeSet == null)
             {
@@ -114,7 +123,7 @@ namespace Theraot.ECS
             return componentTypeSet.Count == 0;
         }
 
-        public bool Overlaps(ComponentTypeSet componentTypeSet, IEnumerable<string> componentTypes)
+        bool IComponentTypeManager<string, ComponentTypeSet>.Overlaps(ComponentTypeSet componentTypeSet, IEnumerable<string> componentTypes)
         {
             if (componentTypeSet == null)
             {
@@ -123,7 +132,7 @@ namespace Theraot.ECS
             return componentTypeSet.Count != 0 && componentTypeSet.Overlaps(componentTypes);
         }
 
-        public bool Overlaps(ComponentTypeSet componentTypeSetA, ComponentTypeSet componentTypeSetB)
+        bool IComponentTypeManager<string, ComponentTypeSet>.Overlaps(ComponentTypeSet componentTypeSetA, ComponentTypeSet componentTypeSetB)
         {
             if (componentTypeSetA == null)
             {
@@ -136,7 +145,7 @@ namespace Theraot.ECS
             return componentTypeSetA.Count != 0 && (componentTypeSetA.Count > componentTypeSetB.Count ? componentTypeSetA.Overlaps(componentTypeSetB) : componentTypeSetB.Overlaps(componentTypeSetA));
         }
 
-        public void Remove(ComponentTypeSet componentTypeSet, ComponentType componentType)
+        void IComponentTypeManager<string, ComponentTypeSet>.Remove(ComponentTypeSet componentTypeSet, ComponentType componentType)
         {
             if (componentTypeSet == null)
             {
@@ -146,7 +155,7 @@ namespace Theraot.ECS
             componentTypeSet.Remove(componentType);
         }
 
-        public void Remove(ComponentTypeSet componentTypeSet, IEnumerable<string> componentTypes)
+        void IComponentTypeManager<string, ComponentTypeSet>.Remove(ComponentTypeSet componentTypeSet, IEnumerable<string> componentTypes)
         {
             if (componentTypeSet == null)
             {
