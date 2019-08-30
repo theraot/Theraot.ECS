@@ -52,9 +52,9 @@ namespace Theraot.ECS
             return _mantle.GetRegisteredComponentType(componentType);
         }
 
-        public void RegisterEntity(TEntity entity)
+        public bool RegisterEntity(TEntity entity)
         {
-            _mantle.RegisterEntity(entity);
+            return _mantle.RegisterEntity(entity);
         }
 
         public void SetComponent<TComponent>(TEntity entity, TComponentType type, TComponent component)
