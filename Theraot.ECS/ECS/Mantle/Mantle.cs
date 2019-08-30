@@ -1,3 +1,5 @@
+#pragma warning disable RECS0096 // Type parameter is never used
+
 using System;
 using System.Collections.Generic;
 using Theraot.ECS.Mantle.Core;
@@ -6,7 +8,7 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS.Mantle
 {
-    internal sealed class Mantle<TEntity, TComponentType, TComponentTypeSet> : IMantle<TEntity, TComponentType>
+    internal sealed partial class Mantle<TEntity, TComponentType, TComponentTypeSet> : IMantle<TEntity, TComponentType>
     {
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
@@ -84,16 +86,6 @@ namespace Theraot.ECS.Mantle
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
         {
             _core.SetComponent(entity, componentType, component);
-        }
-
-        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
-        {
-            if (componentTypes == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypes));
-            }
-
-            _core.SetComponents(entity, componentTypes, componentSelector);
         }
 
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
@@ -199,6 +191,19 @@ namespace Theraot.ECS.Mantle
                         break;
                 }
             }
+        }
+    }
+
+    internal sealed partial class Mantle<TEntity, TComponentType, TComponentTypeSet>
+    {
+        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        {
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+
+            _core.SetComponents(entity, componentTypes, componentSelector);
         }
     }
 }

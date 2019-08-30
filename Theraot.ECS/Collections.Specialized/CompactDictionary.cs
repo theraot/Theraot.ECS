@@ -14,11 +14,7 @@ using System.Diagnostics;
 namespace Theraot.Collections.Specialized
 {
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
-    public sealed
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-    partial
-#endif
-    class CompactDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    public sealed partial class CompactDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private readonly IComparer<TKey> _comparer;
         private KeyList _keyList;
@@ -275,32 +271,6 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
-        public bool Set(TKey key, Func<TKey, TValue> addValueFactory, Func<KeyValuePair<TKey, TValue>, TValue> updateValueFactory)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key), "Key cannot be null.");
-            }
-            if (addValueFactory == null)
-            {
-                throw new ArgumentNullException(nameof(addValueFactory));
-            }
-            if (updateValueFactory == null)
-            {
-                throw new ArgumentNullException(nameof(updateValueFactory));
-            }
-
-            var index = Array.BinarySearch(_keys, 0, Count, key, _comparer);
-            if (index >= 0)
-            {
-                _values[index] = updateValueFactory(new KeyValuePair<TKey, TValue>(key, _values[index]));
-                return false;
-            }
-
-            Insert(~index, key, addValueFactory(key));
-            return true;
-        }
-
         public List<TKey> SetAll(IList<TKey> keys, IList<TValue> values)
         {
             if (keys == null)
@@ -322,33 +292,6 @@ namespace Theraot.Collections.Specialized
                 var key = keys[index];
                 var value = values[index];
                 if (Set(key, value))
-                {
-                    result.Add(key);
-                }
-            }
-
-            return result;
-        }
-
-        public List<TKey> SetAll(IEnumerable<TKey> keys, Func<TKey, TValue> addValueFactory, Func<KeyValuePair<TKey, TValue>, TValue> updateValueFactory)
-        {
-            if (keys == null)
-            {
-                throw new ArgumentNullException(nameof(keys));
-            }
-            if (addValueFactory == null)
-            {
-                throw new ArgumentNullException(nameof(addValueFactory));
-            }
-            if (updateValueFactory == null)
-            {
-                throw new ArgumentNullException(nameof(updateValueFactory));
-            }
-
-            var result = new List<TKey>();
-            foreach (var key in keys)
-            {
-                if (Set(key, addValueFactory, updateValueFactory))
                 {
                     result.Add(key);
                 }
@@ -670,6 +613,62 @@ namespace Theraot.Collections.Specialized
             {
                 throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
+        }
+    }
+
+    public sealed partial class CompactDictionary<TKey, TValue>
+    {
+        public bool Set(TKey key, Func<TKey, TValue> addValueFactory, Func<KeyValuePair<TKey, TValue>, TValue> updateValueFactory)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key), "Key cannot be null.");
+            }
+            if (addValueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(addValueFactory));
+            }
+            if (updateValueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(updateValueFactory));
+            }
+
+            var index = Array.BinarySearch(_keys, 0, Count, key, _comparer);
+            if (index >= 0)
+            {
+                _values[index] = updateValueFactory(new KeyValuePair<TKey, TValue>(key, _values[index]));
+                return false;
+            }
+
+            Insert(~index, key, addValueFactory(key));
+            return true;
+        }
+
+        public List<TKey> SetAll(IEnumerable<TKey> keys, Func<TKey, TValue> addValueFactory, Func<KeyValuePair<TKey, TValue>, TValue> updateValueFactory)
+        {
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
+            if (addValueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(addValueFactory));
+            }
+            if (updateValueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(updateValueFactory));
+            }
+
+            var result = new List<TKey>();
+            foreach (var key in keys)
+            {
+                if (Set(key, addValueFactory, updateValueFactory))
+                {
+                    result.Add(key);
+                }
+            }
+
+            return result;
         }
     }
 

@@ -86,39 +86,6 @@ namespace Theraot.ECS.Mantle.Core
             }
         }
 
-        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
-        {
-            var componentTypeList = EnumerableHelper.AsIList(componentTypes);
-            if (BufferSetComponents(entity, componentTypeList, componentSelector))
-            {
-                return;
-            }
-
-            var entityComponentStorage = _componentsByEntity[entity];
-
-            var addedComponentTypes = new List<TComponentType>();
-            foreach (var componentType in componentTypeList)
-            {
-                if
-                (
-                    entityComponentStorage.ComponentIndex.Set
-                    (
-                        componentType,
-                        key => _globalComponentStorage.AddComponent(componentSelector(key), key),
-                        pair => _globalComponentStorage.UpdateComponent(pair.Value, componentSelector(pair.Key), pair.Key)
-                    )
-                )
-                {
-                    addedComponentTypes.Add(componentType);
-                }
-            }
-
-            if (addedComponentTypes.Count > 0)
-            {
-                OnAddedComponents(entity, addedComponentTypes);
-            }
-        }
-
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
         {
             if
@@ -194,6 +161,42 @@ namespace Theraot.ECS.Mantle.Core
             {
                 ComponentIndex = componentIndex;
                 ComponentTypes = componentTypes;
+            }
+        }
+    }
+
+    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
+    {
+        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        {
+            var componentTypeList = EnumerableHelper.AsIList(componentTypes);
+            if (BufferSetComponents(entity, componentTypeList, componentSelector))
+            {
+                return;
+            }
+
+            var entityComponentStorage = _componentsByEntity[entity];
+
+            var addedComponentTypes = new List<TComponentType>();
+            foreach (var componentType in componentTypeList)
+            {
+                if
+                (
+                    entityComponentStorage.ComponentIndex.Set
+                    (
+                        componentType,
+                        key => _globalComponentStorage.AddComponent(componentSelector(key), key),
+                        pair => _globalComponentStorage.UpdateComponent(pair.Value, componentSelector(pair.Key), pair.Key)
+                    )
+                )
+                {
+                    addedComponentTypes.Add(componentType);
+                }
+            }
+
+            if (addedComponentTypes.Count > 0)
+            {
+                OnAddedComponents(entity, addedComponentTypes);
             }
         }
     }
@@ -412,17 +415,6 @@ namespace Theraot.ECS.Mantle.Core
             return true;
         }
 
-        public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
-        {
-            if (_log == null)
-            {
-                return false;
-            }
-
-            _log.Add(() => SetComponents(entity, componentTypes, componentSelector));
-            return true;
-        }
-
         public bool BufferUnsetComponent(TEntity entity, IList<TComponentType> componentTypes)
         {
             if (_log == null)
@@ -464,6 +456,20 @@ namespace Theraot.ECS.Mantle.Core
             {
                 action();
             }
+        }
+    }
+
+    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
+    {
+        public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        {
+            if (_log == null)
+            {
+                return false;
+            }
+
+            _log.Add(() => SetComponents(entity, componentTypes, componentSelector));
+            return true;
         }
     }
 }

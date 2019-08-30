@@ -694,14 +694,6 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        private static IEnumerable<int> Operation(IEnumerable<Pair> paired, Func<Pair, int> operation)
-        {
-            foreach (var pair in paired)
-            {
-                yield return operation(pair);
-            }
-        }
-
         private static IEnumerable<Pair> Paired(FlagArray left, FlagArray right, PairMode pairMode, out int capacity)
         {
             var settings = new IterationSettings(pairMode, left, right);
@@ -775,6 +767,17 @@ namespace Theraot.Collections.Specialized
             {
                 Left = left;
                 Right = right;
+            }
+        }
+    }
+
+    public sealed partial class FlagArray
+    {
+        private static IEnumerable<int> Operation(IEnumerable<Pair> paired, Func<Pair, int> operation)
+        {
+            foreach (var pair in paired)
+            {
+                yield return operation(pair);
             }
         }
     }

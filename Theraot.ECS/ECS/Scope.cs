@@ -62,21 +62,6 @@ namespace Theraot.ECS
             _mantle.SetComponents(entity, components.Keys, type => components[type]);
         }
 
-        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
-        {
-            if (componentTypes == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypes));
-            }
-
-            if (componentSelector == null)
-            {
-                throw new ArgumentNullException(nameof(componentSelector));
-            }
-
-            _mantle.SetComponents(entity, componentTypes, componentSelector);
-        }
-
         public void SetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, IList<TComponent> components)
         {
             if (componentTypes == null)
@@ -126,6 +111,24 @@ namespace Theraot.ECS
         public void UnsetComponents(TEntity entity, params TComponentType[] componentTypes)
         {
             _mantle.UnsetComponents(entity, componentTypes);
+        }
+    }
+
+    public sealed partial class Scope<TEntity, TComponentType>
+    {
+        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        {
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
+
+            if (componentSelector == null)
+            {
+                throw new ArgumentNullException(nameof(componentSelector));
+            }
+
+            _mantle.SetComponents(entity, componentTypes, componentSelector);
         }
     }
 
