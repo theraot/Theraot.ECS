@@ -1,67 +1,153 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable IDE0041 // Usar comprobación "is null"
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace Theraot
 {
-    internal class HashSet<T> : IEnumerable<T>
+    internal class HashSet<T> : ICollection<T>
     {
-        public HashSet(IEqualityComparer<T> entityEqualityComparer)
+        private readonly Dictionary<T, object> _dictionary;
+        private bool _containsNull;
+
+        public HashSet(IEqualityComparer<T> equalityComparer)
         {
-            throw new System.NotImplementedException();
+            _dictionary = new Dictionary<T, object>(equalityComparer ?? EqualityComparer<T>.Default);
         }
 
         public HashSet()
         {
-            throw new System.NotImplementedException();
+            _dictionary = new Dictionary<T, object>(EqualityComparer<T>.Default);
         }
 
-        public int Count { get; }
+        public int Count => _dictionary.Count + (_containsNull ? 0 : 1);
+
+        bool ICollection<T>.IsReadOnly => false;
+
+        public void Add(T item)
+        {
+            if (ReferenceEquals(item, null))
+            {
+                _containsNull = true;
+            }
+            else
+            {
+                _dictionary.Add(item, null);
+            }
+        }
+
+        public void Clear()
+        {
+            _dictionary.Clear();
+            _containsNull = false;
+        }
 
         public bool Contains(T item)
         {
-            throw new System.NotImplementedException();
+            return ReferenceEquals(item, null) ? _containsNull : _dictionary.ContainsKey(item);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            throw new System.NotImplementedException();
+            if (_containsNull)
+            {
+                array[arrayIndex] = default;
+                _dictionary.Keys.CopyTo(array, arrayIndex + 1);
+            }
+            else
+            {
+                _dictionary.Keys.CopyTo(array, arrayIndex);
+            }
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            if (_containsNull)
+            {
+                yield return default;
+            }
+            foreach (var entry in _dictionary.Keys)
+            {
+                yield return entry;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            return GetEnumerator();
         }
 
-        public void Add(T entity)
+        public bool IsSupersetOf(IEnumerable<T> other)
         {
-            throw new System.NotImplementedException();
+            foreach (var item in EnumerableHelper.AsICollection(other))
+            {
+                if (!Contains(item))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
-        public void Remove(T entity)
+        public bool Overlaps(IEnumerable<T> other)
         {
-            throw new System.NotImplementedException();
+            foreach (var entry in other)
+            {
+                if (Contains(entry))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
-        public bool IsSupersetOf(HashSet<T> other)
+        public bool Remove(T item)
         {
-            throw new System.NotImplementedException();
+            if (!ReferenceEquals(item, null))
+            {
+                return _dictionary.Remove(item);
+            }
+            if (!_containsNull)
+            {
+                return false;
+            }
+            _containsNull = false;
+            return true;
         }
 
-        public bool SetEquals(HashSet<T> hashSet)
+        public bool SetEquals(HashSet<T> other)
         {
-            throw new System.NotImplementedException();
-        }
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
 
-        public bool Overlaps(IEnumerable<T> componentTypes)
-        {
-            throw new System.NotImplementedException();
+            if (_containsNull != other._containsNull)
+            {
+                return false;
+            }
+
+            foreach (var entry in other._dictionary.Keys)
+            {
+                if (!Contains(entry))
+                {
+                    return false;
+                }
+            }
+            foreach (var entry in _dictionary.Keys)
+            {
+                if (!other.Contains(entry))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

@@ -30,6 +30,10 @@ namespace Theraot.ECS
 
         public void CopyTo(TEntity[] array, int arrayIndex)
         {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
             _wrapped.CopyTo(array, arrayIndex);
         }
 
