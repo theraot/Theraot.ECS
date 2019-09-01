@@ -110,6 +110,7 @@ namespace Theraot.ECS.Mantle
 
         private void Core_AddedComponents(object sender, EntityComponentsChangeEventArgs<TEntity, TComponentType> args)
         {
+            var _ = sender;
             var allComponentTypes = _core.GetComponentTypes(args.Entity);
             _componentTypeManager.Add(allComponentTypes, args.ComponentTypes);
             UpdateEntitiesByQueryOnAddedComponents(args.Entity, allComponentTypes, args.ComponentTypes);
@@ -117,6 +118,7 @@ namespace Theraot.ECS.Mantle
 
         private void Core_RemovedComponents(object sender, EntityComponentsChangeEventArgs<TEntity, TComponentType> args)
         {
+            var _ = sender;
             var allComponentTypes = _core.GetComponentTypes(args.Entity);
             _componentTypeManager.Remove(allComponentTypes, args.ComponentTypes);
             UpdateEntitiesByQueryOnRemoveComponents(args.Entity, allComponentTypes, args.ComponentTypes);

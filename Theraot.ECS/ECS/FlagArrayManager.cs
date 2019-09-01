@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable CC0091
+
+using System;
 using System.Collections.Generic;
 using ComponentType = System.Int32;
 using ComponentTypeSet = Theraot.Collections.Specialized.FlagArray;
