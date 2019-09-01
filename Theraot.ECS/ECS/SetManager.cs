@@ -14,7 +14,7 @@ using ComponentTypeSet = System.Collections.Generic.HashSet<string>;
 
 namespace Theraot.ECS
 {
-    public sealed class SetManager : IComponentTypeManager<ComponentType, ComponentTypeSet>, IEqualityComparer<ComponentType>, IEqualityComparer<ComponentTypeSet>
+    public sealed partial class SetManager : IComponentTypeManager<ComponentType, ComponentTypeSet>, IEqualityComparer<ComponentType>, IEqualityComparer<ComponentTypeSet>
     {
         public IEqualityComparer<string> ComponentTypEqualityComparer => this;
 
@@ -70,6 +70,11 @@ namespace Theraot.ECS
             return new HashSet<ComponentType>();
         }
 
+        public bool Equals(string x, string y)
+        {
+            return EqualityComparer<string>.Default.Equals(x, y);
+        }
+
         bool IEqualityComparer<ComponentTypeSet>.Equals(ComponentTypeSet x, ComponentTypeSet y)
         {
             if (x == y)
@@ -85,11 +90,6 @@ namespace Theraot.ECS
             return x.SetEquals(y);
         }
 
-        public bool Equals(string x, string y)
-        {
-            return EqualityComparer<string>.Default.Equals(x, y);
-        }
-
         int IEqualityComparer<ComponentTypeSet>.GetHashCode(ComponentTypeSet obj)
         {
             if (obj == null)
@@ -98,20 +98,6 @@ namespace Theraot.ECS
             }
 
             return obj.GetHashCode();
-        }
-
-        public int GetHashCode(string obj)
-        {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
-
-#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
-            return obj.GetHashCode();
-#else
-            return obj.GetHashCode(StringComparison.OrdinalIgnoreCase);
-#endif
         }
 
         bool IComponentTypeManager<string, ComponentTypeSet>.IsEmpty(ComponentTypeSet componentTypeSet)
@@ -172,4 +158,36 @@ namespace Theraot.ECS
             }
         }
     }
+
+#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
+
+    public sealed partial class SetManager
+    {
+        public int GetHashCode(string obj)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            return obj.GetHashCode();
+        }
+    }
+
+#else
+
+    public sealed partial class SetManager
+    {
+        public int GetHashCode(string obj)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            return obj.GetHashCode(StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+#endif
 }
