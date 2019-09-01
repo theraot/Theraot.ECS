@@ -16,7 +16,7 @@ namespace Theraot.ECS
 {
     public sealed partial class SetManager : IComponentTypeManager<ComponentType, ComponentTypeSet>, IEqualityComparer<ComponentType>, IEqualityComparer<ComponentTypeSet>
     {
-        public IEqualityComparer<string> ComponentTypEqualityComparer => this;
+        IEqualityComparer<string> IComponentTypeManager<string, ComponentTypeSet>.ComponentTypEqualityComparer => this;
 
         IEqualityComparer<ComponentTypeSet> IComponentTypeManager<string, ComponentTypeSet>.ComponentTypSetEqualityComparer => this;
 
@@ -36,6 +36,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentTypes));
             }
+
             if (componentTypeSet == null)
             {
                 throw new ArgumentNullException(nameof(componentTypeSet));
@@ -53,6 +54,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentTypeSet));
             }
+
             return componentTypeSet.Count != 0 && componentTypeSet.Contains(componentType);
         }
 
@@ -62,6 +64,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentTypeSet));
             }
+
             return componentTypeSet.IsSupersetOf(other);
         }
 
@@ -106,6 +109,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentTypeSet));
             }
+
             return componentTypeSet.Count == 0;
         }
 
@@ -115,6 +119,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentTypeSet));
             }
+
             return componentTypeSet.Count != 0 && componentTypeSet.Overlaps(componentTypes);
         }
 
@@ -124,10 +129,12 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentTypeSetA));
             }
+
             if (componentTypeSetB == null)
             {
                 throw new ArgumentNullException(nameof(componentTypeSetA));
             }
+
             return componentTypeSetA.Count != 0 && (componentTypeSetA.Count > componentTypeSetB.Count ? componentTypeSetA.Overlaps(componentTypeSetB) : componentTypeSetB.Overlaps(componentTypeSetA));
         }
 
@@ -147,6 +154,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentTypeSet));
             }
+
             if (componentTypes == null)
             {
                 throw new ArgumentNullException(nameof(componentTypes));
