@@ -34,11 +34,6 @@ namespace Theraot.ECS.Mantle.Core
             return this;
         }
 
-        public Type GetRegisteredComponentType(TComponentType componentType)
-        {
-            return _globalComponentStorage.GetRegisteredComponentType(componentType);
-        }
-
         public bool RegisterEntity(TEntity entity)
         {
             if (_componentsByEntity.ContainsKey(entity))
@@ -94,11 +89,6 @@ namespace Theraot.ECS.Mantle.Core
 
             component = default;
             return false;
-        }
-
-        public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
-        {
-            return _globalComponentStorage.TryRegisterComponentType<TComponent>(componentType);
         }
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)

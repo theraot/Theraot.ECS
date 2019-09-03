@@ -9,15 +9,11 @@ namespace Theraot.ECS.Mantle.Core
 
         event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> RemovedComponents;
 
-        Type GetRegisteredComponentType(TComponentType componentType);
-
         bool RegisterEntity(TEntity entity);
 
         void SetComponent<TComponent>(TEntity entity, TComponentType type, TComponent component);
 
         bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component);
-
-        bool TryRegisterComponentType<TComponent>(TComponentType componentType);
 
         void UnsetComponent(TEntity entity, TComponentType componentType);
 

@@ -18,18 +18,19 @@ namespace Theraot.ECS
                 entityEqualityComparer = EqualityComparer<TEntity>.Default;
             }
 
+            var globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypeManager.ComponentTypEqualityComparer);
             var core = new Core<TEntity, TComponentType>
             (
                 componentTypeManager.ComponentTypEqualityComparer,
                 entityEqualityComparer,
-                new GlobalComponentStorage<TComponentType>(componentTypeManager.ComponentTypEqualityComparer)
+                globalComponentStorage
             );
             var mantle = new Mantle<TEntity, TComponentType, TComponentTypeSet>
             (
                 entityEqualityComparer,
                 componentTypeManager
             );
-            return new Scope<TEntity, TComponentType>(mantle, core);
+            return new Scope<TEntity, TComponentType>(mantle, core, globalComponentStorage);
         }
     }
 
@@ -37,11 +38,13 @@ namespace Theraot.ECS
     {
         private readonly IMantle<TEntity, TComponentType> _mantle;
         private readonly ICore<TEntity, TComponentType> _core;
+        private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
 
-        internal Scope(IMantle<TEntity, TComponentType> mantle, ICore<TEntity, TComponentType> core)
+        internal Scope(IMantle<TEntity, TComponentType> mantle, ICore<TEntity, TComponentType> core, GlobalComponentStorage<TComponentType> globalComponentStorage)
         {
             _mantle = mantle;
             _core = core;
+            _globalComponentStorage = globalComponentStorage;
             mantle.SubscribeToCore(core);
         }
 
@@ -62,7 +65,7 @@ namespace Theraot.ECS
 
         public Type GetRegisteredComponentType(TComponentType componentType)
         {
-            return _core.GetRegisteredComponentType(componentType);
+            return _globalComponentStorage.GetRegisteredComponentType(componentType);
         }
 
         public bool RegisterEntity(TEntity entity)
@@ -118,7 +121,7 @@ namespace Theraot.ECS
 
         public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
         {
-            return _core.TryRegisterComponentType<TComponent>(componentType);
+            return _globalComponentStorage.TryRegisterComponentType<TComponent>(componentType);
         }
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)
