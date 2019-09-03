@@ -18,22 +18,12 @@ namespace Theraot.ECS
                 entityEqualityComparer = EqualityComparer<TEntity>.Default;
             }
 
-            var entityComponentEventDispatcher = new EntityComponentEventDispatcher<TEntity, TComponentType>();
             var mantle = new Mantle<TEntity, TComponentType, TComponentTypeSet>
             (
                 entityEqualityComparer,
                 componentTypeManager
             );
-            mantle.SubscribeTo(entityComponentEventDispatcher);
-            var globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypeManager.ComponentTypEqualityComparer);
-            var core = new Core<TEntity, TComponentType>
-            (
-                componentTypeManager.ComponentTypEqualityComparer,
-                entityEqualityComparer,
-                globalComponentStorage,
-                entityComponentEventDispatcher
-            );
-            return new Scope<TEntity, TComponentType>(mantle, core, globalComponentStorage);
+            return new Scope<TEntity, TComponentType>(mantle, componentTypeManager.ComponentTypEqualityComparer, entityEqualityComparer);
         }
     }
 
@@ -43,11 +33,19 @@ namespace Theraot.ECS
         private readonly ICore<TEntity, TComponentType> _core;
         private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
 
-        internal Scope(IMantle<TEntity, TComponentType> mantle, ICore<TEntity, TComponentType> core, GlobalComponentStorage<TComponentType> globalComponentStorage)
+        internal Scope(IMantle<TEntity, TComponentType> mantle, IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer)
         {
             _mantle = mantle;
-            _core = core;
-            _globalComponentStorage = globalComponentStorage;
+            var entityComponentEventDispatcher = new EntityComponentEventDispatcher<TEntity, TComponentType>();
+            mantle.SubscribeTo(entityComponentEventDispatcher);
+            _globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypeEqualityComparer);
+            _core = new Core<TEntity, TComponentType>
+            (
+                componentTypeEqualityComparer,
+                entityEqualityComparer,
+                _globalComponentStorage,
+                entityComponentEventDispatcher
+            );
         }
 
         public TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType)
