@@ -12,7 +12,9 @@ namespace Theraot.ECS.Mantle
     {
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
-        private readonly ICore<TEntity, TComponentType, TComponentTypeSet> _core;
+        private readonly Dictionary<TEntity, TComponentTypeSet> _componentTypesByEntity;
+
+        private readonly ICore<TEntity, TComponentType> _core;
 
         private readonly Dictionary<QueryId, EntityCollection<TEntity, TComponentType>> _entitiesByQueryId;
 
@@ -30,9 +32,10 @@ namespace Theraot.ECS.Mantle
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
             _entitiesByQueryId = new Dictionary<QueryId, EntityCollection<TEntity, TComponentType>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypEqualityComparer);
-            _core = new Core<TEntity, TComponentType, TComponentTypeSet>(componentTypEqualityComparer, _entityEqualityComparer);
+            _core = new Core<TEntity, TComponentType>(componentTypEqualityComparer, _entityEqualityComparer);
             _core.AddedComponents += Core_AddedComponents;
             _core.RemovedComponents += Core_RemovedComponents;
+            _componentTypesByEntity = new Dictionary<TEntity, TComponentTypeSet>(_entityEqualityComparer);
         }
 
         public IComponentReferenceAccess<TEntity, TComponentType> GetComponentRef()
@@ -64,7 +67,7 @@ namespace Theraot.ECS.Mantle
 
             foreach (var entity in _core.AllEntities)
             {
-                var allComponentTypes = _core.GetComponentTypes(entity);
+                var allComponentTypes = _componentTypesByEntity[entity];
                 if (_queryManager.QueryCheck(allComponentTypes, queryId) == QueryCheckResult.Add)
                 {
                     entityCollection.Add(entity);
@@ -80,7 +83,13 @@ namespace Theraot.ECS.Mantle
 
         public bool RegisterEntity(TEntity entity)
         {
-            return _core.RegisterEntity(entity, _componentTypeManager.Create());
+            if (!_core.RegisterEntity(entity))
+            {
+                return false;
+            }
+
+            _componentTypesByEntity[entity] = _componentTypeManager.Create();
+            return true;
         }
 
         public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
@@ -111,7 +120,7 @@ namespace Theraot.ECS.Mantle
         private void Core_AddedComponents(object sender, EntityComponentsChangeEventArgs<TEntity, TComponentType> args)
         {
             var _ = sender;
-            var allComponentTypes = _core.GetComponentTypes(args.Entity);
+            var allComponentTypes = _componentTypesByEntity[args.Entity];
             _componentTypeManager.Add(allComponentTypes, args.ComponentTypes);
             UpdateEntitiesByQueryOnAddedComponents(args.Entity, allComponentTypes, args.ComponentTypes);
         }
@@ -119,7 +128,7 @@ namespace Theraot.ECS.Mantle
         private void Core_RemovedComponents(object sender, EntityComponentsChangeEventArgs<TEntity, TComponentType> args)
         {
             var _ = sender;
-            var allComponentTypes = _core.GetComponentTypes(args.Entity);
+            var allComponentTypes = _componentTypesByEntity[args.Entity];
             _componentTypeManager.Remove(allComponentTypes, args.ComponentTypes);
             UpdateEntitiesByQueryOnRemoveComponents(args.Entity, allComponentTypes, args.ComponentTypes);
         }

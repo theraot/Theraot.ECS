@@ -14,9 +14,9 @@ using Action = System.Threading.ThreadStart;
 
 namespace Theraot.ECS.Mantle.Core
 {
-    internal partial class Core<TEntity, TComponentType, TComponentTypeSet> : ICore<TEntity, TComponentType, TComponentTypeSet>
+    internal partial class Core<TEntity, TComponentType> : ICore<TEntity, TComponentType>
     {
-        private readonly Dictionary<TEntity, EntityComponentStorage> _componentsByEntity;
+        private readonly Dictionary<TEntity, CompactDictionary<TComponentType, ComponentId>> _componentsByEntity;
 
         private readonly IComparer<TComponentType> _componentTypeComparer;
 
@@ -26,7 +26,7 @@ namespace Theraot.ECS.Mantle.Core
         {
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
             _globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypeEqualityComparer);
-            _componentsByEntity = new Dictionary<TEntity, EntityComponentStorage>(entityEqualityComparer);
+            _componentsByEntity = new Dictionary<TEntity, CompactDictionary<TComponentType, ComponentId>>(entityEqualityComparer);
             _addedComponent = new HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>>();
             _removedComponent = new HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>>();
         }
@@ -38,30 +38,22 @@ namespace Theraot.ECS.Mantle.Core
             return this;
         }
 
-        public TComponentTypeSet GetComponentTypes(TEntity entity)
-        {
-            return _componentsByEntity[entity].ComponentTypes;
-        }
-
         public Type GetRegisteredComponentType(TComponentType componentType)
         {
             return _globalComponentStorage.GetRegisteredComponentType(componentType);
         }
 
-        public bool RegisterEntity(TEntity entity, TComponentTypeSet componentTypes)
+        public bool RegisterEntity(TEntity entity)
         {
             if (_componentsByEntity.ContainsKey(entity))
             {
                 return false;
             }
-            var neo = new EntityComponentStorage
-            (
-                componentTypes,
-                new CompactDictionary<TComponentType, ComponentId>(_componentTypeComparer, 16)
-            );
+
+            var componentIndex = new CompactDictionary<TComponentType, ComponentId>(_componentTypeComparer, 16);
             try
             {
-                _componentsByEntity.Add(entity, neo);
+                _componentsByEntity.Add(entity, componentIndex);
                 return true;
             }
             catch (ArgumentException)
@@ -80,7 +72,7 @@ namespace Theraot.ECS.Mantle.Core
             var entityComponentStorage = _componentsByEntity[entity];
             if
             (
-                entityComponentStorage.ComponentIndex.Set
+                entityComponentStorage.Set
                 (
                     componentType,
                     key => _globalComponentStorage.AddComponent(component, key),
@@ -97,7 +89,7 @@ namespace Theraot.ECS.Mantle.Core
             if
             (
                 _componentsByEntity.TryGetValue(entity, out var entityComponentStorage)
-                && entityComponentStorage.ComponentIndex.TryGetValue(componentType, out var componentId)
+                && entityComponentStorage.TryGetValue(componentType, out var componentId)
                 && _globalComponentStorage.TryGetComponent(componentId, componentType, out component)
             )
             {
@@ -121,7 +113,7 @@ namespace Theraot.ECS.Mantle.Core
             }
 
             var entityComponentStorage = _componentsByEntity[entity];
-            if (!entityComponentStorage.ComponentIndex.Remove(componentType, out var removedComponentId))
+            if (!entityComponentStorage.Remove(componentType, out var removedComponentId))
             {
                 return;
             }
@@ -142,7 +134,7 @@ namespace Theraot.ECS.Mantle.Core
             foreach (var componentType in componentTypeList)
             {
                 var entityComponentStorage = _componentsByEntity[entity];
-                if (!entityComponentStorage.ComponentIndex.Remove(componentType, out var removedComponentId))
+                if (!entityComponentStorage.Remove(componentType, out var removedComponentId))
                 {
                     continue;
                 }
@@ -156,24 +148,11 @@ namespace Theraot.ECS.Mantle.Core
                 OnRemovedComponents(entity, removedComponentTypes);
             }
         }
-
-        private sealed class EntityComponentStorage
-        {
-            public readonly CompactDictionary<TComponentType, ComponentId> ComponentIndex;
-
-            public readonly TComponentTypeSet ComponentTypes;
-
-            public EntityComponentStorage(TComponentTypeSet componentTypes, CompactDictionary<TComponentType, ComponentId> componentIndex)
-            {
-                ComponentIndex = componentIndex;
-                ComponentTypes = componentTypes;
-            }
-        }
     }
 
 #if LESSTHAN_NET35
 
-    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
+    internal partial class Core<TEntity, TComponentType>
     {
         public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
         {
@@ -190,7 +169,7 @@ namespace Theraot.ECS.Mantle.Core
             {
                 if
                 (
-                    entityComponentStorage.ComponentIndex.Set
+                    entityComponentStorage.Set
                     (
                         componentType,
                         key => _globalComponentStorage.AddComponent(componentSelector(key), key),
@@ -211,7 +190,7 @@ namespace Theraot.ECS.Mantle.Core
 
 #else
 
-    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
+    internal partial class Core<TEntity, TComponentType>
     {
         public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
@@ -228,7 +207,7 @@ namespace Theraot.ECS.Mantle.Core
             {
                 if
                 (
-                    entityComponentStorage.ComponentIndex.Set
+                    entityComponentStorage.Set
                     (
                         componentType,
                         key => _globalComponentStorage.AddComponent(componentSelector(key), key),
@@ -249,7 +228,7 @@ namespace Theraot.ECS.Mantle.Core
 
 #endif
 
-    internal partial class Core<TEntity, TComponentType, TComponentTypeSet> : IComponentReferenceAccess<TEntity, TComponentType>
+    internal partial class Core<TEntity, TComponentType> : IComponentReferenceAccess<TEntity, TComponentType>
     {
         public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
         {
@@ -258,7 +237,7 @@ namespace Theraot.ECS.Mantle.Core
                 throw new KeyNotFoundException("Entity not found");
             }
 
-            if (!entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId))
+            if (!entityComponentStorage.TryGetValue(componentType1, out var componentId))
             {
                 throw new KeyNotFoundException("ComponentType not found on the entity");
             }
@@ -286,8 +265,8 @@ namespace Theraot.ECS.Mantle.Core
 
             if
             (
-                !entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType2, out var componentId1)
+                !entityComponentStorage.TryGetValue(componentType1, out var componentId)
+                || !entityComponentStorage.TryGetValue(componentType2, out var componentId1)
             )
             {
                 throw new KeyNotFoundException("ComponentType not found on the entity");
@@ -317,9 +296,9 @@ namespace Theraot.ECS.Mantle.Core
 
             if
             (
-                !entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType2, out var componentId1)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType3, out var componentId2)
+                !entityComponentStorage.TryGetValue(componentType1, out var componentId)
+                || !entityComponentStorage.TryGetValue(componentType2, out var componentId1)
+                || !entityComponentStorage.TryGetValue(componentType3, out var componentId2)
             )
             {
                 throw new KeyNotFoundException("ComponentType not found on the entity");
@@ -350,10 +329,10 @@ namespace Theraot.ECS.Mantle.Core
 
             if
             (
-                !entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType2, out var componentId1)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType3, out var componentId2)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType4, out var componentId3)
+                !entityComponentStorage.TryGetValue(componentType1, out var componentId)
+                || !entityComponentStorage.TryGetValue(componentType2, out var componentId1)
+                || !entityComponentStorage.TryGetValue(componentType3, out var componentId2)
+                || !entityComponentStorage.TryGetValue(componentType4, out var componentId3)
             )
             {
                 throw new KeyNotFoundException("ComponentType not found on the entity");
@@ -385,11 +364,11 @@ namespace Theraot.ECS.Mantle.Core
 
             if
             (
-                !entityComponentStorage.ComponentIndex.TryGetValue(componentType1, out var componentId)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType2, out var componentId1)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType3, out var componentId2)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType4, out var componentId3)
-                || !entityComponentStorage.ComponentIndex.TryGetValue(componentType5, out var componentId4)
+                !entityComponentStorage.TryGetValue(componentType1, out var componentId)
+                || !entityComponentStorage.TryGetValue(componentType2, out var componentId1)
+                || !entityComponentStorage.TryGetValue(componentType3, out var componentId2)
+                || !entityComponentStorage.TryGetValue(componentType4, out var componentId3)
+                || !entityComponentStorage.TryGetValue(componentType5, out var componentId4)
             )
             {
                 throw new KeyNotFoundException("ComponentType not found on the entity");
@@ -414,7 +393,7 @@ namespace Theraot.ECS.Mantle.Core
         }
     }
 
-    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
+    internal partial class Core<TEntity, TComponentType>
     {
         private readonly HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>> _addedComponent;
         private readonly HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>> _removedComponent;
@@ -448,7 +427,7 @@ namespace Theraot.ECS.Mantle.Core
         }
     }
 
-    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
+    internal partial class Core<TEntity, TComponentType>
     {
         private List<Action> _log;
 
@@ -509,7 +488,7 @@ namespace Theraot.ECS.Mantle.Core
 
 #if LESSTHAN_NET35
 
-    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
+    internal partial class Core<TEntity, TComponentType>
     {
         public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
         {
@@ -525,7 +504,7 @@ namespace Theraot.ECS.Mantle.Core
 
 #else
 
-    internal partial class Core<TEntity, TComponentType, TComponentTypeSet>
+    internal partial class Core<TEntity, TComponentType>
     {
         public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
