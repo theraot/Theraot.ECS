@@ -17,8 +17,6 @@ namespace Theraot.ECS
         {
             _componentRefScope = componentRefScope;
             _wrapped = new HashSet<TEntity>(entityEqualityComparer);
-            _removedEntity = new HashSet<EventHandler<EntityCollectionChangeEventArgs<TEntity>>>();
-            _addedEntity = new HashSet<EventHandler<EntityCollectionChangeEventArgs<TEntity>>>();
         }
 
         public int Count => _wrapped.Count;
@@ -60,35 +58,18 @@ namespace Theraot.ECS
 
     public sealed partial class EntityCollection<TEntity, TComponentType>
     {
-        private readonly HashSet<EventHandler<EntityCollectionChangeEventArgs<TEntity>>> _addedEntity;
-        private readonly HashSet<EventHandler<EntityCollectionChangeEventArgs<TEntity>>> _removedEntity;
+        public event EventHandler<EntityCollectionChangeEventArgs<TEntity>> AddedEntity;
 
-        public event EventHandler<EntityCollectionChangeEventArgs<TEntity>> AddedEntity
-        {
-            add => _addedEntity.Add(value);
-            remove => _addedEntity.Remove(value);
-        }
-
-        public event EventHandler<EntityCollectionChangeEventArgs<TEntity>> RemovedEntity
-        {
-            add => _removedEntity.Add(value);
-            remove => _removedEntity.Remove(value);
-        }
+        public event EventHandler<EntityCollectionChangeEventArgs<TEntity>> RemovedEntity;
 
         private void OnAddedEntity(TEntity entity)
         {
-            foreach (var handler in _addedEntity)
-            {
-                handler.Invoke(this, EntityCollectionChangeEventArgs.CreateAdd(entity));
-            }
+            AddedEntity?.Invoke(this, EntityCollectionChangeEventArgs.CreateAdd(entity));
         }
 
         private void OnRemovedEntity(TEntity entity)
         {
-            foreach (var handler in _removedEntity)
-            {
-                handler.Invoke(this, EntityCollectionChangeEventArgs.CreateRemove(entity));
-            }
+            RemovedEntity?.Invoke(this, EntityCollectionChangeEventArgs.CreateRemove(entity));
         }
     }
 
