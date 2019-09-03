@@ -9,13 +9,13 @@ namespace Theraot.ECS
 {
     public sealed partial class EntityCollection<TEntity, TComponentType> : ICollection<TEntity>
     {
-        private readonly IComponentReferenceAccess<TEntity, TComponentType> _componentRefScope;
+        private readonly IComponentReferenceAccess<TEntity, TComponentType> _componentReferenceAccess;
 
         private readonly HashSet<TEntity> _wrapped;
 
-        internal EntityCollection(IComponentReferenceAccess<TEntity, TComponentType> componentRefScope, IEqualityComparer<TEntity> entityEqualityComparer)
+        internal EntityCollection(IComponentReferenceAccess<TEntity, TComponentType> componentReferenceAccess, IEqualityComparer<TEntity> entityEqualityComparer)
         {
-            _componentRefScope = componentRefScope;
+            _componentReferenceAccess = componentReferenceAccess;
             _wrapped = new HashSet<TEntity>(entityEqualityComparer);
         }
 
@@ -107,7 +107,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                _componentRefScope.With(entity, componentType1, callback);
+                _componentReferenceAccess.With(entity, componentType1, callback);
             }
         }
 
@@ -125,7 +125,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                _componentRefScope.With(entity, componentType1, componentType2, callback);
+                _componentReferenceAccess.With(entity, componentType1, componentType2, callback);
             }
         }
 
@@ -144,7 +144,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                _componentRefScope.With(entity, componentType1, componentType2, componentType3, callback);
+                _componentReferenceAccess.With(entity, componentType1, componentType2, componentType3, callback);
             }
         }
 
@@ -164,7 +164,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                _componentRefScope.With(entity, componentType1, componentType2, componentType3, componentType4, callback);
+                _componentReferenceAccess.With(entity, componentType1, componentType2, componentType3, componentType4, callback);
             }
         }
 
@@ -185,7 +185,7 @@ namespace Theraot.ECS
 
             foreach (var entity in _wrapped)
             {
-                _componentRefScope.With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
+                _componentReferenceAccess.With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
             }
         }
     }

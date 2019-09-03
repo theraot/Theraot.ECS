@@ -32,7 +32,7 @@ namespace Theraot.ECS.Mantle
             _componentTypesByEntity = new Dictionary<TEntity, TComponentTypeSet>(_entityEqualityComparer);
         }
 
-        public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none, IComponentReferenceAccess<TEntity, TComponentType> componentRefScope)
+        public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none, IComponentReferenceAccess<TEntity, TComponentType> componentReferenceAccess)
         {
             var allAsICollection = EnumerableHelper.AsICollection(all);
             var anyAsICollection = EnumerableHelper.AsICollection(any);
@@ -40,7 +40,7 @@ namespace Theraot.ECS.Mantle
             var queryId = _queryManager.CreateQuery(allAsICollection, anyAsICollection, noneAsICollection);
             return _entitiesByQueryId.TryGetValue(queryId, out var entityCollection)
                 ? entityCollection
-                : CreateEntityCollection(EnumerableHelper.Concat(allAsICollection, anyAsICollection, noneAsICollection), queryId, componentRefScope);
+                : CreateEntityCollection(EnumerableHelper.Concat(allAsICollection, anyAsICollection, noneAsICollection), queryId, componentReferenceAccess);
         }
 
         public void RegisterEntity(TEntity entity)
@@ -48,25 +48,15 @@ namespace Theraot.ECS.Mantle
             _componentTypesByEntity[entity] = _componentTypeManager.Create();
         }
 
-        private void Core_AddedComponents(object sender, EntityComponentsChangeEventArgs<TEntity, TComponentType> args)
+        public void SubscribeTo(EntityComponentEventDispatcher<TEntity, TComponentType> entityComponentEventDispatcher)
         {
-            var _ = sender;
-            var allComponentTypes = _componentTypesByEntity[args.Entity];
-            _componentTypeManager.Add(allComponentTypes, args.ComponentTypes);
-            UpdateEntitiesByQueryOnAddedComponents(args.Entity, allComponentTypes, args.ComponentTypes);
+            entityComponentEventDispatcher.AddedComponents += OnAddedComponents;
+            entityComponentEventDispatcher.RemovedComponents += OnRemovedComponents;
         }
 
-        private void Core_RemovedComponents(object sender, EntityComponentsChangeEventArgs<TEntity, TComponentType> args)
+        private EntityCollection<TEntity, TComponentType> CreateEntityCollection(IEnumerable<TComponentType> componentTypes, int queryId, IComponentReferenceAccess<TEntity, TComponentType> componentReferenceAccess)
         {
-            var _ = sender;
-            var allComponentTypes = _componentTypesByEntity[args.Entity];
-            _componentTypeManager.Remove(allComponentTypes, args.ComponentTypes);
-            UpdateEntitiesByQueryOnRemoveComponents(args.Entity, allComponentTypes, args.ComponentTypes);
-        }
-
-        private EntityCollection<TEntity, TComponentType> CreateEntityCollection(IEnumerable<TComponentType> componentTypes, int queryId, IComponentReferenceAccess<TEntity, TComponentType> componentRefScope)
-        {
-            var entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(componentRefScope, _entityEqualityComparer);
+            var entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(componentReferenceAccess, _entityEqualityComparer);
             foreach (var componentType in componentTypes)
             {
                 if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
@@ -112,10 +102,20 @@ namespace Theraot.ECS.Mantle
             return set;
         }
 
-        public void SubscribeTo(EntityComponentEventDispatcher<TEntity, TComponentType> entityComponentEventDispatcher)
+        private void OnAddedComponents(object sender, EntityComponentsChangeEventArgs<TEntity, TComponentType> args)
         {
-            entityComponentEventDispatcher.AddedComponents += Core_AddedComponents;
-            entityComponentEventDispatcher.RemovedComponents += Core_RemovedComponents;
+            var _ = sender;
+            var allComponentTypes = _componentTypesByEntity[args.Entity];
+            _componentTypeManager.Add(allComponentTypes, args.ComponentTypes);
+            UpdateEntitiesByQueryOnAddedComponents(args.Entity, allComponentTypes, args.ComponentTypes);
+        }
+
+        private void OnRemovedComponents(object sender, EntityComponentsChangeEventArgs<TEntity, TComponentType> args)
+        {
+            var _ = sender;
+            var allComponentTypes = _componentTypesByEntity[args.Entity];
+            _componentTypeManager.Remove(allComponentTypes, args.ComponentTypes);
+            UpdateEntitiesByQueryOnRemoveComponents(args.Entity, allComponentTypes, args.ComponentTypes);
         }
 
         private void UpdateEntitiesByQueryOnAddedComponents(TEntity entity, TComponentTypeSet allComponentsTypes, IList<TComponentType> addedComponentTypes)
