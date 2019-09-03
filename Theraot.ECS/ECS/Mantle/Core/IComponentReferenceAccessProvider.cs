@@ -2,6 +2,6 @@
 {
     internal interface IComponentReferenceAccessProvider<TEntity, in TComponentType>
     {
-        IComponentReferenceAccess<TEntity, TComponentType> GetComponentRef();
+        IComponentReferenceAccess<TEntity, TComponentType> GetComponentReferenceAccess();
     }
 }

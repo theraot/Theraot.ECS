@@ -32,7 +32,7 @@ namespace Theraot.ECS.Mantle.Core
             _entityComponentEventDispatcher = entityComponentEventDispatcher;
         }
 
-        public IComponentReferenceAccess<TEntity, TComponentType> GetComponentRef()
+        public IComponentReferenceAccess<TEntity, TComponentType> GetComponentReferenceAccess()
         {
             return this;
         }
