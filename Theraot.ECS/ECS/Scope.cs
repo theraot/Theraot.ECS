@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Theraot.ECS.Mantle;
+using Theraot.ECS.Mantle.Core;
 
 namespace Theraot.ECS
 {
@@ -8,7 +9,26 @@ namespace Theraot.ECS
     {
         public static Scope<TEntity, TComponentType> CreateScope<TEntity, TComponentType, TComponentTypeSet>(IEqualityComparer<TEntity> entityEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
-            var mantle = new Mantle<TEntity, TComponentType, TComponentTypeSet>(entityEqualityComparer, componentTypeManager);
+            if (componentTypeManager == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypeManager));
+            }
+            if (entityEqualityComparer == null)
+            {
+                entityEqualityComparer = EqualityComparer<TEntity>.Default;
+            }
+
+            var core = new Core<TEntity, TComponentType>
+            (
+                componentTypeManager.ComponentTypEqualityComparer,
+                entityEqualityComparer
+            );
+            var mantle = new Mantle<TEntity, TComponentType, TComponentTypeSet>
+            (
+                entityEqualityComparer,
+                componentTypeManager,
+                core
+            );
             return new Scope<TEntity, TComponentType>(mantle);
         }
     }

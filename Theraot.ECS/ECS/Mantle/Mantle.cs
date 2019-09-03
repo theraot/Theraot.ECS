@@ -24,15 +24,15 @@ namespace Theraot.ECS.Mantle
 
         private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
-        internal Mantle(IEqualityComparer<TEntity> entityEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
+        internal Mantle(IEqualityComparer<TEntity> entityEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager, ICore<TEntity, TComponentType> core)
         {
             _entityEqualityComparer = entityEqualityComparer;
-            _componentTypeManager = componentTypeManager ?? throw new ArgumentNullException(nameof(componentTypeManager));
+            _componentTypeManager = componentTypeManager;
             var componentTypEqualityComparer = componentTypeManager.ComponentTypEqualityComparer;
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
             _entitiesByQueryId = new Dictionary<QueryId, EntityCollection<TEntity, TComponentType>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypEqualityComparer);
-            _core = new Core<TEntity, TComponentType>(componentTypEqualityComparer, _entityEqualityComparer);
+            _core = core;
             _core.AddedComponents += Core_AddedComponents;
             _core.RemovedComponents += Core_RemovedComponents;
             _componentTypesByEntity = new Dictionary<TEntity, TComponentTypeSet>(_entityEqualityComparer);
