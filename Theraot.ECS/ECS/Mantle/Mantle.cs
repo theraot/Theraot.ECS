@@ -49,31 +49,9 @@ namespace Theraot.ECS.Mantle
             var anyAsICollection = EnumerableHelper.AsICollection(any);
             var noneAsICollection = EnumerableHelper.AsICollection(none);
             var queryId = _queryManager.CreateQuery(allAsICollection, anyAsICollection, noneAsICollection);
-            if (_entitiesByQueryId.TryGetValue(queryId, out var entityCollection))
-            {
-                return entityCollection;
-            }
-            entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(GetComponentRef(), _entityEqualityComparer);
-            foreach (var componentType in EnumerableHelper.Concat(allAsICollection, anyAsICollection, noneAsICollection))
-            {
-                if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
-                {
-                    queryIds = new HashSet<QueryId>();
-                    _queryIdsByComponentType[componentType] = queryIds;
-                }
-
-                queryIds.Add(queryId);
-            }
-
-            foreach (var entity in _core.AllEntities)
-            {
-                var allComponentTypes = _componentTypesByEntity[entity];
-                if (_queryManager.QueryCheck(allComponentTypes, queryId) == QueryCheckResult.Add)
-                {
-                    entityCollection.Add(entity);
-                }
-            }
-            return entityCollection;
+            return _entitiesByQueryId.TryGetValue(queryId, out var entityCollection)
+                ? entityCollection
+                : CreateEntityCollection(EnumerableHelper.Concat(allAsICollection, anyAsICollection, noneAsICollection), queryId);
         }
 
         public Type GetRegisteredComponentType(TComponentType componentType)
@@ -131,6 +109,31 @@ namespace Theraot.ECS.Mantle
             var allComponentTypes = _componentTypesByEntity[args.Entity];
             _componentTypeManager.Remove(allComponentTypes, args.ComponentTypes);
             UpdateEntitiesByQueryOnRemoveComponents(args.Entity, allComponentTypes, args.ComponentTypes);
+        }
+
+        private EntityCollection<TEntity, TComponentType> CreateEntityCollection(IEnumerable<TComponentType> componentTypes, int queryId)
+        {
+            var entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(GetComponentRef(), _entityEqualityComparer);
+            foreach (var componentType in componentTypes)
+            {
+                if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
+                {
+                    queryIds = new HashSet<QueryId>();
+                    _queryIdsByComponentType[componentType] = queryIds;
+                }
+
+                queryIds.Add(queryId);
+            }
+
+            foreach (var entity in _core.AllEntities)
+            {
+                var allComponentTypes = _componentTypesByEntity[entity];
+                if (_queryManager.QueryCheck(allComponentTypes, queryId) == QueryCheckResult.Add)
+                {
+                    entityCollection.Add(entity);
+                }
+            }
+            return entityCollection;
         }
 
         private IEnumerable<QueryId> GetQueriesByComponentType(TComponentType componentType)
@@ -221,7 +224,6 @@ namespace Theraot.ECS.Mantle
     }
 
 #else
-
     internal sealed partial class Mantle<TEntity, TComponentType, TComponentTypeSet>
     {
         public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
