@@ -20,15 +20,15 @@ namespace Theraot.ECS.Mantle.Core
 
         private readonly IComparer<TComponentType> _componentTypeComparer;
 
-        private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
+        private readonly ComponentTypeRegistry<TComponentType> _componentTypeRegistry;
 
         private readonly EntityComponentEventDispatcher<TEntity, TComponentType> _entityComponentEventDispatcher;
 
-        public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer, GlobalComponentStorage<TComponentType> globalComponentStorage, EntityComponentEventDispatcher<TEntity, TComponentType> entityComponentEventDispatcher)
+        public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer, ComponentTypeRegistry<TComponentType> componentTypeRegistry, EntityComponentEventDispatcher<TEntity, TComponentType> entityComponentEventDispatcher)
         {
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
             _componentsByEntity = new Dictionary<TEntity, CompactDictionary<TComponentType, ComponentId>>(entityEqualityComparer);
-            _globalComponentStorage = globalComponentStorage;
+            _componentTypeRegistry = componentTypeRegistry;
             _entityComponentEventDispatcher = entityComponentEventDispatcher;
         }
 
@@ -69,8 +69,8 @@ namespace Theraot.ECS.Mantle.Core
                 entityComponentStorage.Set
                 (
                     componentType,
-                    key => _globalComponentStorage.AddComponent(component, key),
-                    pair => _globalComponentStorage.UpdateComponent(pair.Value, component, pair.Key)
+                    key => _componentTypeRegistry.AddComponent(component, key),
+                    pair => _componentTypeRegistry.UpdateComponent(pair.Value, component, pair.Key)
                 )
             )
             {
@@ -84,7 +84,7 @@ namespace Theraot.ECS.Mantle.Core
             (
                 _componentsByEntity.TryGetValue(entity, out var entityComponentStorage)
                 && entityComponentStorage.TryGetValue(componentType, out var componentId)
-                && _globalComponentStorage.TryGetComponent(componentId, componentType, out component)
+                && _componentTypeRegistry.TryGetComponent(componentId, componentType, out component)
             )
             {
                 return true;
@@ -107,7 +107,7 @@ namespace Theraot.ECS.Mantle.Core
                 return;
             }
 
-            _globalComponentStorage.RemoveComponent(removedComponentId, componentType);
+            _componentTypeRegistry.RemoveComponent(removedComponentId, componentType);
             _entityComponentEventDispatcher.NotifyRemovedComponents(entity, new[] { componentType });
         }
 
@@ -128,7 +128,7 @@ namespace Theraot.ECS.Mantle.Core
                     continue;
                 }
 
-                _globalComponentStorage.RemoveComponent(removedComponentId, componentType);
+                _componentTypeRegistry.RemoveComponent(removedComponentId, componentType);
                 removedComponentTypes.Add(componentType);
             }
 
@@ -158,7 +158,7 @@ namespace Theraot.ECS.Mantle.Core
             callback
             (
                 entity,
-                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1)
+                ref _componentTypeRegistry.GetComponentRef<TComponent1>(componentId, componentType1)
             );
 
             if (created)
@@ -188,8 +188,8 @@ namespace Theraot.ECS.Mantle.Core
             callback
             (
                 entity,
-                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1),
-                ref _globalComponentStorage.GetComponentRef<TComponent2>(componentId1, componentType2)
+                ref _componentTypeRegistry.GetComponentRef<TComponent1>(componentId, componentType1),
+                ref _componentTypeRegistry.GetComponentRef<TComponent2>(componentId1, componentType2)
             );
 
             if (created)
@@ -220,9 +220,9 @@ namespace Theraot.ECS.Mantle.Core
             callback
             (
                 entity,
-                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1),
-                ref _globalComponentStorage.GetComponentRef<TComponent2>(componentId1, componentType2),
-                ref _globalComponentStorage.GetComponentRef<TComponent3>(componentId2, componentType3)
+                ref _componentTypeRegistry.GetComponentRef<TComponent1>(componentId, componentType1),
+                ref _componentTypeRegistry.GetComponentRef<TComponent2>(componentId1, componentType2),
+                ref _componentTypeRegistry.GetComponentRef<TComponent3>(componentId2, componentType3)
             );
 
             if (created)
@@ -254,10 +254,10 @@ namespace Theraot.ECS.Mantle.Core
             callback
             (
                 entity,
-                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1),
-                ref _globalComponentStorage.GetComponentRef<TComponent2>(componentId1, componentType2),
-                ref _globalComponentStorage.GetComponentRef<TComponent3>(componentId2, componentType3),
-                ref _globalComponentStorage.GetComponentRef<TComponent4>(componentId3, componentType4)
+                ref _componentTypeRegistry.GetComponentRef<TComponent1>(componentId, componentType1),
+                ref _componentTypeRegistry.GetComponentRef<TComponent2>(componentId1, componentType2),
+                ref _componentTypeRegistry.GetComponentRef<TComponent3>(componentId2, componentType3),
+                ref _componentTypeRegistry.GetComponentRef<TComponent4>(componentId3, componentType4)
             );
 
             if (created)
@@ -290,11 +290,11 @@ namespace Theraot.ECS.Mantle.Core
             callback
             (
                 entity,
-                ref _globalComponentStorage.GetComponentRef<TComponent1>(componentId, componentType1),
-                ref _globalComponentStorage.GetComponentRef<TComponent2>(componentId1, componentType2),
-                ref _globalComponentStorage.GetComponentRef<TComponent3>(componentId2, componentType3),
-                ref _globalComponentStorage.GetComponentRef<TComponent4>(componentId3, componentType4),
-                ref _globalComponentStorage.GetComponentRef<TComponent5>(componentId4, componentType5)
+                ref _componentTypeRegistry.GetComponentRef<TComponent1>(componentId, componentType1),
+                ref _componentTypeRegistry.GetComponentRef<TComponent2>(componentId1, componentType2),
+                ref _componentTypeRegistry.GetComponentRef<TComponent3>(componentId2, componentType3),
+                ref _componentTypeRegistry.GetComponentRef<TComponent4>(componentId3, componentType4),
+                ref _componentTypeRegistry.GetComponentRef<TComponent5>(componentId4, componentType5)
             );
 
             if (created)

@@ -5,13 +5,13 @@ using ComponentId = System.Int32;
 
 namespace Theraot.ECS.Mantle.Core
 {
-    internal sealed class GlobalComponentStorage<TComponentType>
+    internal sealed class ComponentTypeRegistry<TComponentType>
     {
         private readonly Dictionary<Type, IHasIndexedRemove> _indexByActualType;
 
         private readonly Dictionary<TComponentType, Type> _indexByComponentType;
 
-        public GlobalComponentStorage(IEqualityComparer<TComponentType> componentTypeEqualityComparer)
+        public ComponentTypeRegistry(IEqualityComparer<TComponentType> componentTypeEqualityComparer)
         {
             _indexByComponentType = new Dictionary<TComponentType, Type>(componentTypeEqualityComparer);
             _indexByActualType = new Dictionary<Type, IHasIndexedRemove>();

@@ -31,19 +31,19 @@ namespace Theraot.ECS
     {
         private readonly IMantle<TEntity, TComponentType> _mantle;
         private readonly ICore<TEntity, TComponentType> _core;
-        private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
+        private readonly ComponentTypeRegistry<TComponentType> _componentTypeRegistry;
 
         internal Scope(IMantle<TEntity, TComponentType> mantle, IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer)
         {
             _mantle = mantle;
             var entityComponentEventDispatcher = new EntityComponentEventDispatcher<TEntity, TComponentType>();
             mantle.SubscribeTo(entityComponentEventDispatcher);
-            _globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypeEqualityComparer);
+            _componentTypeRegistry = new ComponentTypeRegistry<TComponentType>(componentTypeEqualityComparer);
             _core = new Core<TEntity, TComponentType>
             (
                 componentTypeEqualityComparer,
                 entityEqualityComparer,
-                _globalComponentStorage,
+                _componentTypeRegistry,
                 entityComponentEventDispatcher
             );
         }
@@ -65,7 +65,7 @@ namespace Theraot.ECS
 
         public Type GetRegisteredComponentType(TComponentType componentType)
         {
-            return _globalComponentStorage.GetRegisteredComponentType(componentType);
+            return _componentTypeRegistry.GetRegisteredComponentType(componentType);
         }
 
         public bool RegisterEntity(TEntity entity)
@@ -121,7 +121,7 @@ namespace Theraot.ECS
 
         public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
         {
-            return _globalComponentStorage.TryRegisterComponentType<TComponent>(componentType);
+            return _componentTypeRegistry.TryRegisterComponentType<TComponent>(componentType);
         }
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)

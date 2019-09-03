@@ -39,8 +39,8 @@ namespace Theraot.ECS.Mantle.Core
                     entityComponentStorage.Set
                     (
                         componentType,
-                        key => _globalComponentStorage.AddComponent(componentSelector(key), key),
-                        pair => _globalComponentStorage.UpdateComponent(pair.Value, componentSelector(pair.Key), pair.Key)
+                        key => _componentTypeRegistry.AddComponent(componentSelector(key), key),
+                        pair => _componentTypeRegistry.UpdateComponent(pair.Value, componentSelector(pair.Key), pair.Key)
                     )
                 )
                 {
@@ -88,8 +88,8 @@ namespace Theraot.ECS.Mantle.Core
                     entityComponentStorage.Set
                     (
                         componentType,
-                        key => _globalComponentStorage.AddComponent(componentSelector(key), key),
-                        pair => _globalComponentStorage.UpdateComponent(pair.Value, componentSelector(pair.Key), pair.Key)
+                        key => _componentTypeRegistry.AddComponent(componentSelector(key), key),
+                        pair => _componentTypeRegistry.UpdateComponent(pair.Value, componentSelector(pair.Key), pair.Key)
                     )
                 )
                 {
