@@ -18,7 +18,7 @@ namespace Theraot.ECS
                 entityEqualityComparer = EqualityComparer<TEntity>.Default;
             }
 
-            var mantle = new Mantle<TEntity, TComponentType, TComponentTypeSet>
+            var mantle = new Controller<TEntity, TComponentType, TComponentTypeSet>
             (
                 entityEqualityComparer,
                 componentTypeManager
@@ -29,11 +29,11 @@ namespace Theraot.ECS
 
     public sealed partial class Scope<TEntity, TComponentType>
     {
-        private readonly IMantle<TEntity, TComponentType> _mantle;
+        private readonly IController<TEntity, TComponentType> _mantle;
         private readonly ComponentStorage<TEntity, TComponentType> _core;
         private readonly ComponentTypeRegistry<TComponentType> _componentTypeRegistry;
 
-        internal Scope(IMantle<TEntity, TComponentType> mantle, IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer)
+        internal Scope(IController<TEntity, TComponentType> mantle, IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer)
         {
             _mantle = mantle;
             var entityComponentEventDispatcher = new EntityComponentEventDispatcher<TEntity, TComponentType>();

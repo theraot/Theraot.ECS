@@ -7,7 +7,7 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS.Mantle
 {
-    internal sealed class Mantle<TEntity, TComponentType, TComponentTypeSet> : IMantle<TEntity, TComponentType>
+    internal sealed class Controller<TEntity, TComponentType, TComponentTypeSet> : IController<TEntity, TComponentType>
     {
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
@@ -21,7 +21,7 @@ namespace Theraot.ECS.Mantle
 
         private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
-        internal Mantle(IEqualityComparer<TEntity> entityEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
+        internal Controller(IEqualityComparer<TEntity> entityEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _entityEqualityComparer = entityEqualityComparer;
             _componentTypeManager = componentTypeManager;

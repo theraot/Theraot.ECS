@@ -3,7 +3,7 @@ using Theraot.ECS.Core;
 
 namespace Theraot.ECS.Mantle
 {
-    internal interface IMantle<TEntity, TComponentType>
+    internal interface IController<TEntity, TComponentType>
     {
         EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none, IComponentReferenceAccess<TEntity, TComponentType> componentRefScope);
 
