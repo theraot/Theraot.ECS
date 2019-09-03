@@ -22,11 +22,11 @@ namespace Theraot.ECS.Mantle.Core
 
         private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
 
-        public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer)
+        public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer, GlobalComponentStorage<TComponentType> globalComponentStorage)
         {
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
-            _globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypeEqualityComparer);
             _componentsByEntity = new Dictionary<TEntity, CompactDictionary<TComponentType, ComponentId>>(entityEqualityComparer);
+            _globalComponentStorage = globalComponentStorage;
         }
 
         public IComponentReferenceAccess<TEntity, TComponentType> GetComponentRef()

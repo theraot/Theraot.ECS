@@ -21,7 +21,8 @@ namespace Theraot.ECS
             var core = new Core<TEntity, TComponentType>
             (
                 componentTypeManager.ComponentTypEqualityComparer,
-                entityEqualityComparer
+                entityEqualityComparer,
+                new GlobalComponentStorage<TComponentType>(componentTypeManager.ComponentTypEqualityComparer)
             );
             var mantle = new Mantle<TEntity, TComponentType, TComponentTypeSet>
             (
