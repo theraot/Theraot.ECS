@@ -98,20 +98,22 @@ namespace Theraot.ECS
             return true;
         }
 
-        public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
+        public bool TryRegisterComponentType<TComponent>(TComponentType componentType, IIndexedCollection<TComponent> storage)
         {
             var actualType = typeof(TComponent);
-            if (_indexByComponentType.TryGetValue(componentType, out var type))
+            if (_indexByComponentType.TryGetValue(componentType, out _))
             {
-                return type == actualType;
+                return false;
             }
 
             _indexByComponentType.Add(componentType, actualType);
 
-            if (!_indexByActualType.ContainsKey(actualType))
+            if (_indexByActualType.ContainsKey(actualType))
             {
-                _indexByActualType[actualType] = new IndexedCollection<TComponent>(16);
+                return false;
             }
+
+            _indexByActualType[actualType] = storage;
 
             return true;
         }

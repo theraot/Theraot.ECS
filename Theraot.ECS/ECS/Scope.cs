@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Theraot.Collections.Specialized;
 
 namespace Theraot.ECS
 {
@@ -121,7 +122,12 @@ namespace Theraot.ECS
 
         public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
         {
-            return _componentTypeRegistry.TryRegisterComponentType<TComponent>(componentType);
+            return _componentTypeRegistry.TryRegisterComponentType(componentType, new IndexedCollection<TComponent>(16));
+        }
+
+        public bool TryRegisterComponentType<TComponent>(TComponentType componentType, IIndexedCollection<TComponent> storage)
+        {
+            return _componentTypeRegistry.TryRegisterComponentType(componentType, storage);
         }
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)
