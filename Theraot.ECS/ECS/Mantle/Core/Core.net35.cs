@@ -10,6 +10,17 @@ namespace Theraot.ECS.Mantle.Core
 
     internal partial class Core<TEntity, TComponentType>
     {
+        public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
+        {
+            if (_log == null)
+            {
+                return false;
+            }
+
+            _log.Add(() => SetComponents(entity, componentTypes, componentSelector));
+            return true;
+        }
+
         public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
         {
             var componentTypeList = EnumerableHelper.AsIList(componentTypes);
@@ -48,6 +59,17 @@ namespace Theraot.ECS.Mantle.Core
 
     internal partial class Core<TEntity, TComponentType>
     {
+        public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        {
+            if (_log == null)
+            {
+                return false;
+            }
+
+            _log.Add(() => SetComponents(entity, componentTypes, componentSelector));
+            return true;
+        }
+
         public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
             var componentTypeList = EnumerableHelper.AsIList(componentTypes);
@@ -79,40 +101,6 @@ namespace Theraot.ECS.Mantle.Core
             {
                 OnAddedComponents(entity, addedComponentTypes);
             }
-        }
-    }
-
-#endif
-
-#if LESSTHAN_NET35
-
-    internal partial class Core<TEntity, TComponentType>
-    {
-        public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
-        {
-            if (_log == null)
-            {
-                return false;
-            }
-
-            _log.Add(() => SetComponents(entity, componentTypes, componentSelector));
-            return true;
-        }
-    }
-
-#else
-
-    internal partial class Core<TEntity, TComponentType>
-    {
-        public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
-        {
-            if (_log == null)
-            {
-                return false;
-            }
-
-            _log.Add(() => SetComponents(entity, componentTypes, componentSelector));
-            return true;
         }
     }
 
