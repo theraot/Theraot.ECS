@@ -5,7 +5,7 @@ using Theraot.Collections.Specialized;
 
 namespace Tests
 {
-    public static class IndexedCollectionTests
+    public static class IntKeyCollectionTests
     {
         [Test]
         public static void Adding()
