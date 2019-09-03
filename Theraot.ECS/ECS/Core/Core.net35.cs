@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Theraot.ECS.Mantle.Core
+namespace Theraot.ECS.Core
 {
 #if LESSTHAN_NET35
 

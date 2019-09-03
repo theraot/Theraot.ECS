@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 
-namespace Theraot.ECS.Mantle.Core
+namespace Theraot.ECS.Core
 {
     internal sealed class ComponentTypeRegistry<TComponentType>
     {

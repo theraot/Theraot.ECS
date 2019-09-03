@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Theraot.ECS.Core;
 using Theraot.ECS.Mantle;
-using Theraot.ECS.Mantle.Core;
 
 namespace Theraot.ECS
 {

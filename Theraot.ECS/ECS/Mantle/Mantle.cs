@@ -1,7 +1,7 @@
 #pragma warning disable RECS0096 // Type parameter is never used
 
 using System.Collections.Generic;
-using Theraot.ECS.Mantle.Core;
+using Theraot.ECS.Core;
 using Theraot.ECS.Mantle.Queries;
 using QueryId = System.Int32;
 

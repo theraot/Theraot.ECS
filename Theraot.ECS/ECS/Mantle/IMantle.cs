@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Theraot.ECS.Mantle.Core;
+using Theraot.ECS.Core;
 
 namespace Theraot.ECS.Mantle
 {
