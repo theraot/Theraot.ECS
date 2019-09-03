@@ -69,8 +69,8 @@ namespace Theraot.ECS.Mantle.Core
                 entityComponentStorage.Set
                 (
                     componentType,
-                    key => _componentTypeRegistry.AddComponent(component, key),
-                    pair => _componentTypeRegistry.UpdateComponent(pair.Value, component, pair.Key)
+                    key => _componentTypeRegistry.GetOrCreateTypedStorage<TComponent>(key).Add(component),
+                    pair => _componentTypeRegistry.GetOrCreateTypedStorage<TComponent>(pair.Key).Update(pair.Value, component)
                 )
             )
             {
@@ -80,18 +80,11 @@ namespace Theraot.ECS.Mantle.Core
 
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
         {
-            if
-            (
-                _componentsByEntity.TryGetValue(entity, out var entityComponentStorage)
-                && entityComponentStorage.TryGetValue(componentType, out var componentId)
-                && _componentTypeRegistry.TryGetComponent(componentId, componentType, out component)
-            )
-            {
-                return true;
-            }
-
             component = default;
-            return false;
+            return _componentsByEntity.TryGetValue(entity, out var entityComponentStorage)
+                   && entityComponentStorage.TryGetValue(componentType, out var componentId)
+                   && _componentTypeRegistry.TryGetTypedStorage<TComponent>(componentType, out var typedComponentStorage)
+                   && typedComponentStorage.TryGetValue(componentId, out component);
         }
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)
@@ -107,7 +100,10 @@ namespace Theraot.ECS.Mantle.Core
                 return;
             }
 
-            _componentTypeRegistry.RemoveComponent(removedComponentId, componentType);
+            if (_componentTypeRegistry.TryGetStorage(componentType, out var componentStorage))
+            {
+                componentStorage.Remove(removedComponentId);
+            }
             _entityComponentEventDispatcher.NotifyRemovedComponents(entity, new[] { componentType });
         }
 
@@ -128,7 +124,10 @@ namespace Theraot.ECS.Mantle.Core
                     continue;
                 }
 
-                _componentTypeRegistry.RemoveComponent(removedComponentId, componentType);
+                if (_componentTypeRegistry.TryGetStorage(componentType, out var componentStorage))
+                {
+                    componentStorage.Remove(removedComponentId);
+                }
                 removedComponentTypes.Add(componentType);
             }
 
@@ -158,7 +157,7 @@ namespace Theraot.ECS.Mantle.Core
             callback
             (
                 entity,
-                ref _componentTypeRegistry.GetComponentRef<TComponent1>(componentId, componentType1)
+                ref _componentTypeRegistry.GetTypedStorage<TComponent1>(componentType1).GetRef(componentId)
             );
 
             if (created)
@@ -176,8 +175,8 @@ namespace Theraot.ECS.Mantle.Core
 
             if
             (
-                !entityComponentStorage.TryGetValue(componentType1, out var componentId)
-                || !entityComponentStorage.TryGetValue(componentType2, out var componentId1)
+                !entityComponentStorage.TryGetValue(componentType1, out var componentId1)
+                || !entityComponentStorage.TryGetValue(componentType2, out var componentId2)
             )
             {
                 throw new KeyNotFoundException("ComponentType not found on the entity");
@@ -188,8 +187,8 @@ namespace Theraot.ECS.Mantle.Core
             callback
             (
                 entity,
-                ref _componentTypeRegistry.GetComponentRef<TComponent1>(componentId, componentType1),
-                ref _componentTypeRegistry.GetComponentRef<TComponent2>(componentId1, componentType2)
+                ref _componentTypeRegistry.GetTypedStorage<TComponent1>(componentType1).GetRef(componentId1),
+                ref _componentTypeRegistry.GetTypedStorage<TComponent2>(componentType2).GetRef(componentId2)
             );
 
             if (created)
@@ -207,9 +206,9 @@ namespace Theraot.ECS.Mantle.Core
 
             if
             (
-                !entityComponentStorage.TryGetValue(componentType1, out var componentId)
-                || !entityComponentStorage.TryGetValue(componentType2, out var componentId1)
-                || !entityComponentStorage.TryGetValue(componentType3, out var componentId2)
+                !entityComponentStorage.TryGetValue(componentType1, out var componentId1)
+                || !entityComponentStorage.TryGetValue(componentType2, out var componentId2)
+                || !entityComponentStorage.TryGetValue(componentType3, out var componentId3)
             )
             {
                 throw new KeyNotFoundException("ComponentType not found on the entity");
@@ -220,9 +219,9 @@ namespace Theraot.ECS.Mantle.Core
             callback
             (
                 entity,
-                ref _componentTypeRegistry.GetComponentRef<TComponent1>(componentId, componentType1),
-                ref _componentTypeRegistry.GetComponentRef<TComponent2>(componentId1, componentType2),
-                ref _componentTypeRegistry.GetComponentRef<TComponent3>(componentId2, componentType3)
+                ref _componentTypeRegistry.GetTypedStorage<TComponent1>(componentType1).GetRef(componentId1),
+                ref _componentTypeRegistry.GetTypedStorage<TComponent2>(componentType2).GetRef(componentId2),
+                ref _componentTypeRegistry.GetTypedStorage<TComponent3>(componentType3).GetRef(componentId3)
             );
 
             if (created)
@@ -240,10 +239,10 @@ namespace Theraot.ECS.Mantle.Core
 
             if
             (
-                !entityComponentStorage.TryGetValue(componentType1, out var componentId)
-                || !entityComponentStorage.TryGetValue(componentType2, out var componentId1)
-                || !entityComponentStorage.TryGetValue(componentType3, out var componentId2)
-                || !entityComponentStorage.TryGetValue(componentType4, out var componentId3)
+                !entityComponentStorage.TryGetValue(componentType1, out var componentId1)
+                || !entityComponentStorage.TryGetValue(componentType2, out var componentId2)
+                || !entityComponentStorage.TryGetValue(componentType3, out var componentId3)
+                || !entityComponentStorage.TryGetValue(componentType4, out var componentId4)
             )
             {
                 throw new KeyNotFoundException("ComponentType not found on the entity");
@@ -254,10 +253,10 @@ namespace Theraot.ECS.Mantle.Core
             callback
             (
                 entity,
-                ref _componentTypeRegistry.GetComponentRef<TComponent1>(componentId, componentType1),
-                ref _componentTypeRegistry.GetComponentRef<TComponent2>(componentId1, componentType2),
-                ref _componentTypeRegistry.GetComponentRef<TComponent3>(componentId2, componentType3),
-                ref _componentTypeRegistry.GetComponentRef<TComponent4>(componentId3, componentType4)
+                ref _componentTypeRegistry.GetTypedStorage<TComponent1>(componentType1).GetRef(componentId1),
+                ref _componentTypeRegistry.GetTypedStorage<TComponent2>(componentType2).GetRef(componentId2),
+                ref _componentTypeRegistry.GetTypedStorage<TComponent3>(componentType3).GetRef(componentId3),
+                ref _componentTypeRegistry.GetTypedStorage<TComponent4>(componentType4).GetRef(componentId4)
             );
 
             if (created)
@@ -275,11 +274,11 @@ namespace Theraot.ECS.Mantle.Core
 
             if
             (
-                !entityComponentStorage.TryGetValue(componentType1, out var componentId)
-                || !entityComponentStorage.TryGetValue(componentType2, out var componentId1)
-                || !entityComponentStorage.TryGetValue(componentType3, out var componentId2)
-                || !entityComponentStorage.TryGetValue(componentType4, out var componentId3)
-                || !entityComponentStorage.TryGetValue(componentType5, out var componentId4)
+                !entityComponentStorage.TryGetValue(componentType1, out var componentId1)
+                || !entityComponentStorage.TryGetValue(componentType2, out var componentId2)
+                || !entityComponentStorage.TryGetValue(componentType3, out var componentId3)
+                || !entityComponentStorage.TryGetValue(componentType4, out var componentId4)
+                || !entityComponentStorage.TryGetValue(componentType5, out var componentId5)
             )
             {
                 throw new KeyNotFoundException("ComponentType not found on the entity");
@@ -290,11 +289,11 @@ namespace Theraot.ECS.Mantle.Core
             callback
             (
                 entity,
-                ref _componentTypeRegistry.GetComponentRef<TComponent1>(componentId, componentType1),
-                ref _componentTypeRegistry.GetComponentRef<TComponent2>(componentId1, componentType2),
-                ref _componentTypeRegistry.GetComponentRef<TComponent3>(componentId2, componentType3),
-                ref _componentTypeRegistry.GetComponentRef<TComponent4>(componentId3, componentType4),
-                ref _componentTypeRegistry.GetComponentRef<TComponent5>(componentId4, componentType5)
+                ref _componentTypeRegistry.GetTypedStorage<TComponent1>(componentType1).GetRef(componentId1),
+                ref _componentTypeRegistry.GetTypedStorage<TComponent2>(componentType2).GetRef(componentId2),
+                ref _componentTypeRegistry.GetTypedStorage<TComponent3>(componentType3).GetRef(componentId3),
+                ref _componentTypeRegistry.GetTypedStorage<TComponent4>(componentType4).GetRef(componentId4),
+                ref _componentTypeRegistry.GetTypedStorage<TComponent5>(componentType5).GetRef(componentId5)
             );
 
             if (created)
