@@ -3,10 +3,12 @@ using Theraot.ECS.Mantle.Core;
 
 namespace Theraot.ECS.Mantle
 {
-    internal interface IMantle<TEntity, TComponentType> : ICommon<TEntity, TComponentType>, IComponentReferenceAccessProvider<TEntity, TComponentType>
+    internal interface IMantle<TEntity, TComponentType>
     {
-        EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none);
+        EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none, IComponentReferenceAccess<TEntity, TComponentType> componentRefScope);
 
-        bool RegisterEntity(TEntity entity);
+        void RegisterEntity(TEntity entity);
+
+        void SubscribeToCore(ICore<TEntity, TComponentType> core);
     }
 }

@@ -26,25 +26,27 @@ namespace Theraot.ECS
             var mantle = new Mantle<TEntity, TComponentType, TComponentTypeSet>
             (
                 entityEqualityComparer,
-                componentTypeManager,
-                core
+                componentTypeManager
             );
-            return new Scope<TEntity, TComponentType>(mantle);
+            return new Scope<TEntity, TComponentType>(mantle, core);
         }
     }
 
     public sealed partial class Scope<TEntity, TComponentType>
     {
         private readonly IMantle<TEntity, TComponentType> _mantle;
+        private readonly ICore<TEntity, TComponentType> _core;
 
-        internal Scope(IMantle<TEntity, TComponentType> mantle)
+        internal Scope(IMantle<TEntity, TComponentType> mantle, ICore<TEntity, TComponentType> core)
         {
             _mantle = mantle;
+            _core = core;
+            mantle.SubscribeToCore(core);
         }
 
         public TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType)
         {
-            if (_mantle.TryGetComponent<TComponent>(entity, componentType, out var component))
+            if (_core.TryGetComponent<TComponent>(entity, componentType, out var component))
             {
                 return component;
             }
@@ -54,22 +56,27 @@ namespace Theraot.ECS
 
         public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
-            return _mantle.GetEntityCollection(all, any, none);
+            return _mantle.GetEntityCollection(all, any, none, _core.GetComponentRef());
         }
 
         public Type GetRegisteredComponentType(TComponentType componentType)
         {
-            return _mantle.GetRegisteredComponentType(componentType);
+            return _core.GetRegisteredComponentType(componentType);
         }
 
         public bool RegisterEntity(TEntity entity)
         {
-            return _mantle.RegisterEntity(entity);
+            if (!_core.RegisterEntity(entity))
+            {
+                return false;
+            }
+            _mantle.RegisterEntity(entity);
+            return true;
         }
 
         public void SetComponent<TComponent>(TEntity entity, TComponentType type, TComponent component)
         {
-            _mantle.SetComponent(entity, type, component);
+            _core.SetComponent(entity, type, component);
         }
 
         public void SetComponents<TComponent>(TEntity entity, Dictionary<TComponentType, TComponent> components)
@@ -79,7 +86,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(components));
             }
 
-            _mantle.SetComponents(entity, components.Keys, type => components[type]);
+            _core.SetComponents(entity, components.Keys, type => components[type]);
         }
 
         public void SetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, IList<TComponent> components)
@@ -100,22 +107,22 @@ namespace Theraot.ECS
             }
 
             var index = 0;
-            _mantle.SetComponents(entity, componentTypes, _ => components[index++]);
+            _core.SetComponents(entity, componentTypes, _ => components[index++]);
         }
 
         public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
         {
-            return _mantle.TryGetComponent(entity, componentType, out component);
+            return _core.TryGetComponent(entity, componentType, out component);
         }
 
         public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
         {
-            return _mantle.TryRegisterComponentType<TComponent>(componentType);
+            return _core.TryRegisterComponentType<TComponent>(componentType);
         }
 
         public void UnsetComponent(TEntity entity, TComponentType componentType)
         {
-            _mantle.UnsetComponent(entity, componentType);
+            _core.UnsetComponent(entity, componentType);
         }
 
         public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
@@ -125,12 +132,12 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(componentTypes));
             }
 
-            _mantle.UnsetComponents(entity, componentTypes);
+            _core.UnsetComponents(entity, componentTypes);
         }
 
         public void UnsetComponents(TEntity entity, params TComponentType[] componentTypes)
         {
-            _mantle.UnsetComponents(entity, componentTypes);
+            _core.UnsetComponents(entity, componentTypes);
         }
     }
 
@@ -150,7 +157,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(componentSelector));
             }
 
-            _mantle.SetComponents(entity, componentTypes, componentSelector);
+            _core.SetComponents(entity, componentTypes, componentSelector);
         }
     }
 
@@ -170,7 +177,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(componentSelector));
             }
 
-            _mantle.SetComponents(entity, componentTypes, componentSelector);
+            _core.SetComponents(entity, componentTypes, componentSelector);
         }
     }
 
@@ -185,7 +192,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _mantle.GetComponentRef().With(entity, componentType1, callback);
+            _core.GetComponentRef().With(entity, componentType1, callback);
         }
 
         public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
@@ -195,7 +202,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _mantle.GetComponentRef().With(entity, componentType1, componentType2, callback);
+            _core.GetComponentRef().With(entity, componentType1, componentType2, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
@@ -205,7 +212,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _mantle.GetComponentRef().With(entity, componentType1, componentType2, componentType3, callback);
+            _core.GetComponentRef().With(entity, componentType1, componentType2, componentType3, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
@@ -215,7 +222,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _mantle.GetComponentRef().With(entity, componentType1, componentType2, componentType3, componentType4, callback);
+            _core.GetComponentRef().With(entity, componentType1, componentType2, componentType3, componentType4, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
@@ -225,7 +232,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _mantle.GetComponentRef().With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
+            _core.GetComponentRef().With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
         }
     }
 }

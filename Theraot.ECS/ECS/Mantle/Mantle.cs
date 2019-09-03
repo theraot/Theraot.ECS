@@ -1,6 +1,5 @@
 #pragma warning disable RECS0096 // Type parameter is never used
 
-using System;
 using System.Collections.Generic;
 using Theraot.ECS.Mantle.Core;
 using Theraot.ECS.Mantle.Queries;
@@ -8,13 +7,11 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS.Mantle
 {
-    internal sealed partial class Mantle<TEntity, TComponentType, TComponentTypeSet> : IMantle<TEntity, TComponentType>
+    internal sealed class Mantle<TEntity, TComponentType, TComponentTypeSet> : IMantle<TEntity, TComponentType>
     {
         private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
 
         private readonly Dictionary<TEntity, TComponentTypeSet> _componentTypesByEntity;
-
-        private readonly ICore<TEntity, TComponentType> _core;
 
         private readonly Dictionary<QueryId, EntityCollection<TEntity, TComponentType>> _entitiesByQueryId;
 
@@ -24,7 +21,7 @@ namespace Theraot.ECS.Mantle
 
         private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
 
-        internal Mantle(IEqualityComparer<TEntity> entityEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager, ICore<TEntity, TComponentType> core)
+        internal Mantle(IEqualityComparer<TEntity> entityEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
         {
             _entityEqualityComparer = entityEqualityComparer;
             _componentTypeManager = componentTypeManager;
@@ -32,17 +29,10 @@ namespace Theraot.ECS.Mantle
             _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
             _entitiesByQueryId = new Dictionary<QueryId, EntityCollection<TEntity, TComponentType>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypEqualityComparer);
-            _core = core;
-            SubscribeToCore(core);
             _componentTypesByEntity = new Dictionary<TEntity, TComponentTypeSet>(_entityEqualityComparer);
         }
 
-        public IComponentReferenceAccess<TEntity, TComponentType> GetComponentRef()
-        {
-            return _core.GetComponentRef();
-        }
-
-        public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
+        public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none, IComponentReferenceAccess<TEntity, TComponentType> componentRefScope)
         {
             var allAsICollection = EnumerableHelper.AsICollection(all);
             var anyAsICollection = EnumerableHelper.AsICollection(any);
@@ -50,48 +40,12 @@ namespace Theraot.ECS.Mantle
             var queryId = _queryManager.CreateQuery(allAsICollection, anyAsICollection, noneAsICollection);
             return _entitiesByQueryId.TryGetValue(queryId, out var entityCollection)
                 ? entityCollection
-                : CreateEntityCollection(EnumerableHelper.Concat(allAsICollection, anyAsICollection, noneAsICollection), queryId);
+                : CreateEntityCollection(EnumerableHelper.Concat(allAsICollection, anyAsICollection, noneAsICollection), queryId, componentRefScope);
         }
 
-        public Type GetRegisteredComponentType(TComponentType componentType)
+        public void RegisterEntity(TEntity entity)
         {
-            return _core.GetRegisteredComponentType(componentType);
-        }
-
-        public bool RegisterEntity(TEntity entity)
-        {
-            if (!_core.RegisterEntity(entity))
-            {
-                return false;
-            }
-
             _componentTypesByEntity[entity] = _componentTypeManager.Create();
-            return true;
-        }
-
-        public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
-        {
-            _core.SetComponent(entity, componentType, component);
-        }
-
-        public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
-        {
-            return _core.TryGetComponent(entity, componentType, out component);
-        }
-
-        public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
-        {
-            return _core.TryRegisterComponentType<TComponent>(componentType);
-        }
-
-        public void UnsetComponent(TEntity entity, TComponentType componentType)
-        {
-            _core.UnsetComponent(entity, componentType);
-        }
-
-        public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
-        {
-            _core.UnsetComponents(entity, componentTypes);
         }
 
         private void Core_AddedComponents(object sender, EntityComponentsChangeEventArgs<TEntity, TComponentType> args)
@@ -110,9 +64,9 @@ namespace Theraot.ECS.Mantle
             UpdateEntitiesByQueryOnRemoveComponents(args.Entity, allComponentTypes, args.ComponentTypes);
         }
 
-        private EntityCollection<TEntity, TComponentType> CreateEntityCollection(IEnumerable<TComponentType> componentTypes, int queryId)
+        private EntityCollection<TEntity, TComponentType> CreateEntityCollection(IEnumerable<TComponentType> componentTypes, int queryId, IComponentReferenceAccess<TEntity, TComponentType> componentRefScope)
         {
-            var entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(GetComponentRef(), _entityEqualityComparer);
+            var entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntity, TComponentType>(componentRefScope, _entityEqualityComparer);
             foreach (var componentType in componentTypes)
             {
                 if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
@@ -158,7 +112,7 @@ namespace Theraot.ECS.Mantle
             return set;
         }
 
-        private void SubscribeToCore(ICore<TEntity, TComponentType> core)
+        public void SubscribeToCore(ICore<TEntity, TComponentType> core)
         {
             core.AddedComponents += Core_AddedComponents;
             core.RemovedComponents += Core_RemovedComponents;
@@ -212,35 +166,4 @@ namespace Theraot.ECS.Mantle
             }
         }
     }
-
-#if LESSTHAN_NET35
-
-    internal sealed partial class Mantle<TEntity, TComponentType, TComponentTypeSet>
-    {
-        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
-        {
-            if (componentTypes == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypes));
-            }
-
-            _core.SetComponents(entity, componentTypes, componentSelector);
-        }
-    }
-
-#else
-    internal sealed partial class Mantle<TEntity, TComponentType, TComponentTypeSet>
-    {
-        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
-        {
-            if (componentTypes == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypes));
-            }
-
-            _core.SetComponents(entity, componentTypes, componentSelector);
-        }
-    }
-
-#endif
 }
