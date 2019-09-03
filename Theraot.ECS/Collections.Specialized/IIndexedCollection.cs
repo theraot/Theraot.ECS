@@ -4,10 +4,10 @@
     {
         int Add(TValue value);
 
-        ref TValue GetRef(int index);
+        ref TValue GetRef(int key);
 
-        bool TryGetValue(int index, out TValue value);
+        bool TryGetValue(int key, out TValue value);
 
-        int Update(int index, TValue value);
+        int Update(int key, TValue value);
     }
 }
