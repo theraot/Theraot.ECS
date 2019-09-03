@@ -20,16 +20,6 @@ namespace Theraot.ECS
 
         IEqualityComparer<ComponentTypeSet> IComponentTypeManager<string, ComponentTypeSet>.ComponentTypSetEqualityComparer => this;
 
-        void IComponentTypeManager<string, ComponentTypeSet>.Add(ComponentTypeSet componentTypeSet, ComponentType componentType)
-        {
-            if (componentTypeSet == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypeSet));
-            }
-
-            componentTypeSet.Add(componentType);
-        }
-
         void IComponentTypeManager<string, ComponentTypeSet>.Add(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
         {
             if (componentTypes == null)
@@ -136,16 +126,6 @@ namespace Theraot.ECS
             }
 
             return componentTypeSetA.Count != 0 && (componentTypeSetA.Count > componentTypeSetB.Count ? componentTypeSetA.Overlaps(componentTypeSetB) : componentTypeSetB.Overlaps(componentTypeSetA));
-        }
-
-        void IComponentTypeManager<string, ComponentTypeSet>.Remove(ComponentTypeSet componentTypeSet, ComponentType componentType)
-        {
-            if (componentTypeSet == null)
-            {
-                throw new ArgumentNullException(nameof(componentTypeSet));
-            }
-
-            componentTypeSet.Remove(componentType);
         }
 
         void IComponentTypeManager<string, ComponentTypeSet>.Remove(ComponentTypeSet componentTypeSet, IEnumerable<string> componentTypes)

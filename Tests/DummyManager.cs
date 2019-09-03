@@ -13,10 +13,6 @@ namespace Tests
         {
         }
 
-        public void Add(int componentTypeSet, int componentType)
-        {
-        }
-
         public bool Contains(int componentTypeSet, int other)
         {
             return false;
@@ -58,10 +54,6 @@ namespace Tests
         }
 
         public void Remove(int componentTypeSet, IEnumerable<int> componentTypes)
-        {
-        }
-
-        public void Remove(int componentTypeSet, int componentType)
         {
         }
     }

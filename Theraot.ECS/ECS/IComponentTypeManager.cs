@@ -16,8 +16,6 @@ namespace Theraot.ECS
 
         void Add(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
 
-        void Add(TComponentTypeSet componentTypeSet, TComponentType componentType);
-
         bool Contains(TComponentTypeSet componentTypeSet, TComponentType componentType);
 
         bool ContainsAll(TComponentTypeSet componentTypeSet, TComponentTypeSet other);
@@ -31,7 +29,5 @@ namespace Theraot.ECS
         bool Overlaps(TComponentTypeSet componentTypeSetA, TComponentTypeSet componentTypeSetB);
 
         void Remove(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
-
-        void Remove(TComponentTypeSet componentTypeSet, TComponentType componentType);
     }
 }
