@@ -16,13 +16,13 @@ namespace Theraot.Collections.Specialized
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
     partial
 #endif
-    class IndexedCollection<TValue> : ICollection<TValue>, IIntKeyCollection<TValue>
+    class IntKeyCollection<TValue> : ICollection<TValue>, IIntKeyCollection<TValue>
     {
         private int _key;
         private int[] _keys;
         private TValue[] _values;
 
-        public IndexedCollection(int initialCapacity)
+        public IntKeyCollection(int initialCapacity)
         {
             Count = 0;
             _keys = new int[initialCapacity];
@@ -119,9 +119,9 @@ namespace Theraot.Collections.Specialized
             Count = 0;
         }
 
-        public IndexedCollection<TValue> Clone()
+        public IntKeyCollection<TValue> Clone()
         {
-            var clone = new IndexedCollection<TValue>(Count);
+            var clone = new IntKeyCollection<TValue>(Count);
             Array.Copy(_keys, 0, clone._keys, 0, Count);
             Array.Copy(_values, 0, clone._values, 0, Count);
             clone.Count = Count;
@@ -300,7 +300,7 @@ namespace Theraot.Collections.Specialized
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
 
-    public sealed partial class IndexedCollection<TValue> : ICloneable
+    public sealed partial class IntKeyCollection<TValue> : ICloneable
     {
         object ICloneable.Clone()
         {

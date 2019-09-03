@@ -36,7 +36,7 @@ namespace Theraot.ECS
                 return (IIntKeyCollection<TComponent>)result;
             }
 
-            result = new IndexedCollection<TComponent>(16);
+            result = new IntKeyCollection<TComponent>(16);
             _indexByActualType[actualType] = result;
             return (IIntKeyCollection<TComponent>)result;
         }

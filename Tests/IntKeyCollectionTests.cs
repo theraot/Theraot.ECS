@@ -10,7 +10,7 @@ namespace Tests
         [Test]
         public static void Adding()
         {
-            var x = new IndexedCollection<string>(16)
+            var x = new IntKeyCollection<string>(16)
             {
                 "a",
                 "b",
@@ -25,7 +25,7 @@ namespace Tests
         [Test]
         public static void AddRange()
         {
-            var collection = new IndexedCollection<string>(16);
+            var collection = new IntKeyCollection<string>(16);
             Assert.AreEqual(16, collection.Capacity);
             var abc = new[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
             var result = collection.AddRange(abc);
@@ -37,7 +37,7 @@ namespace Tests
         [Test]
         public static void Contains()
         {
-            var x = new IndexedCollection<string>(16)
+            var x = new IntKeyCollection<string>(16)
             {
                 "a",
                 "b",
@@ -53,7 +53,7 @@ namespace Tests
         [Test]
         public static void IndexedAccess()
         {
-            var x = new IndexedCollection<string>(16)
+            var x = new IntKeyCollection<string>(16)
             {
                 "a",
                 "b",
@@ -71,7 +71,7 @@ namespace Tests
         [Test]
         public static void RemoveAll()
         {
-            var x = new IndexedCollection<string>(16)
+            var x = new IntKeyCollection<string>(16)
             {
                 "a",
                 "b",
@@ -85,7 +85,7 @@ namespace Tests
         [Test]
         public static void Trim()
         {
-            var x = new IndexedCollection<string>(16)
+            var x = new IntKeyCollection<string>(16)
             {
                 "a",
                 "b",
@@ -100,7 +100,7 @@ namespace Tests
         [Test]
         public static void UnableToReduceCapacityBelowCount()
         {
-            var x = new IndexedCollection<string>(16)
+            var x = new IntKeyCollection<string>(16)
             {
                 "a",
                 "b",
