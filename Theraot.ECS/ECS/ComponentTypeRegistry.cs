@@ -6,14 +6,14 @@ namespace Theraot.ECS
 {
     internal sealed class ComponentTypeRegistry<TComponentType>
     {
-        private readonly Dictionary<Type, IHasIndexedRemove> _indexByActualType;
+        private readonly Dictionary<Type, IHasRemoveByIntKey> _indexByActualType;
 
         private readonly Dictionary<TComponentType, Type> _indexByComponentType;
 
         public ComponentTypeRegistry(IEqualityComparer<TComponentType> componentTypeEqualityComparer)
         {
             _indexByComponentType = new Dictionary<TComponentType, Type>(componentTypeEqualityComparer);
-            _indexByActualType = new Dictionary<Type, IHasIndexedRemove>();
+            _indexByActualType = new Dictionary<Type, IHasRemoveByIntKey>();
         }
 
         public IIndexedCollection<TComponent> GetOrCreateTypedStorage<TComponent>(TComponentType componentType)
@@ -67,7 +67,7 @@ namespace Theraot.ECS
             throw new KeyNotFoundException("Component not stored");
         }
 
-        public bool TryGetStorage(TComponentType componentType, out IHasIndexedRemove typedComponentStorage)
+        public bool TryGetStorage(TComponentType componentType, out IHasRemoveByIntKey typedComponentStorage)
         {
             typedComponentStorage = default;
             return _indexByComponentType.TryGetValue(componentType, out var type)

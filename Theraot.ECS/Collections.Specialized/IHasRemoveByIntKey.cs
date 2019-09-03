@@ -1,6 +1,6 @@
 ﻿namespace Theraot.Collections.Specialized
 {
-    public interface IHasIndexedRemove
+    public interface IHasRemoveByIntKey
     {
         bool Remove(int key);
     }

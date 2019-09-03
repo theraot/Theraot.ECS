@@ -1,6 +1,6 @@
 ﻿namespace Theraot.Collections.Specialized
 {
-    public interface IIndexedCollection<TValue> : IHasIndexedRemove
+    public interface IIndexedCollection<TValue> : IHasRemoveByIntKey
     {
         int Add(TValue value);
 
