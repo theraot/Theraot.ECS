@@ -31,8 +31,6 @@ namespace Theraot.ECS.Mantle.Core
             _removedComponent = new HashSet<EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>>>();
         }
 
-        public IEnumerable<TEntity> AllEntities => _componentsByEntity.Keys;
-
         public IComponentReferenceAccess<TEntity, TComponentType> GetComponentRef()
         {
             return this;

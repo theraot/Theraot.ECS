@@ -125,7 +125,7 @@ namespace Theraot.ECS.Mantle
                 queryIds.Add(queryId);
             }
 
-            foreach (var entity in _core.AllEntities)
+            foreach (var entity in _componentTypesByEntity.Keys)
             {
                 var allComponentTypes = _componentTypesByEntity[entity];
                 if (_queryManager.QueryCheck(allComponentTypes, queryId) == QueryCheckResult.Add)

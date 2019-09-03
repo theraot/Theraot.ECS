@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Theraot.ECS.Mantle.Core
 {
@@ -8,8 +7,6 @@ namespace Theraot.ECS.Mantle.Core
         event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> AddedComponents;
 
         event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> RemovedComponents;
-
-        IEnumerable<TEntity> AllEntities { get; }
 
         bool RegisterEntity(TEntity entity);
     }
