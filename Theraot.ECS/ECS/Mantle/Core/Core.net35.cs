@@ -50,7 +50,7 @@ namespace Theraot.ECS.Mantle.Core
 
             if (addedComponentTypes.Count > 0)
             {
-                OnAddedComponents(entity, addedComponentTypes);
+                _entityComponentEventDispatcher.NotifyAddedComponents(entity, addedComponentTypes);
             }
         }
     }
@@ -99,7 +99,7 @@ namespace Theraot.ECS.Mantle.Core
 
             if (addedComponentTypes.Count > 0)
             {
-                OnAddedComponents(entity, addedComponentTypes);
+                _entityComponentEventDispatcher.NotifyAddedComponents(entity, addedComponentTypes);
             }
         }
     }

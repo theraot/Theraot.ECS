@@ -18,17 +18,20 @@ namespace Theraot.ECS
                 entityEqualityComparer = EqualityComparer<TEntity>.Default;
             }
 
+            var entityComponentEventDispatcher = new EntityComponentEventDispatcher<TEntity, TComponentType>();
+            var mantle = new Mantle<TEntity, TComponentType, TComponentTypeSet>
+            (
+                entityEqualityComparer,
+                componentTypeManager
+            );
+            mantle.SubscribeTo(entityComponentEventDispatcher);
             var globalComponentStorage = new GlobalComponentStorage<TComponentType>(componentTypeManager.ComponentTypEqualityComparer);
             var core = new Core<TEntity, TComponentType>
             (
                 componentTypeManager.ComponentTypEqualityComparer,
                 entityEqualityComparer,
-                globalComponentStorage
-            );
-            var mantle = new Mantle<TEntity, TComponentType, TComponentTypeSet>
-            (
-                entityEqualityComparer,
-                componentTypeManager
+                globalComponentStorage,
+                entityComponentEventDispatcher
             );
             return new Scope<TEntity, TComponentType>(mantle, core, globalComponentStorage);
         }
@@ -45,7 +48,6 @@ namespace Theraot.ECS
             _mantle = mantle;
             _core = core;
             _globalComponentStorage = globalComponentStorage;
-            mantle.SubscribeToCore(core);
         }
 
         public TComponent GetComponent<TComponent>(TEntity entity, TComponentType componentType)

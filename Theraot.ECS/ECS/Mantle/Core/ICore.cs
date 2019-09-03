@@ -5,10 +5,6 @@ namespace Theraot.ECS.Mantle.Core
 {
     internal partial interface ICore<TEntity, TComponentType> : IComponentReferenceAccessProvider<TEntity, TComponentType>
     {
-        event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> AddedComponents;
-
-        event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> RemovedComponents;
-
         bool RegisterEntity(TEntity entity);
 
         void SetComponent<TComponent>(TEntity entity, TComponentType type, TComponent component);

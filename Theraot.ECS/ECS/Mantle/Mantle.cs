@@ -112,10 +112,10 @@ namespace Theraot.ECS.Mantle
             return set;
         }
 
-        public void SubscribeToCore(ICore<TEntity, TComponentType> core)
+        public void SubscribeTo(EntityComponentEventDispatcher<TEntity, TComponentType> entityComponentEventDispatcher)
         {
-            core.AddedComponents += Core_AddedComponents;
-            core.RemovedComponents += Core_RemovedComponents;
+            entityComponentEventDispatcher.AddedComponents += Core_AddedComponents;
+            entityComponentEventDispatcher.RemovedComponents += Core_RemovedComponents;
         }
 
         private void UpdateEntitiesByQueryOnAddedComponents(TEntity entity, TComponentTypeSet allComponentsTypes, IList<TComponentType> addedComponentTypes)

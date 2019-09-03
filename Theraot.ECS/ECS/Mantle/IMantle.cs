@@ -9,6 +9,6 @@ namespace Theraot.ECS.Mantle
 
         void RegisterEntity(TEntity entity);
 
-        void SubscribeToCore(ICore<TEntity, TComponentType> core);
+        void SubscribeTo(EntityComponentEventDispatcher<TEntity, TComponentType> core);
     }
 }

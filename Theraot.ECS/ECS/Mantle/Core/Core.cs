@@ -22,11 +22,14 @@ namespace Theraot.ECS.Mantle.Core
 
         private readonly GlobalComponentStorage<TComponentType> _globalComponentStorage;
 
-        public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer, GlobalComponentStorage<TComponentType> globalComponentStorage)
+        private readonly EntityComponentEventDispatcher<TEntity, TComponentType> _entityComponentEventDispatcher;
+
+        public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer, GlobalComponentStorage<TComponentType> globalComponentStorage, EntityComponentEventDispatcher<TEntity, TComponentType> entityComponentEventDispatcher)
         {
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
             _componentsByEntity = new Dictionary<TEntity, CompactDictionary<TComponentType, ComponentId>>(entityEqualityComparer);
             _globalComponentStorage = globalComponentStorage;
+            _entityComponentEventDispatcher = entityComponentEventDispatcher;
         }
 
         public IComponentReferenceAccess<TEntity, TComponentType> GetComponentRef()
@@ -71,7 +74,7 @@ namespace Theraot.ECS.Mantle.Core
                 )
             )
             {
-                OnAddedComponents(entity, new[] { componentType });
+                _entityComponentEventDispatcher.NotifyAddedComponents(entity, new[] { componentType });
             }
         }
 
@@ -105,7 +108,7 @@ namespace Theraot.ECS.Mantle.Core
             }
 
             _globalComponentStorage.RemoveComponent(removedComponentId, componentType);
-            OnRemovedComponents(entity, new[] { componentType });
+            _entityComponentEventDispatcher.NotifyRemovedComponents(entity, new[] { componentType });
         }
 
         public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
@@ -131,7 +134,7 @@ namespace Theraot.ECS.Mantle.Core
 
             if (removedComponentTypes.Count > 0)
             {
-                OnRemovedComponents(entity, removedComponentTypes);
+                _entityComponentEventDispatcher.NotifyRemovedComponents(entity, removedComponentTypes);
             }
         }
     }
@@ -298,23 +301,6 @@ namespace Theraot.ECS.Mantle.Core
             {
                 ExecuteBuffer();
             }
-        }
-    }
-
-    internal partial class Core<TEntity, TComponentType>
-    {
-        public event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> AddedComponents;
-
-        public event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> RemovedComponents;
-
-        private void OnAddedComponents(TEntity entity, IList<TComponentType> componentTypes)
-        {
-            AddedComponents?.Invoke(this, new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeActionEx.Add, entity, componentTypes));
-        }
-
-        private void OnRemovedComponents(TEntity entity, IList<TComponentType> componentTypes)
-        {
-            RemovedComponents?.Invoke(this, new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeActionEx.Remove, entity, componentTypes));
         }
     }
 
