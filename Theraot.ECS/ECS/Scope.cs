@@ -30,7 +30,7 @@ namespace Theraot.ECS
     public sealed partial class Scope<TEntity, TComponentType>
     {
         private readonly IMantle<TEntity, TComponentType> _mantle;
-        private readonly Core<TEntity, TComponentType> _core;
+        private readonly ComponentStorage<TEntity, TComponentType> _core;
         private readonly ComponentTypeRegistry<TComponentType> _componentTypeRegistry;
 
         internal Scope(IMantle<TEntity, TComponentType> mantle, IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer)
@@ -39,7 +39,7 @@ namespace Theraot.ECS
             var entityComponentEventDispatcher = new EntityComponentEventDispatcher<TEntity, TComponentType>();
             mantle.SubscribeTo(entityComponentEventDispatcher);
             _componentTypeRegistry = new ComponentTypeRegistry<TComponentType>(componentTypeEqualityComparer);
-            _core = new Core<TEntity, TComponentType>
+            _core = new ComponentStorage<TEntity, TComponentType>
             (
                 componentTypeEqualityComparer,
                 entityEqualityComparer,

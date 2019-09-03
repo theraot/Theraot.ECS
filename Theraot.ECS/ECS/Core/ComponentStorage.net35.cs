@@ -8,7 +8,7 @@ namespace Theraot.ECS.Core
 {
 #if LESSTHAN_NET35
 
-    internal partial class Core<TEntity, TComponentType>
+    internal partial class ComponentStorage<TEntity, TComponentType>
     {
         public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
         {
@@ -57,7 +57,7 @@ namespace Theraot.ECS.Core
 
 #else
 
-    internal partial class Core<TEntity, TComponentType>
+    internal partial class ComponentStorage<TEntity, TComponentType>
     {
         public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {

@@ -15,7 +15,7 @@ using Action = System.Threading.ThreadStart;
 
 namespace Theraot.ECS.Core
 {
-    internal partial class Core<TEntity, TComponentType>
+    internal partial class ComponentStorage<TEntity, TComponentType>
     {
         private readonly Dictionary<TEntity, CompactDictionary<TComponentType, ComponentId>> _componentsByEntity;
 
@@ -25,7 +25,7 @@ namespace Theraot.ECS.Core
 
         private readonly EntityComponentEventDispatcher<TEntity, TComponentType> _entityComponentEventDispatcher;
 
-        public Core(IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer, ComponentTypeRegistry<TComponentType> componentTypeRegistry, EntityComponentEventDispatcher<TEntity, TComponentType> entityComponentEventDispatcher)
+        public ComponentStorage(IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer, ComponentTypeRegistry<TComponentType> componentTypeRegistry, EntityComponentEventDispatcher<TEntity, TComponentType> entityComponentEventDispatcher)
         {
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
             _componentsByEntity = new Dictionary<TEntity, CompactDictionary<TComponentType, ComponentId>>(entityEqualityComparer);
@@ -139,7 +139,7 @@ namespace Theraot.ECS.Core
         }
     }
 
-    internal partial class Core<TEntity, TComponentType> : IComponentReferenceAccess<TEntity, TComponentType>
+    internal partial class ComponentStorage<TEntity, TComponentType> : IComponentReferenceAccess<TEntity, TComponentType>
     {
         public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
         {
@@ -304,7 +304,7 @@ namespace Theraot.ECS.Core
         }
     }
 
-    internal partial class Core<TEntity, TComponentType>
+    internal partial class ComponentStorage<TEntity, TComponentType>
     {
         private List<Action> _log;
 
