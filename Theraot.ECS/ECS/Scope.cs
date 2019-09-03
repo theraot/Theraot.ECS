@@ -30,7 +30,7 @@ namespace Theraot.ECS
     public sealed partial class Scope<TEntity, TComponentType>
     {
         private readonly IMantle<TEntity, TComponentType> _mantle;
-        private readonly ICore<TEntity, TComponentType> _core;
+        private readonly Core<TEntity, TComponentType> _core;
         private readonly ComponentTypeRegistry<TComponentType> _componentTypeRegistry;
 
         internal Scope(IMantle<TEntity, TComponentType> mantle, IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer)

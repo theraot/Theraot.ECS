@@ -15,7 +15,7 @@ using Action = System.Threading.ThreadStart;
 
 namespace Theraot.ECS.Core
 {
-    internal partial class Core<TEntity, TComponentType> : ICore<TEntity, TComponentType>
+    internal partial class Core<TEntity, TComponentType>
     {
         private readonly Dictionary<TEntity, CompactDictionary<TComponentType, ComponentId>> _componentsByEntity;
 
