@@ -16,7 +16,7 @@ namespace Theraot.Collections.Specialized
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
     partial
 #endif
-    class IndexedCollection<TValue> : ICollection<TValue>, IIndexedCollection<TValue>
+    class IndexedCollection<TValue> : ICollection<TValue>, IIntKeyCollection<TValue>
     {
         private int _key;
         private int[] _keys;

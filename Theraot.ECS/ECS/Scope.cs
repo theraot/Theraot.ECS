@@ -125,7 +125,7 @@ namespace Theraot.ECS
             return _componentTypeRegistry.TryRegisterComponentType(componentType, new IndexedCollection<TComponent>(16));
         }
 
-        public bool TryRegisterComponentType<TComponent>(TComponentType componentType, IIndexedCollection<TComponent> storage)
+        public bool TryRegisterComponentType<TComponent>(TComponentType componentType, IIntKeyCollection<TComponent> storage)
         {
             return _componentTypeRegistry.TryRegisterComponentType(componentType, storage);
         }
