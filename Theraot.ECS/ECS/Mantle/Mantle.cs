@@ -33,8 +33,7 @@ namespace Theraot.ECS.Mantle
             _entitiesByQueryId = new Dictionary<QueryId, EntityCollection<TEntity, TComponentType>>();
             _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypEqualityComparer);
             _core = core;
-            _core.AddedComponents += Core_AddedComponents;
-            _core.RemovedComponents += Core_RemovedComponents;
+            SubscribeToCore(core);
             _componentTypesByEntity = new Dictionary<TEntity, TComponentTypeSet>(_entityEqualityComparer);
         }
 
@@ -157,6 +156,12 @@ namespace Theraot.ECS.Mantle
             }
 
             return set;
+        }
+
+        private void SubscribeToCore(ICore<TEntity, TComponentType> core)
+        {
+            core.AddedComponents += Core_AddedComponents;
+            core.RemovedComponents += Core_RemovedComponents;
         }
 
         private void UpdateEntitiesByQueryOnAddedComponents(TEntity entity, TComponentTypeSet allComponentsTypes, IList<TComponentType> addedComponentTypes)
