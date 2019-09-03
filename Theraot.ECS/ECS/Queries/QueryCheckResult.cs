@@ -1,4 +1,4 @@
-﻿namespace Theraot.ECS.Mantle.Queries
+﻿namespace Theraot.ECS.Queries
 {
     internal enum QueryCheckResult
     {

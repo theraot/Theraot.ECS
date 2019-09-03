@@ -1,11 +1,10 @@
 #pragma warning disable RECS0096 // Type parameter is never used
 
 using System.Collections.Generic;
-using Theraot.ECS.Core;
-using Theraot.ECS.Mantle.Queries;
+using Theraot.ECS.Queries;
 using QueryId = System.Int32;
 
-namespace Theraot.ECS.Mantle
+namespace Theraot.ECS
 {
     internal sealed class Controller<TEntity, TComponentType, TComponentTypeSet> : IController<TEntity, TComponentType>
     {

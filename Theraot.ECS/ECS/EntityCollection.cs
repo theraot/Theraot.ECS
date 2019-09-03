@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Theraot.ECS.Mantle;
 
 namespace Theraot.ECS
 {

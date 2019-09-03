@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Theraot.ECS.Core;
 
-namespace Theraot.ECS.Mantle
+namespace Theraot.ECS
 {
     internal interface IController<TEntity, TComponentType>
     {

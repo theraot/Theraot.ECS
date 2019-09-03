@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Theraot.ECS.Core
+namespace Theraot.ECS
 {
     internal class EntityComponentEventDispatcher<TEntity, TComponentType>
     {
