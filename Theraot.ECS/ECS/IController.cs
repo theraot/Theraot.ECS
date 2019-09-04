@@ -6,7 +6,7 @@ namespace Theraot.ECS
     {
         EntityCollection<TEntityId, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none, IComponentReferenceAccess<TEntityId, TComponentType> componentReferenceAccess);
 
-        void RegisterEntity(TEntityId entity);
+        void RegisterEntity(TEntityId entityId);
 
         void SubscribeTo(EntityComponentEventDispatcher<TEntityId, TComponentType> entityComponentEventDispatcher);
     }

@@ -9,14 +9,14 @@ namespace Theraot.ECS
 
         public event EventHandler<EntityComponentsChangeEventArgs<TEntityId, TComponentType>> RemovedComponents;
 
-        internal void NotifyAddedComponents(TEntityId entity, IList<TComponentType> componentTypes)
+        internal void NotifyAddedComponents(TEntityId entityId, IList<TComponentType> componentTypes)
         {
-            AddedComponents?.Invoke(this, new EntityComponentsChangeEventArgs<TEntityId, TComponentType>(CollectionChangeActionEx.Add, entity, componentTypes));
+            AddedComponents?.Invoke(this, new EntityComponentsChangeEventArgs<TEntityId, TComponentType>(CollectionChangeActionEx.Add, entityId, componentTypes));
         }
 
-        internal void NotifyRemovedComponents(TEntityId entity, IList<TComponentType> componentTypes)
+        internal void NotifyRemovedComponents(TEntityId entityId, IList<TComponentType> componentTypes)
         {
-            RemovedComponents?.Invoke(this, new EntityComponentsChangeEventArgs<TEntityId, TComponentType>(CollectionChangeActionEx.Remove, entity, componentTypes));
+            RemovedComponents?.Invoke(this, new EntityComponentsChangeEventArgs<TEntityId, TComponentType>(CollectionChangeActionEx.Remove, entityId, componentTypes));
         }
     }
 }

@@ -42,9 +42,9 @@ namespace Theraot.ECS
                 : CreateEntityCollection(EnumerableHelper.Concat(allAsICollection, anyAsICollection, noneAsICollection), queryId, componentReferenceAccess);
         }
 
-        public void RegisterEntity(TEntityId entity)
+        public void RegisterEntity(TEntityId entityId)
         {
-            _componentTypesByEntity[entity] = _componentTypeManager.Create();
+            _componentTypesByEntity[entityId] = _componentTypeManager.Create();
         }
 
         public void SubscribeTo(EntityComponentEventDispatcher<TEntityId, TComponentType> entityComponentEventDispatcher)
@@ -67,12 +67,12 @@ namespace Theraot.ECS
                 queryIds.Add(queryId);
             }
 
-            foreach (var entity in _componentTypesByEntity.Keys)
+            foreach (var entityId in _componentTypesByEntity.Keys)
             {
-                var allComponentTypes = _componentTypesByEntity[entity];
+                var allComponentTypes = _componentTypesByEntity[entityId];
                 if (_queryManager.QueryCheck(allComponentTypes, queryId) == QueryCheckResult.Add)
                 {
-                    entityCollection.Add(entity);
+                    entityCollection.Add(entityId);
                 }
             }
             return entityCollection;
@@ -104,20 +104,20 @@ namespace Theraot.ECS
         private void OnAddedComponents(object sender, EntityComponentsChangeEventArgs<TEntityId, TComponentType> args)
         {
             var _ = sender;
-            var allComponentTypes = _componentTypesByEntity[args.Entity];
+            var allComponentTypes = _componentTypesByEntity[args.EntityId];
             _componentTypeManager.Add(allComponentTypes, args.ComponentTypes);
-            UpdateEntitiesByQueryOnAddedComponents(args.Entity, allComponentTypes, args.ComponentTypes);
+            UpdateEntitiesByQueryOnAddedComponents(args.EntityId, allComponentTypes, args.ComponentTypes);
         }
 
         private void OnRemovedComponents(object sender, EntityComponentsChangeEventArgs<TEntityId, TComponentType> args)
         {
             var _ = sender;
-            var allComponentTypes = _componentTypesByEntity[args.Entity];
+            var allComponentTypes = _componentTypesByEntity[args.EntityId];
             _componentTypeManager.Remove(allComponentTypes, args.ComponentTypes);
-            UpdateEntitiesByQueryOnRemoveComponents(args.Entity, allComponentTypes, args.ComponentTypes);
+            UpdateEntitiesByQueryOnRemoveComponents(args.EntityId, allComponentTypes, args.ComponentTypes);
         }
 
-        private void UpdateEntitiesByQueryOnAddedComponents(TEntityId entity, TComponentTypeSet allComponentsTypes, IList<TComponentType> addedComponentTypes)
+        private void UpdateEntitiesByQueryOnAddedComponents(TEntityId entityId, TComponentTypeSet allComponentsTypes, IList<TComponentType> addedComponentTypes)
         {
             foreach (var queryId in GetQueriesByComponentTypes(addedComponentTypes))
             {
@@ -125,11 +125,11 @@ namespace Theraot.ECS
                 switch (_queryManager.QueryCheckOnAddedComponents(addedComponentTypes, allComponentsTypes, queryId))
                 {
                     case QueryCheckResult.Remove:
-                        set.Remove(entity);
+                        set.Remove(entityId);
                         break;
 
                     case QueryCheckResult.Add:
-                        set.Add(entity);
+                        set.Add(entityId);
                         break;
 
                     case QueryCheckResult.Noop:
@@ -141,7 +141,7 @@ namespace Theraot.ECS
             }
         }
 
-        private void UpdateEntitiesByQueryOnRemoveComponents(TEntityId entity, TComponentTypeSet allComponentsTypes, IList<TComponentType> removedComponentTypes)
+        private void UpdateEntitiesByQueryOnRemoveComponents(TEntityId entityId, TComponentTypeSet allComponentsTypes, IList<TComponentType> removedComponentTypes)
         {
             foreach (var queryId in GetQueriesByComponentTypes(removedComponentTypes))
             {
@@ -149,11 +149,11 @@ namespace Theraot.ECS
                 switch (_queryManager.QueryCheckOnRemovedComponents(removedComponentTypes, allComponentsTypes, queryId))
                 {
                     case QueryCheckResult.Remove:
-                        set.Remove(entity);
+                        set.Remove(entityId);
                         break;
 
                     case QueryCheckResult.Add:
-                        set.Add(entity);
+                        set.Add(entityId);
                         break;
 
                     case QueryCheckResult.Noop:

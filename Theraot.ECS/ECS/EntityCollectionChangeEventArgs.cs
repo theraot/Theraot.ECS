@@ -2,22 +2,22 @@
 {
     internal static class EntityCollectionChangeEventArgs
     {
-        public static EntityCollectionChangeEventArgs<TEntityId> CreateAdd<TEntityId>(TEntityId entity)
+        public static EntityCollectionChangeEventArgs<TEntityId> CreateAdd<TEntityId>(TEntityId entityId)
         {
-            return new EntityCollectionChangeEventArgs<TEntityId>(CollectionChangeActionEx.Add, entity);
+            return new EntityCollectionChangeEventArgs<TEntityId>(CollectionChangeActionEx.Add, entityId);
         }
 
-        public static EntityCollectionChangeEventArgs<TEntityId> CreateRemove<TEntityId>(TEntityId entity)
+        public static EntityCollectionChangeEventArgs<TEntityId> CreateRemove<TEntityId>(TEntityId entityId)
         {
-            return new EntityCollectionChangeEventArgs<TEntityId>(CollectionChangeActionEx.Remove, entity);
+            return new EntityCollectionChangeEventArgs<TEntityId>(CollectionChangeActionEx.Remove, entityId);
         }
     }
 
     /// <inheritdoc />
     public sealed class EntityCollectionChangeEventArgs<TEntityId> : EntityCollectionChangeBaseEventArgs<TEntityId>
     {
-        internal EntityCollectionChangeEventArgs(CollectionChangeActionEx action, TEntityId entity)
-            : base(action, entity)
+        internal EntityCollectionChangeEventArgs(CollectionChangeActionEx action, TEntityId entityId)
+            : base(action, entityId)
         {
             // Empty
         }

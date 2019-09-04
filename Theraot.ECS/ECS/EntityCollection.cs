@@ -29,10 +29,10 @@ namespace Theraot.ECS
         public int Count => _wrapped.Count;
 
         /// <summary>
-        /// Verifies if this instance contains the provided entity.
+        /// Verifies if this instance contains the provided entity id.
         /// </summary>
-        /// <param name="item">The entity to search for.</param>
-        /// <returns>true if the entity is found; otherwise, false.</returns>
+        /// <param name="item">The entity id to search for.</param>
+        /// <returns>true if the entity id is found; otherwise, false.</returns>
         public bool Contains(TEntityId item)
         {
             return _wrapped.Contains(item);
@@ -51,22 +51,22 @@ namespace Theraot.ECS
         /// <inheritdoc />
         public IEnumerator<TEntityId> GetEnumerator()
         {
-            foreach (var entity in _wrapped)
+            foreach (var entityId in _wrapped)
             {
-                yield return entity;
+                yield return entityId;
             }
         }
 
-        internal void Add(TEntityId entity)
+        internal void Add(TEntityId entityId)
         {
-            _wrapped.Add(entity);
-            OnAddedEntity(entity);
+            _wrapped.Add(entityId);
+            OnAddedEntity(entityId);
         }
 
-        internal void Remove(TEntityId entity)
+        internal void Remove(TEntityId entityId)
         {
-            _wrapped.Remove(entity);
-            OnRemovedEntity(entity);
+            _wrapped.Remove(entityId);
+            OnRemovedEntity(entityId);
         }
     }
 
@@ -82,14 +82,14 @@ namespace Theraot.ECS
         /// </summary>
         public event EventHandler<EntityCollectionChangeEventArgs<TEntityId>> RemovedEntity;
 
-        private void OnAddedEntity(TEntityId entity)
+        private void OnAddedEntity(TEntityId entityId)
         {
-            AddedEntity?.Invoke(this, EntityCollectionChangeEventArgs.CreateAdd(entity));
+            AddedEntity?.Invoke(this, EntityCollectionChangeEventArgs.CreateAdd(entityId));
         }
 
-        private void OnRemovedEntity(TEntityId entity)
+        private void OnRemovedEntity(TEntityId entityId)
         {
-            RemovedEntity?.Invoke(this, EntityCollectionChangeEventArgs.CreateRemove(entity));
+            RemovedEntity?.Invoke(this, EntityCollectionChangeEventArgs.CreateRemove(entityId));
         }
     }
 
@@ -110,11 +110,11 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            foreach (var entity in _wrapped)
+            foreach (var entityId in _wrapped)
             {
                 callback
                 (
-                    entity
+                    entityId
                 );
             }
         }
@@ -139,9 +139,9 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            foreach (var entity in _wrapped)
+            foreach (var entityId in _wrapped)
             {
-                _componentReferenceAccess.With(entity, componentType1, callback);
+                _componentReferenceAccess.With(entityId, componentType1, callback);
             }
         }
 
@@ -168,9 +168,9 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            foreach (var entity in _wrapped)
+            foreach (var entityId in _wrapped)
             {
-                _componentReferenceAccess.With(entity, componentType1, componentType2, callback);
+                _componentReferenceAccess.With(entityId, componentType1, componentType2, callback);
             }
         }
 
@@ -200,9 +200,9 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            foreach (var entity in _wrapped)
+            foreach (var entityId in _wrapped)
             {
-                _componentReferenceAccess.With(entity, componentType1, componentType2, componentType3, callback);
+                _componentReferenceAccess.With(entityId, componentType1, componentType2, componentType3, callback);
             }
         }
 
@@ -235,9 +235,9 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            foreach (var entity in _wrapped)
+            foreach (var entityId in _wrapped)
             {
-                _componentReferenceAccess.With(entity, componentType1, componentType2, componentType3, componentType4, callback);
+                _componentReferenceAccess.With(entityId, componentType1, componentType2, componentType3, componentType4, callback);
             }
         }
 
@@ -273,9 +273,9 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            foreach (var entity in _wrapped)
+            foreach (var entityId in _wrapped)
             {
-                _componentReferenceAccess.With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
+                _componentReferenceAccess.With(entityId, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
             }
         }
     }

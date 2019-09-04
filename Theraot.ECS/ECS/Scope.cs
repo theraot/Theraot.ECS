@@ -67,17 +67,17 @@ namespace Theraot.ECS
         }
 
         /// <summary>
-        /// Retrieves a component by its component type for an entity.
+        /// Retrieves a component by its component type for an entity id.
         /// </summary>
         /// <typeparam name="TComponent">The actual type of the component.</typeparam>
-        /// <param name="entity">The entity for which to get the component.</param>
+        /// <param name="entityId">The entity id for which to get the component.</param>
         /// <param name="componentType">The type of the component to retrieve.</param>
         /// <exception cref="KeyNotFoundException">The component was not found.</exception>
         /// <exception cref="ArgumentNullException">The component type is null.</exception>
         /// <exception cref="ArgumentException">The the actual type of the component does not match.</exception>
-        public TComponent GetComponent<TComponent>(TEntityId entity, TComponentType componentType)
+        public TComponent GetComponent<TComponent>(TEntityId entityId, TComponentType componentType)
         {
-            if (_componentStorage.TryGetComponent<TComponent>(entity, componentType, out var component))
+            if (_componentStorage.TryGetComponent<TComponent>(entityId, componentType, out var component))
             {
                 return component;
             }
@@ -111,62 +111,62 @@ namespace Theraot.ECS
         /// <summary>
         /// Creates an entity with the provided id.
         /// </summary>
-        /// <param name="entity">The entity id to add.</param>
+        /// <param name="entityId">The entity id to add.</param>
         /// <returns>true if the entity is new; otherwise, false.</returns>
-        public bool RegisterEntity(TEntityId entity)
+        public bool RegisterEntity(TEntityId entityId)
         {
-            if (!_componentStorage.RegisterEntity(entity))
+            if (!_componentStorage.RegisterEntity(entityId))
             {
                 return false;
             }
-            _controller.RegisterEntity(entity);
+            _controller.RegisterEntity(entityId);
             return true;
         }
 
         /// <summary>
-        /// Sets a component by its component type associated for an entity.
+        /// Sets a component by its component type associated for an entity id.
         /// </summary>
         /// <typeparam name="TComponent">The actual type of the component.</typeparam>
-        /// <param name="entity">The entity to set the component to.</param>
+        /// <param name="entityId">The entity id to set the component to.</param>
         /// <param name="type">The component type.</param>
         /// <param name="component">The component value.</param>
         /// <exception cref="ArgumentException">The actual type does not match the component type.</exception>
         /// <remarks>If the component type has not been registered, it is registered with the provided actual type and a default container.</remarks>
-        public void SetComponent<TComponent>(TEntityId entity, TComponentType type, TComponent component)
+        public void SetComponent<TComponent>(TEntityId entityId, TComponentType type, TComponent component)
         {
-            _componentStorage.SetComponent(entity, type, component);
+            _componentStorage.SetComponent(entityId, type, component);
         }
 
         /// <summary>
-        /// Sets a components by their component type associated for an entity.
+        /// Sets a components by their component type associated for an entity id.
         /// </summary>
         /// <typeparam name="TComponent">The actual type of the component.</typeparam>
-        /// <param name="entity">The entity to set the component to.</param>
+        /// <param name="entityId">The entity to set the component to.</param>
         /// <param name="components">A dictionary of component types and values.</param>
         /// <exception cref="ArgumentException">The actual type does not match the component type.</exception>
         /// <remarks>If a component type has not been registered, it is registered with the provided actual type and a default container.</remarks>
-        public void SetComponents<TComponent>(TEntityId entity, Dictionary<TComponentType, TComponent> components)
+        public void SetComponents<TComponent>(TEntityId entityId, Dictionary<TComponentType, TComponent> components)
         {
             if (components == null)
             {
                 throw new ArgumentNullException(nameof(components));
             }
 
-            _componentStorage.SetComponents(entity, components.Keys, type => components[type]);
+            _componentStorage.SetComponents(entityId, components.Keys, type => components[type]);
         }
 
         /// <summary>
-        /// Sets a components by their component type associated for an entity.
+        /// Sets a components by their component type associated for an entity id.
         /// </summary>
         /// <typeparam name="TComponent">The actual type of the component.</typeparam>
-        /// <param name="entity">The entity to set the component to.</param>
+        /// <param name="entityId">The entity id to set the component to.</param>
         /// <param name="componentTypes">The list of component types.</param>
         /// <param name="components">The list of component values.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="componentTypes"/> or <paramref name="components"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="componentTypes"/> and <paramref name="components"/> do not have the same number of elements.</exception>
         /// <exception cref="ArgumentException">The actual type does not match the component type.</exception>
         /// <remarks>The component types and values are taken in order. If a component type has not been registered, it is registered with the provided actual type and a default container.</remarks>
-        public void SetComponents<TComponent>(TEntityId entity, IList<TComponentType> componentTypes, IList<TComponent> components)
+        public void SetComponents<TComponent>(TEntityId entityId, IList<TComponentType> componentTypes, IList<TComponent> components)
         {
             if (componentTypes == null)
             {
@@ -184,20 +184,20 @@ namespace Theraot.ECS
             }
 
             var index = 0;
-            _componentStorage.SetComponents(entity, componentTypes, _ => components[index++]);
+            _componentStorage.SetComponents(entityId, componentTypes, _ => components[index++]);
         }
 
         /// <summary>
-        /// Attempts to retrieve a component by its component type for an entity.
+        /// Attempts to retrieve a component by its component type for an entity id.
         /// </summary>
         /// <typeparam name="TComponent">The actual type of the component.</typeparam>
-        /// <param name="entity">The entity for which to get the component.</param>
+        /// <param name="entityId">The entity id for which to get the component.</param>
         /// <param name="componentType">The component type to retrieve.</param>
         /// <param name="component">The retrieved component value.</param>
         /// <returns>true if the component was retrieved; otherwise, false.</returns>
-        public bool TryGetComponent<TComponent>(TEntityId entity, TComponentType componentType, out TComponent component)
+        public bool TryGetComponent<TComponent>(TEntityId entityId, TComponentType componentType, out TComponent component)
         {
-            return _componentStorage.TryGetComponent(entity, componentType, out component);
+            return _componentStorage.TryGetComponent(entityId, componentType, out component);
         }
 
         /// <summary>
@@ -224,91 +224,91 @@ namespace Theraot.ECS
         }
 
         /// <summary>
-        /// Removes a component by its component type for an entity.
+        /// Removes a component by its component type for an entity id.
         /// </summary>
-        /// <param name="entity">The entity for which to remove the component.</param>
+        /// <param name="entityId">The entity id for which to remove the component.</param>
         /// <param name="componentType">The component type to remove.</param>
-        public void UnsetComponent(TEntityId entity, TComponentType componentType)
+        public void UnsetComponent(TEntityId entityId, TComponentType componentType)
         {
-            _componentStorage.UnsetComponent(entity, componentType);
+            _componentStorage.UnsetComponent(entityId, componentType);
         }
 
         /// <summary>
-        /// Removes components by their component type for an entity.
+        /// Removes components by their component type for an entity id.
         /// </summary>
-        /// <param name="entity">The entity for which to remove the component.</param>
+        /// <param name="entityId">The entity id for which to remove the component.</param>
         /// <param name="componentTypes">The collection of component types to remove.</param>
-        public void UnsetComponents(TEntityId entity, IEnumerable<TComponentType> componentTypes)
+        public void UnsetComponents(TEntityId entityId, IEnumerable<TComponentType> componentTypes)
         {
             if (componentTypes == null)
             {
                 throw new ArgumentNullException(nameof(componentTypes));
             }
 
-            _componentStorage.UnsetComponents(entity, componentTypes);
+            _componentStorage.UnsetComponents(entityId, componentTypes);
         }
 
         /// <summary>
-        /// Removes components by their component type for an entity.
+        /// Removes components by their component type for an entity id.
         /// </summary>
-        /// <param name="entity">The entity for which to remove the component.</param>
+        /// <param name="entityId">The entity id for which to remove the component.</param>
         /// <param name="componentTypes">The collection of component types to remove.</param>
-        public void UnsetComponents(TEntityId entity, params TComponentType[] componentTypes)
+        public void UnsetComponents(TEntityId entityId, params TComponentType[] componentTypes)
         {
-            _componentStorage.UnsetComponents(entity, componentTypes);
+            _componentStorage.UnsetComponents(entityId, componentTypes);
         }
     }
 
     public sealed partial class Scope<TEntityId, TComponentType>
     {
-        public void With<TComponent1>(TEntityId entity, TComponentType componentType1, ActionRef<TEntityId, TComponent1> callback)
+        public void With<TComponent1>(TEntityId entityId, TComponentType componentType1, ActionRef<TEntityId, TComponent1> callback)
         {
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _componentStorage.With(entity, componentType1, callback);
+            _componentStorage.With(entityId, componentType1, callback);
         }
 
-        public void With<TComponent1, TComponent2>(TEntityId entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntityId, TComponent1, TComponent2> callback)
+        public void With<TComponent1, TComponent2>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntityId, TComponent1, TComponent2> callback)
         {
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _componentStorage.With(entity, componentType1, componentType2, callback);
+            _componentStorage.With(entityId, componentType1, componentType2, callback);
         }
 
-        public void With<TComponent1, TComponent2, TComponent3>(TEntityId entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3> callback)
+        public void With<TComponent1, TComponent2, TComponent3>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3> callback)
         {
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _componentStorage.With(entity, componentType1, componentType2, componentType3, callback);
+            _componentStorage.With(entityId, componentType1, componentType2, componentType3, callback);
         }
 
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntityId entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4> callback)
+        public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4> callback)
         {
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _componentStorage.With(entity, componentType1, componentType2, componentType3, componentType4, callback);
+            _componentStorage.With(entityId, componentType1, componentType2, componentType3, componentType4, callback);
         }
 
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntityId entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
+        public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
         {
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _componentStorage.With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
+            _componentStorage.With(entityId, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
         }
     }
 
@@ -316,7 +316,7 @@ namespace Theraot.ECS
 
     public sealed partial class Scope<TEntityId, TComponentType>
     {
-        public void SetComponents<TComponent>(TEntityId entity, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
+        public void SetComponents<TComponent>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
         {
             if (componentTypes == null)
             {
@@ -328,7 +328,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(componentSelector));
             }
 
-            _componentStorage.SetComponents(entity, componentTypes, componentSelector);
+            _componentStorage.SetComponents(entityId, componentTypes, componentSelector);
         }
     }
 
@@ -336,7 +336,7 @@ namespace Theraot.ECS
 
     public sealed partial class Scope<TEntityId, TComponentType>
     {
-        public void SetComponents<TComponent>(TEntityId entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        public void SetComponents<TComponent>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
             if (componentTypes == null)
             {
@@ -348,7 +348,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(componentSelector));
             }
 
-            _componentStorage.SetComponents(entity, componentTypes, componentSelector);
+            _componentStorage.SetComponents(entityId, componentTypes, componentSelector);
         }
     }
 

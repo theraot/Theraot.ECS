@@ -10,26 +10,26 @@ namespace Theraot.ECS
 
     internal partial class ComponentStorage<TEntityId, TComponentType>
     {
-        public bool BufferSetComponents<TComponent>(TEntityId entity, IList<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
+        public bool BufferSetComponents<TComponent>(TEntityId entityId, IList<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
         {
             if (_log == null)
             {
                 return false;
             }
 
-            _log.Add(() => SetComponents(entity, componentTypes, componentSelector));
+            _log.Add(() => SetComponents(entityId, componentTypes, componentSelector));
             return true;
         }
 
-        public void SetComponents<TComponent>(TEntityId entity, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
+        public void SetComponents<TComponent>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
         {
             var componentTypeList = EnumerableHelper.AsIList(componentTypes);
-            if (BufferSetComponents(entity, componentTypeList, componentSelector))
+            if (BufferSetComponents(entityId, componentTypeList, componentSelector))
             {
                 return;
             }
 
-            var entityComponentStorage = _componentsByEntity[entity];
+            var entityComponentStorage = _componentsByEntity[entityId];
 
             var addedComponentTypes = new List<TComponentType>();
             foreach (var componentType in componentTypeList)
@@ -50,7 +50,7 @@ namespace Theraot.ECS
 
             if (addedComponentTypes.Count > 0)
             {
-                _entityComponentEventDispatcher.NotifyAddedComponents(entity, addedComponentTypes);
+                _entityComponentEventDispatcher.NotifyAddedComponents(entityId, addedComponentTypes);
             }
         }
     }
@@ -59,26 +59,26 @@ namespace Theraot.ECS
 
     internal partial class ComponentStorage<TEntityId, TComponentType>
     {
-        public bool BufferSetComponents<TComponent>(TEntityId entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        public bool BufferSetComponents<TComponent>(TEntityId entityId, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
             if (_log == null)
             {
                 return false;
             }
 
-            _log.Add(() => SetComponents(entity, componentTypes, componentSelector));
+            _log.Add(() => SetComponents(entityId, componentTypes, componentSelector));
             return true;
         }
 
-        public void SetComponents<TComponent>(TEntityId entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        public void SetComponents<TComponent>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
             var componentTypeList = EnumerableHelper.AsIList(componentTypes);
-            if (BufferSetComponents(entity, componentTypeList, componentSelector))
+            if (BufferSetComponents(entityId, componentTypeList, componentSelector))
             {
                 return;
             }
 
-            var entityComponentStorage = _componentsByEntity[entity];
+            var entityComponentStorage = _componentsByEntity[entityId];
 
             var addedComponentTypes = new List<TComponentType>();
             foreach (var componentType in componentTypeList)
@@ -99,7 +99,7 @@ namespace Theraot.ECS
 
             if (addedComponentTypes.Count > 0)
             {
-                _entityComponentEventDispatcher.NotifyAddedComponents(entity, addedComponentTypes);
+                _entityComponentEventDispatcher.NotifyAddedComponents(entityId, addedComponentTypes);
             }
         }
     }

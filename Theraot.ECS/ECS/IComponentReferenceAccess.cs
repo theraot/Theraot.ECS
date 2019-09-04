@@ -4,14 +4,14 @@
     {
         void With<TComponent1>
         (
-            TEntityId entity,
+            TEntityId entityId,
             TComponentType componentType1,
             ActionRef<TEntityId, TComponent1> callback
         );
 
         void With<TComponent1, TComponent2>
         (
-            TEntityId entity,
+            TEntityId entityId,
             TComponentType componentType1,
             TComponentType componentType2,
             ActionRef<TEntityId, TComponent1, TComponent2> callback
@@ -19,7 +19,7 @@
 
         void With<TComponent1, TComponent2, TComponent3>
         (
-            TEntityId entity,
+            TEntityId entityId,
             TComponentType componentType1,
             TComponentType componentType2,
             TComponentType componentType3,
@@ -28,7 +28,7 @@
 
         void With<TComponent1, TComponent2, TComponent3, TComponent4>
         (
-            TEntityId entity,
+            TEntityId entityId,
             TComponentType componentType1,
             TComponentType componentType2,
             TComponentType componentType3,
@@ -38,7 +38,7 @@
 
         void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>
         (
-            TEntityId entity,
+            TEntityId entityId,
             TComponentType componentType1,
             TComponentType componentType2,
             TComponentType componentType3,

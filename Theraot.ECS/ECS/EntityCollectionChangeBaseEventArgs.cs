@@ -16,15 +16,15 @@
             : base((System.ComponentModel.CollectionChangeAction)action, element)
 #endif
         {
-            Entity = element;
+            EntityId = element;
             IsAdd = action == CollectionChangeActionEx.Add;
             IsRemove = action == CollectionChangeActionEx.Remove;
         }
 
         /// <summary>
-        /// Gets the entity.
+        /// Gets the entity id.
         /// </summary>
-        public TEntityId Entity { get; }
+        public TEntityId EntityId { get; }
 
         /// <summary>
         /// Gets whatever or not the change was an addition.
