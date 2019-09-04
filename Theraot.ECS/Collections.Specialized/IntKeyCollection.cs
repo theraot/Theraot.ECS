@@ -11,6 +11,10 @@ using System.Diagnostics;
 
 namespace Theraot.Collections.Specialized
 {
+    /// <summary>
+    /// Represents a collection operated by int keys, which keeps the values compact in memory
+    /// </summary>
+    /// <typeparam name="TValue">The type of the values</typeparam>
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public sealed
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
@@ -22,6 +26,10 @@ namespace Theraot.Collections.Specialized
         private int[] _keys;
         private TValue[] _values;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="IntKeyCollection{TValue}"/> with the provided initial capacity.
+        /// </summary>
+        /// <param name="initialCapacity">The initial capacity for the new instance.</param>
         public IntKeyCollection(int initialCapacity)
         {
             Count = 0;
@@ -29,6 +37,10 @@ namespace Theraot.Collections.Specialized
             _values = new TValue[initialCapacity];
         }
 
+        /// <summary>
+        /// Gets or sets the capacity of this instance
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">When attempting to set the capacity smaller than the number of items in the collection.</exception>
         public int Capacity
         {
             get => _keys.Length;
@@ -66,10 +78,16 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        /// <inheritdoc />
         public int Count { get; private set; }
 
         bool ICollection<TValue>.IsReadOnly => false;
 
+        /// <summary>
+        /// Gets a value by its int key.
+        /// </summary>
+        /// <param name="key">The key associate with the value to retrieve.</param>
+        /// <exception cref="KeyNotFoundException">When the specified key is not found in this instance.</exception>
         public TValue this[int key]
         {
             get
@@ -89,6 +107,7 @@ namespace Theraot.Collections.Specialized
             Add(value);
         }
 
+        /// <inheritdoc />
         public int Add(TValue value)
         {
             var key = _key++;
@@ -96,6 +115,12 @@ namespace Theraot.Collections.Specialized
             return key;
         }
 
+        /// <summary>
+        /// Adds multiple values to the collection.
+        /// </summary>
+        /// <param name="values">The collection of values to add.</param>
+        /// <returns>The list of int keys that was given to the added values, in the same order.</returns>
+        /// <exception cref="ArgumentNullException">When the collection of values to add is null.</exception>
         public List<int> AddRange(IList<TValue> values)
         {
             if (values == null)
@@ -112,6 +137,7 @@ namespace Theraot.Collections.Specialized
             return result;
         }
 
+        /// <inheritdoc />
         public void Clear()
         {
             Array.Clear(_keys, 0, Count);
@@ -119,6 +145,10 @@ namespace Theraot.Collections.Specialized
             Count = 0;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="IntKeyCollection{TValue}"/> containing the same values as this one.
+        /// </summary>
+        /// <returns></returns>
         public IntKeyCollection<TValue> Clone()
         {
             var clone = new IntKeyCollection<TValue>(Count);
@@ -128,16 +158,31 @@ namespace Theraot.Collections.Specialized
             return clone;
         }
 
+        /// <summary>
+        /// Verifies if the current instance contains the provided value.
+        /// </summary>
+        /// <param name="item">The value to search for.</param>
+        /// <returns>true if the value was found; otherwise, false.</returns>
         public bool Contains(TValue item)
         {
             return IndexOfValue(item) >= 0;
         }
 
+        /// <summary>
+        /// Verifies if the current instance contains the provided int key.
+        /// </summary>
+        /// <param name="key">The int key to search for.</param>
+        /// <returns>true if the key was found; otherwise, false.</returns>
         public bool ContainsKey(int key)
         {
             return IndexOfKey(key) >= 0;
         }
 
+        /// <summary>
+        /// Copies the values to the provided array.
+        /// </summary>
+        /// <param name="array">The array to copy the values to.</param>
+        /// <param name="arrayIndex">The starting index at which to copy the values.</param>
         public void CopyTo(TValue[] array, int arrayIndex)
         {
             Array.Copy(_values, 0, array, arrayIndex, Count);
@@ -148,6 +193,7 @@ namespace Theraot.Collections.Specialized
             return GetEnumerator();
         }
 
+        /// <inheritdoc />
         public IEnumerator<TValue> GetEnumerator()
         {
             foreach (var value in _values)
@@ -156,6 +202,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        /// <inheritdoc />
         public ref TValue GetRef(int key)
         {
             var index = IndexOfKey(key);
@@ -167,6 +214,7 @@ namespace Theraot.Collections.Specialized
             throw new KeyNotFoundException();
         }
 
+        /// <inheritdoc />
         public bool Remove(int key)
         {
             var index = IndexOfKey(key);
@@ -179,6 +227,7 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
+        /// <inheritdoc />
         public bool Remove(TValue item)
         {
             var index = IndexOfValue(item);
@@ -191,6 +240,11 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
+        /// <summary>
+        /// Remove all the values associated with the provided keys.
+        /// </summary>
+        /// <param name="source">The collection of keys to remove.</param>
+        /// <returns>The list of keys that were removed.</returns>
         public List<int> RemoveAll(IEnumerable<int> source)
         {
             if (source == null)
@@ -210,11 +264,20 @@ namespace Theraot.Collections.Specialized
             return result;
         }
 
+        /// <summary>
+        /// Sets the capacity to the number of elements in this instance.
+        /// </summary>
         public void TrimToSize()
         {
             Capacity = Count;
         }
 
+        /// <summary>
+        /// Attempts to retrieve the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key by which to find the value.</param>
+        /// <param name="value">The retrieved value.</param>
+        /// <returns>true if the key was found; otherwise, false.</returns>
         public bool TryGetValue(int key, out TValue value)
         {
             var index = IndexOfKey(key);
@@ -228,6 +291,7 @@ namespace Theraot.Collections.Specialized
             return false;
         }
 
+        /// <inheritdoc />
         public int Update(int key, TValue value)
         {
             var index = IndexOfKey(key);
