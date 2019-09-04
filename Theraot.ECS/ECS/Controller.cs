@@ -12,13 +12,15 @@ namespace Theraot.ECS
 
         private readonly Dictionary<TEntityId, TComponentKindSet> _componentKindsByEntity;
 
-        private readonly Dictionary<QueryId, EntityCollection<TEntityId, TComponentKind>> _entityIdsByQueryId;
-
         private readonly IEqualityComparer<TEntityId> _entityEqualityComparer;
+
+        private readonly Dictionary<QueryId, EntityCollection<TEntityId, TComponentKind>> _entityIdsByQueryId;
 
         private readonly Dictionary<TComponentKind, HashSet<QueryId>> _queryIdsByComponentKind;
 
         private readonly QueryManager<TComponentKind, TComponentKindSet> _queryManager;
+
+        private EntityCollection<TEntityId, TComponentKind> _allEntities;
 
         internal Controller(IEqualityComparer<TEntityId> entityEqualityComparer, IComponentKindManager<TComponentKind, TComponentKindSet> componentKindManager)
         {
@@ -29,6 +31,17 @@ namespace Theraot.ECS
             _entityIdsByQueryId = new Dictionary<QueryId, EntityCollection<TEntityId, TComponentKind>>();
             _queryIdsByComponentKind = new Dictionary<TComponentKind, HashSet<QueryId>>(componentKindEqualityComparer);
             _componentKindsByEntity = new Dictionary<TEntityId, TComponentKindSet>(_entityEqualityComparer);
+        }
+
+        public EntityCollection<TEntityId, TComponentKind> GetAllEntities(IComponentReferenceAccess<TEntityId, TComponentKind> componentReferenceAccess)
+        {
+            if (_allEntities != null)
+            {
+                return _allEntities;
+            }
+
+            _allEntities = new EntityCollection<TEntityId, TComponentKind>(componentReferenceAccess, _componentKindsByEntity.Keys, _ => true, _ => true);
+            return _allEntities;
         }
 
         public EntityCollection<TEntityId, TComponentKind> GetEntityCollection(IEnumerable<TComponentKind> all, IEnumerable<TComponentKind> any, IEnumerable<TComponentKind> none, IComponentReferenceAccess<TEntityId, TComponentKind> componentReferenceAccess)
@@ -55,7 +68,8 @@ namespace Theraot.ECS
 
         private EntityCollection<TEntityId, TComponentKind> CreateEntityCollection(IEnumerable<TComponentKind> componentKinds, int queryId, IComponentReferenceAccess<TEntityId, TComponentKind> componentReferenceAccess)
         {
-            var entityCollection = _entityIdsByQueryId[queryId] = new EntityCollection<TEntityId, TComponentKind>(componentReferenceAccess, _entityEqualityComparer);
+            var set = new HashSet<TEntityId>(_entityEqualityComparer);
+            var entityCollection = _entityIdsByQueryId[queryId] = new EntityCollection<TEntityId, TComponentKind>(componentReferenceAccess, set, set.Add, set.Remove);
             foreach (var componentKind in componentKinds)
             {
                 if (!_queryIdsByComponentKind.TryGetValue(componentKind, out var queryIds))

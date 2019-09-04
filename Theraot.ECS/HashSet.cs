@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable IDE0041 // Usar comprobación "is null"
 
 using System;
@@ -27,7 +28,7 @@ namespace Theraot
 
         bool ICollection<T>.IsReadOnly => false;
 
-        public void Add(T item)
+        void ICollection<T>.Add(T item)
         {
             if (ReferenceEquals(item, null))
             {
@@ -36,6 +37,26 @@ namespace Theraot
             else
             {
                 _dictionary.Add(item, null);
+            }
+        }
+
+        public bool Add(T item)
+        {
+            if (ReferenceEquals(item, null))
+            {
+                var result = !_containsNull;
+                _containsNull = true;
+                return result;
+            }
+
+            try
+            {
+                _dictionary.Add(item, null);
+                return true;
+            }
+            catch (ArgumentException)
+            {
+                return false;
             }
         }
 

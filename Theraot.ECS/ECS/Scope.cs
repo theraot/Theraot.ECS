@@ -44,9 +44,9 @@ namespace Theraot.ECS
     /// <typeparam name="TComponentKind">The type used to represent component kinds.</typeparam>
     public sealed partial class Scope<TEntityId, TComponentKind>
     {
-        private readonly ComponentStorage<TEntityId, TComponentKind> _componentStorage;
-
         private readonly ComponentKindRegistry<TComponentKind> _componentKindRegistry;
+
+        private readonly ComponentStorage<TEntityId, TComponentKind> _componentStorage;
 
         private readonly IController<TEntityId, TComponentKind> _controller;
 
@@ -63,6 +63,14 @@ namespace Theraot.ECS
                 _componentKindRegistry,
                 entityComponentEventDispatcher
             );
+        }
+
+        /// <summary>
+        /// Gets a <see cref="EntityCollection{TEntityId, TComponentKind}"/> with all the entities.
+        /// </summary>
+        public EntityCollection<TEntityId, TComponentKind> GetAllEntities()
+        {
+            return _controller.GetAllEntities(_componentStorage);
         }
 
         /// <summary>

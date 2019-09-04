@@ -13,14 +13,20 @@ namespace Theraot.ECS
     /// <typeparam name="TComponentKind">The type uses to represent component kinds.</typeparam>
     public sealed partial class EntityCollection<TEntityId, TComponentKind> : ICollection<TEntityId>
     {
+        private readonly Predicate<TEntityId> _add;
+
         private readonly IComponentReferenceAccess<TEntityId, TComponentKind> _componentReferenceAccess;
 
-        private readonly HashSet<TEntityId> _wrapped;
+        private readonly Predicate<TEntityId> _remove;
 
-        internal EntityCollection(IComponentReferenceAccess<TEntityId, TComponentKind> componentReferenceAccess, IEqualityComparer<TEntityId> entityEqualityComparer)
+        private readonly ICollection<TEntityId> _wrapped;
+
+        internal EntityCollection(IComponentReferenceAccess<TEntityId, TComponentKind> componentReferenceAccess, ICollection<TEntityId> wrapped, Predicate<TEntityId> add, Predicate<TEntityId> remove)
         {
             _componentReferenceAccess = componentReferenceAccess;
-            _wrapped = new HashSet<TEntityId>(entityEqualityComparer);
+            _wrapped = wrapped;
+            _add = add;
+            _remove = remove;
         }
 
         /// <summary>
@@ -59,14 +65,18 @@ namespace Theraot.ECS
 
         internal void Add(TEntityId entityId)
         {
-            _wrapped.Add(entityId);
-            OnAddedEntity(entityId);
+            if (_add(entityId))
+            {
+                OnAddedEntity(entityId);
+            }
         }
 
         internal void Remove(TEntityId entityId)
         {
-            _wrapped.Remove(entityId);
-            OnRemovedEntity(entityId);
+            if (_remove(entityId))
+            {
+                OnRemovedEntity(entityId);
+            }
         }
     }
 
