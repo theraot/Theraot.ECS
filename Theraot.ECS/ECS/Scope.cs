@@ -61,7 +61,7 @@ namespace Theraot.ECS
 
         public EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
         {
-            return _controller.GetEntityCollection(all, any, none, _componentStorage.GetComponentReferenceAccess());
+            return _controller.GetEntityCollection(all, any, none, _componentStorage);
         }
 
         public Type GetRegisteredComponentType(TComponentType componentType)
@@ -160,7 +160,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _componentStorage.GetComponentReferenceAccess().With(entity, componentType1, callback);
+            _componentStorage.With(entity, componentType1, callback);
         }
 
         public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
@@ -170,7 +170,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _componentStorage.GetComponentReferenceAccess().With(entity, componentType1, componentType2, callback);
+            _componentStorage.With(entity, componentType1, componentType2, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
@@ -180,7 +180,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _componentStorage.GetComponentReferenceAccess().With(entity, componentType1, componentType2, componentType3, callback);
+            _componentStorage.With(entity, componentType1, componentType2, componentType3, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
@@ -190,7 +190,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _componentStorage.GetComponentReferenceAccess().With(entity, componentType1, componentType2, componentType3, componentType4, callback);
+            _componentStorage.With(entity, componentType1, componentType2, componentType3, componentType4, callback);
         }
 
         public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
@@ -200,7 +200,7 @@ namespace Theraot.ECS
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _componentStorage.GetComponentReferenceAccess().With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
+            _componentStorage.With(entity, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
         }
     }
 

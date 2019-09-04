@@ -33,11 +33,6 @@ namespace Theraot.ECS
             _entityComponentEventDispatcher = entityComponentEventDispatcher;
         }
 
-        public IComponentReferenceAccess<TEntity, TComponentType> GetComponentReferenceAccess()
-        {
-            return this;
-        }
-
         public bool RegisterEntity(TEntity entity)
         {
             if (_componentsByEntity.ContainsKey(entity))
