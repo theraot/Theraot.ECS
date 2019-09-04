@@ -1,6 +1,6 @@
-﻿namespace Theraot.ECS
+namespace Theraot.ECS
 {
-    public static class EntityCollectionChangeEventArgs
+    internal static class EntityCollectionChangeEventArgs
     {
         public static EntityCollectionChangeEventArgs<TEntity> CreateAdd<TEntity>(TEntity entity)
         {
