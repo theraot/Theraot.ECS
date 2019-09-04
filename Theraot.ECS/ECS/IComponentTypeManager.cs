@@ -72,6 +72,7 @@ namespace Theraot.ECS
         /// <param name="componentTypes">The collection of component types to search.</param>
         /// <returns>True if the set of component types contains any of the component types; otherwise, false.</returns>
         /// <exception cref="System.ArgumentNullException">If <paramref name="componentTypeSet"/> or <paramref name="componentTypes"/> is null.</exception>
+        /// <remark>Calling <see cref="Contains"></see> in a loop is a valid implementation.</remark>
         bool Overlaps(TComponentTypeSet componentTypeSet, IEnumerable<TComponentType> componentTypes);
 
         /// <summary>
