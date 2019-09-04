@@ -257,7 +257,7 @@ namespace Theraot.Collections.Specialized
             }
             catch (IndexOutOfRangeException exception)
             {
-                throw new ArgumentException(exception.Message, nameof(array));
+                throw new ArgumentException(exception.Message, nameof(array), exception);
             }
         }
 
@@ -511,11 +511,20 @@ namespace Theraot.Collections.Specialized
     {
         public FlagArray And(FlagArray other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
             return Build(Operation(Paired(this, other, PairMode.Shorter, out var capacity), And), capacity);
         }
 
         public bool IsProperSubsetOf(FlagArray other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
             var equals = true;
 
             int Operate(Pair pair)
@@ -539,6 +548,11 @@ namespace Theraot.Collections.Specialized
 
         public bool IsProperSupersetOf(FlagArray other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
             var equals = true;
 
             int Operate(Pair pair)
@@ -562,36 +576,64 @@ namespace Theraot.Collections.Specialized
 
         public bool IsSubsetOf(FlagArray other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
             return IsEmpty(Operation(Paired(this, other, PairMode.Left, out _), Minus));
         }
 
         public bool IsSupersetOf(FlagArray other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
             return IsEmpty(Operation(Paired(other, this, PairMode.Left, out _), Minus));
         }
 
         public FlagArray Minus(FlagArray other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
             return Build(Operation(Paired(this, other, PairMode.Left, out var capacity), Minus), capacity);
         }
 
         public FlagArray Or(FlagArray other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
             return Build(Operation(Paired(this, other, PairMode.Longer, out var capacity), Or), capacity);
         }
 
         public bool Overlaps(FlagArray other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
             return !IsEmpty(Operation(Paired(this, other, PairMode.Shorter, out _), And));
         }
 
         public bool SetEquals(FlagArray other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
             return IsEmpty(Operation(Paired(this, other, PairMode.Longer, out _), Xor));
         }
 
         public FlagArray Xor(FlagArray other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
             return Build(Operation(Paired(this, other, PairMode.Longer, out var capacity), Xor), capacity);
         }
 

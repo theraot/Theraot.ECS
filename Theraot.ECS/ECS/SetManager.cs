@@ -109,6 +109,10 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentTypeSet));
             }
+            if (componentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(componentTypes));
+            }
 
             return componentTypeSet.Count != 0 && componentTypeSet.Overlaps(componentTypes);
         }
