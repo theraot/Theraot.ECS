@@ -1,3 +1,4 @@
+#pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable RECS0096 // Type parameter is never used
 
