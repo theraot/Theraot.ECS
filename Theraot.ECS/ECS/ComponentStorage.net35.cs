@@ -8,9 +8,9 @@ namespace Theraot.ECS
 {
 #if LESSTHAN_NET35
 
-    internal partial class ComponentStorage<TEntity, TComponentType>
+    internal partial class ComponentStorage<TEntityId, TComponentType>
     {
-        public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
+        public bool BufferSetComponents<TComponent>(TEntityId entity, IList<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
         {
             if (_log == null)
             {
@@ -21,7 +21,7 @@ namespace Theraot.ECS
             return true;
         }
 
-        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
+        public void SetComponents<TComponent>(TEntityId entity, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
         {
             var componentTypeList = EnumerableHelper.AsIList(componentTypes);
             if (BufferSetComponents(entity, componentTypeList, componentSelector))
@@ -57,9 +57,9 @@ namespace Theraot.ECS
 
 #else
 
-    internal partial class ComponentStorage<TEntity, TComponentType>
+    internal partial class ComponentStorage<TEntityId, TComponentType>
     {
-        public bool BufferSetComponents<TComponent>(TEntity entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        public bool BufferSetComponents<TComponent>(TEntityId entity, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
             if (_log == null)
             {
@@ -70,7 +70,7 @@ namespace Theraot.ECS
             return true;
         }
 
-        public void SetComponents<TComponent>(TEntity entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        public void SetComponents<TComponent>(TEntityId entity, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
         {
             var componentTypeList = EnumerableHelper.AsIList(componentTypes);
             if (BufferSetComponents(entity, componentTypeList, componentSelector))

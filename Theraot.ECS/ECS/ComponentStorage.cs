@@ -15,25 +15,25 @@ using Action = System.Threading.ThreadStart;
 
 namespace Theraot.ECS
 {
-    internal partial class ComponentStorage<TEntity, TComponentType>
+    internal partial class ComponentStorage<TEntityId, TComponentType>
     {
-        private readonly Dictionary<TEntity, CompactDictionary<TComponentType, ComponentId>> _componentsByEntity;
+        private readonly Dictionary<TEntityId, CompactDictionary<TComponentType, ComponentId>> _componentsByEntity;
 
         private readonly IComparer<TComponentType> _componentTypeComparer;
 
         private readonly ComponentTypeRegistry<TComponentType> _componentTypeRegistry;
 
-        private readonly EntityComponentEventDispatcher<TEntity, TComponentType> _entityComponentEventDispatcher;
+        private readonly EntityComponentEventDispatcher<TEntityId, TComponentType> _entityComponentEventDispatcher;
 
-        public ComponentStorage(IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntity> entityEqualityComparer, ComponentTypeRegistry<TComponentType> componentTypeRegistry, EntityComponentEventDispatcher<TEntity, TComponentType> entityComponentEventDispatcher)
+        public ComponentStorage(IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntityId> entityEqualityComparer, ComponentTypeRegistry<TComponentType> componentTypeRegistry, EntityComponentEventDispatcher<TEntityId, TComponentType> entityComponentEventDispatcher)
         {
             _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
-            _componentsByEntity = new Dictionary<TEntity, CompactDictionary<TComponentType, ComponentId>>(entityEqualityComparer);
+            _componentsByEntity = new Dictionary<TEntityId, CompactDictionary<TComponentType, ComponentId>>(entityEqualityComparer);
             _componentTypeRegistry = componentTypeRegistry;
             _entityComponentEventDispatcher = entityComponentEventDispatcher;
         }
 
-        public bool RegisterEntity(TEntity entity)
+        public bool RegisterEntity(TEntityId entity)
         {
             if (_componentsByEntity.ContainsKey(entity))
             {
@@ -52,7 +52,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void SetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
+        public void SetComponent<TComponent>(TEntityId entity, TComponentType componentType, TComponent component)
         {
             if (BufferSetComponent(entity, componentType, component))
             {
@@ -74,7 +74,7 @@ namespace Theraot.ECS
             }
         }
 
-        public bool TryGetComponent<TComponent>(TEntity entity, TComponentType componentType, out TComponent component)
+        public bool TryGetComponent<TComponent>(TEntityId entity, TComponentType componentType, out TComponent component)
         {
             component = default;
             return _componentsByEntity.TryGetValue(entity, out var entityComponentStorage)
@@ -83,7 +83,7 @@ namespace Theraot.ECS
                    && typedComponentStorage.TryGetValue(componentId, out component);
         }
 
-        public void UnsetComponent(TEntity entity, TComponentType componentType)
+        public void UnsetComponent(TEntityId entity, TComponentType componentType)
         {
             if (BufferUnsetComponent(entity, componentType))
             {
@@ -103,7 +103,7 @@ namespace Theraot.ECS
             _entityComponentEventDispatcher.NotifyRemovedComponents(entity, new[] { componentType });
         }
 
-        public void UnsetComponents(TEntity entity, IEnumerable<TComponentType> componentTypes)
+        public void UnsetComponents(TEntityId entity, IEnumerable<TComponentType> componentTypes)
         {
             var componentTypeList = EnumerableHelper.AsIList(componentTypes);
             if (BufferUnsetComponent(entity, componentTypeList))
@@ -134,9 +134,9 @@ namespace Theraot.ECS
         }
     }
 
-    internal partial class ComponentStorage<TEntity, TComponentType> : IComponentReferenceAccess<TEntity, TComponentType>
+    internal partial class ComponentStorage<TEntityId, TComponentType> : IComponentReferenceAccess<TEntityId, TComponentType>
     {
-        public void With<TComponent1>(TEntity entity, TComponentType componentType1, ActionRef<TEntity, TComponent1> callback)
+        public void With<TComponent1>(TEntityId entity, TComponentType componentType1, ActionRef<TEntityId, TComponent1> callback)
         {
             if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
             {
@@ -162,7 +162,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void With<TComponent1, TComponent2>(TEntity entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntity, TComponent1, TComponent2> callback)
+        public void With<TComponent1, TComponent2>(TEntityId entity, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntityId, TComponent1, TComponent2> callback)
         {
             if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
             {
@@ -193,7 +193,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void With<TComponent1, TComponent2, TComponent3>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback)
+        public void With<TComponent1, TComponent2, TComponent3>(TEntityId entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3> callback)
         {
             if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
             {
@@ -226,7 +226,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback)
+        public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntityId entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4> callback)
         {
             if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
             {
@@ -261,7 +261,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntity entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
+        public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntityId entity, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
         {
             if (!_componentsByEntity.TryGetValue(entity, out var entityComponentStorage))
             {
@@ -299,11 +299,11 @@ namespace Theraot.ECS
         }
     }
 
-    internal partial class ComponentStorage<TEntity, TComponentType>
+    internal partial class ComponentStorage<TEntityId, TComponentType>
     {
         private List<Action> _log;
 
-        public bool BufferSetComponent<TComponent>(TEntity entity, TComponentType componentType, TComponent component)
+        public bool BufferSetComponent<TComponent>(TEntityId entity, TComponentType componentType, TComponent component)
         {
             if (_log == null)
             {
@@ -314,7 +314,7 @@ namespace Theraot.ECS
             return true;
         }
 
-        public bool BufferUnsetComponent(TEntity entity, IList<TComponentType> componentTypes)
+        public bool BufferUnsetComponent(TEntityId entity, IList<TComponentType> componentTypes)
         {
             if (_log == null)
             {
@@ -325,7 +325,7 @@ namespace Theraot.ECS
             return true;
         }
 
-        public bool BufferUnsetComponent(TEntity entity, TComponentType componentType)
+        public bool BufferUnsetComponent(TEntityId entity, TComponentType componentType)
         {
             if (_log == null)
             {

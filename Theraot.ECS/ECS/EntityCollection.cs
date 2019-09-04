@@ -7,20 +7,20 @@ using System.Collections.Generic;
 namespace Theraot.ECS
 {
     /// <summary>
-    /// Represents a readonly view of entities from the <see cref="Scope{TEntity, TComponentType}"/> from which it was created.
+    /// Represents a readonly view of entities from the <see cref="Scope{TEntityId, TComponentType}"/> from which it was created.
     /// </summary>
-    /// <typeparam name="TEntity">The type of the entities.</typeparam>
+    /// <typeparam name="TEntityId">The type of the entities.</typeparam>
     /// <typeparam name="TComponentType">The type uses to represent component types.</typeparam>
-    public sealed partial class EntityCollection<TEntity, TComponentType> : ICollection<TEntity>
+    public sealed partial class EntityCollection<TEntityId, TComponentType> : ICollection<TEntityId>
     {
-        private readonly IComponentReferenceAccess<TEntity, TComponentType> _componentReferenceAccess;
+        private readonly IComponentReferenceAccess<TEntityId, TComponentType> _componentReferenceAccess;
 
-        private readonly HashSet<TEntity> _wrapped;
+        private readonly HashSet<TEntityId> _wrapped;
 
-        internal EntityCollection(IComponentReferenceAccess<TEntity, TComponentType> componentReferenceAccess, IEqualityComparer<TEntity> entityEqualityComparer)
+        internal EntityCollection(IComponentReferenceAccess<TEntityId, TComponentType> componentReferenceAccess, IEqualityComparer<TEntityId> entityEqualityComparer)
         {
             _componentReferenceAccess = componentReferenceAccess;
-            _wrapped = new HashSet<TEntity>(entityEqualityComparer);
+            _wrapped = new HashSet<TEntityId>(entityEqualityComparer);
         }
 
         /// <summary>
@@ -33,13 +33,13 @@ namespace Theraot.ECS
         /// </summary>
         /// <param name="item">The entity to search for.</param>
         /// <returns>true if the entity is found; otherwise, false.</returns>
-        public bool Contains(TEntity item)
+        public bool Contains(TEntityId item)
         {
             return _wrapped.Contains(item);
         }
 
         /// <inheritdoc />
-        public void CopyTo(TEntity[] array, int arrayIndex)
+        public void CopyTo(TEntityId[] array, int arrayIndex)
         {
             if (array == null)
             {
@@ -49,7 +49,7 @@ namespace Theraot.ECS
         }
 
         /// <inheritdoc />
-        public IEnumerator<TEntity> GetEnumerator()
+        public IEnumerator<TEntityId> GetEnumerator()
         {
             foreach (var entity in _wrapped)
             {
@@ -57,43 +57,43 @@ namespace Theraot.ECS
             }
         }
 
-        internal void Add(TEntity entity)
+        internal void Add(TEntityId entity)
         {
             _wrapped.Add(entity);
             OnAddedEntity(entity);
         }
 
-        internal void Remove(TEntity entity)
+        internal void Remove(TEntityId entity)
         {
             _wrapped.Remove(entity);
             OnRemovedEntity(entity);
         }
     }
 
-    public sealed partial class EntityCollection<TEntity, TComponentType>
+    public sealed partial class EntityCollection<TEntityId, TComponentType>
     {
         /// <summary>
         /// Occurs when an entity is added.
         /// </summary>
-        public event EventHandler<EntityCollectionChangeEventArgs<TEntity>> AddedEntity;
+        public event EventHandler<EntityCollectionChangeEventArgs<TEntityId>> AddedEntity;
 
         /// <summary>
         /// Occurs when an entity is removed.
         /// </summary>
-        public event EventHandler<EntityCollectionChangeEventArgs<TEntity>> RemovedEntity;
+        public event EventHandler<EntityCollectionChangeEventArgs<TEntityId>> RemovedEntity;
 
-        private void OnAddedEntity(TEntity entity)
+        private void OnAddedEntity(TEntityId entity)
         {
             AddedEntity?.Invoke(this, EntityCollectionChangeEventArgs.CreateAdd(entity));
         }
 
-        private void OnRemovedEntity(TEntity entity)
+        private void OnRemovedEntity(TEntityId entity)
         {
             RemovedEntity?.Invoke(this, EntityCollectionChangeEventArgs.CreateRemove(entity));
         }
     }
 
-    public sealed partial class EntityCollection<TEntity, TComponentType>
+    public sealed partial class EntityCollection<TEntityId, TComponentType>
     {
         /// <summary>
         /// Executes a callback over all the entities in this instance.
@@ -102,7 +102,7 @@ namespace Theraot.ECS
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
         public void ForEach
         (
-            Action<TEntity> callback
+            Action<TEntityId> callback
         )
         {
             if (callback == null)
@@ -131,7 +131,7 @@ namespace Theraot.ECS
         public void ForEach<TComponent1>
         (
             TComponentType componentType1,
-            ActionRef<TEntity, TComponent1> callback
+            ActionRef<TEntityId, TComponent1> callback
         )
         {
             if (callback == null)
@@ -160,7 +160,7 @@ namespace Theraot.ECS
         (
             TComponentType componentType1,
             TComponentType componentType2,
-            ActionRef<TEntity, TComponent1, TComponent2> callback
+            ActionRef<TEntityId, TComponent1, TComponent2> callback
         )
         {
             if (callback == null)
@@ -192,7 +192,7 @@ namespace Theraot.ECS
             TComponentType componentType1,
             TComponentType componentType2,
             TComponentType componentType3,
-            ActionRef<TEntity, TComponent1, TComponent2, TComponent3> callback
+            ActionRef<TEntityId, TComponent1, TComponent2, TComponent3> callback
         )
         {
             if (callback == null)
@@ -227,7 +227,7 @@ namespace Theraot.ECS
             TComponentType componentType2,
             TComponentType componentType3,
             TComponentType componentType4,
-            ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4> callback
+            ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4> callback
         )
         {
             if (callback == null)
@@ -265,7 +265,7 @@ namespace Theraot.ECS
             TComponentType componentType3,
             TComponentType componentType4,
             TComponentType componentType5,
-            ActionRef<TEntity, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback
+            ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback
         )
         {
             if (callback == null)
@@ -280,16 +280,16 @@ namespace Theraot.ECS
         }
     }
 
-    public sealed partial class EntityCollection<TEntity, TComponentType>
+    public sealed partial class EntityCollection<TEntityId, TComponentType>
     {
-        bool ICollection<TEntity>.IsReadOnly => true;
+        bool ICollection<TEntityId>.IsReadOnly => true;
 
-        void ICollection<TEntity>.Add(TEntity item)
+        void ICollection<TEntityId>.Add(TEntityId item)
         {
             throw new NotSupportedException();
         }
 
-        void ICollection<TEntity>.Clear()
+        void ICollection<TEntityId>.Clear()
         {
             throw new NotSupportedException();
         }
@@ -299,7 +299,7 @@ namespace Theraot.ECS
             return GetEnumerator();
         }
 
-        bool ICollection<TEntity>.Remove(TEntity item)
+        bool ICollection<TEntityId>.Remove(TEntityId item)
         {
             throw new NotSupportedException();
         }

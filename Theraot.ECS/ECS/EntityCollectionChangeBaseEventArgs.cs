@@ -1,17 +1,17 @@
 ﻿namespace Theraot.ECS
 {
     /// <summary>
-    /// Represents a change in a <see cref="EntityCollection{TEntity, TComponentType}"/>
+    /// Represents a change in a <see cref="EntityCollection{TEntityId, TComponentType}"/>
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    public class EntityCollectionChangeBaseEventArgs<TEntity>
+    /// <typeparam name="TEntityId"></typeparam>
+    public class EntityCollectionChangeBaseEventArgs<TEntityId>
 #if NET_20 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
         : System.EventArgs
 #else
         : System.ComponentModel.CollectionChangeEventArgs
 #endif
     {
-        internal EntityCollectionChangeBaseEventArgs(CollectionChangeActionEx action, TEntity element)
+        internal EntityCollectionChangeBaseEventArgs(CollectionChangeActionEx action, TEntityId element)
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             : base((System.ComponentModel.CollectionChangeAction)action, element)
 #endif
@@ -24,7 +24,7 @@
         /// <summary>
         /// Gets the entity.
         /// </summary>
-        public TEntity Entity { get; }
+        public TEntityId Entity { get; }
 
         /// <summary>
         /// Gets whatever or not the change was an addition.

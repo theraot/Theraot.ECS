@@ -3,20 +3,20 @@ using System.Collections.Generic;
 
 namespace Theraot.ECS
 {
-    internal class EntityComponentEventDispatcher<TEntity, TComponentType>
+    internal class EntityComponentEventDispatcher<TEntityId, TComponentType>
     {
-        public event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> AddedComponents;
+        public event EventHandler<EntityComponentsChangeEventArgs<TEntityId, TComponentType>> AddedComponents;
 
-        public event EventHandler<EntityComponentsChangeEventArgs<TEntity, TComponentType>> RemovedComponents;
+        public event EventHandler<EntityComponentsChangeEventArgs<TEntityId, TComponentType>> RemovedComponents;
 
-        internal void NotifyAddedComponents(TEntity entity, IList<TComponentType> componentTypes)
+        internal void NotifyAddedComponents(TEntityId entity, IList<TComponentType> componentTypes)
         {
-            AddedComponents?.Invoke(this, new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeActionEx.Add, entity, componentTypes));
+            AddedComponents?.Invoke(this, new EntityComponentsChangeEventArgs<TEntityId, TComponentType>(CollectionChangeActionEx.Add, entity, componentTypes));
         }
 
-        internal void NotifyRemovedComponents(TEntity entity, IList<TComponentType> componentTypes)
+        internal void NotifyRemovedComponents(TEntityId entity, IList<TComponentType> componentTypes)
         {
-            RemovedComponents?.Invoke(this, new EntityComponentsChangeEventArgs<TEntity, TComponentType>(CollectionChangeActionEx.Remove, entity, componentTypes));
+            RemovedComponents?.Invoke(this, new EntityComponentsChangeEventArgs<TEntityId, TComponentType>(CollectionChangeActionEx.Remove, entity, componentTypes));
         }
     }
 }

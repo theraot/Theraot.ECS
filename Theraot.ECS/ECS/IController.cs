@@ -2,12 +2,12 @@
 
 namespace Theraot.ECS
 {
-    internal interface IController<TEntity, TComponentType>
+    internal interface IController<TEntityId, TComponentType>
     {
-        EntityCollection<TEntity, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none, IComponentReferenceAccess<TEntity, TComponentType> componentReferenceAccess);
+        EntityCollection<TEntityId, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none, IComponentReferenceAccess<TEntityId, TComponentType> componentReferenceAccess);
 
-        void RegisterEntity(TEntity entity);
+        void RegisterEntity(TEntityId entity);
 
-        void SubscribeTo(EntityComponentEventDispatcher<TEntity, TComponentType> entityComponentEventDispatcher);
+        void SubscribeTo(EntityComponentEventDispatcher<TEntityId, TComponentType> entityComponentEventDispatcher);
     }
 }
