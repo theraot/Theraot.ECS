@@ -10,7 +10,7 @@ namespace Theraot.ECS
 
     internal partial class ComponentStorage<TEntityId, TComponentType>
     {
-        public bool BufferSetComponents<TComponent>(TEntityId entityId, IList<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
+        public bool BufferSetComponents<TComponentValue>(TEntityId entityId, IList<TComponentType> componentTypes, Converter<TComponentType, TComponentValue> componentSelector)
         {
             if (_log == null)
             {
@@ -21,7 +21,7 @@ namespace Theraot.ECS
             return true;
         }
 
-        public void SetComponents<TComponent>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
+        public void SetComponents<TComponentValue>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponentValue> componentSelector)
         {
             var componentTypeList = EnumerableHelper.AsIList(componentTypes);
             if (BufferSetComponents(entityId, componentTypeList, componentSelector))
@@ -39,8 +39,8 @@ namespace Theraot.ECS
                     entityComponentStorage.Set
                     (
                         componentType,
-                        key => _componentTypeRegistry.GetOrCreateTypedStorage<TComponent>(key).Add(componentSelector(key)),
-                        pair => _componentTypeRegistry.GetOrCreateTypedStorage<TComponent>(pair.Key).Update(pair.Value, componentSelector(pair.Key))
+                        key => _componentTypeRegistry.GetOrCreateTypedStorage<TComponentValue>(key).Add(componentSelector(key)),
+                        pair => _componentTypeRegistry.GetOrCreateTypedStorage<TComponentValue>(pair.Key).Update(pair.Value, componentSelector(pair.Key))
                     )
                 )
                 {
@@ -59,7 +59,7 @@ namespace Theraot.ECS
 
     internal partial class ComponentStorage<TEntityId, TComponentType>
     {
-        public bool BufferSetComponents<TComponent>(TEntityId entityId, IList<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        public bool BufferSetComponents<TComponentValue>(TEntityId entityId, IList<TComponentType> componentTypes, Func<TComponentType, TComponentValue> componentSelector)
         {
             if (_log == null)
             {
@@ -70,7 +70,7 @@ namespace Theraot.ECS
             return true;
         }
 
-        public void SetComponents<TComponent>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        public void SetComponents<TComponentValue>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponentValue> componentSelector)
         {
             var componentTypeList = EnumerableHelper.AsIList(componentTypes);
             if (BufferSetComponents(entityId, componentTypeList, componentSelector))
@@ -88,8 +88,8 @@ namespace Theraot.ECS
                     entityComponentStorage.Set
                     (
                         componentType,
-                        key => _componentTypeRegistry.GetOrCreateTypedStorage<TComponent>(key).Add(componentSelector(key)),
-                        pair => _componentTypeRegistry.GetOrCreateTypedStorage<TComponent>(pair.Key).Update(pair.Value, componentSelector(pair.Key))
+                        key => _componentTypeRegistry.GetOrCreateTypedStorage<TComponentValue>(key).Add(componentSelector(key)),
+                        pair => _componentTypeRegistry.GetOrCreateTypedStorage<TComponentValue>(pair.Key).Update(pair.Value, componentSelector(pair.Key))
                     )
                 )
                 {

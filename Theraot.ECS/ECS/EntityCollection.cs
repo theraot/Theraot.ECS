@@ -122,16 +122,16 @@ namespace Theraot.ECS
         /// <summary>
         /// Executes a callback with references to components over all the entities in this instance.
         /// </summary>
-        /// <typeparam name="TComponent1">The actual type of the component type.</typeparam>
+        /// <typeparam name="TComponentValue1">The type of the component value.</typeparam>
         /// <param name="componentType1">A component type to which to get a reference.</param>
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
         /// <exception cref="KeyNotFoundException">A component or component type was not found.</exception>
-        /// <exception cref="ArgumentException">A component type does not match the specified actual type.</exception>
-        public void ForEach<TComponent1>
+        /// <exception cref="ArgumentException">A component type does not match the type of the component value.</exception>
+        public void ForEach<TComponentValue1>
         (
             TComponentType componentType1,
-            ActionRef<TEntityId, TComponent1> callback
+            ActionRef<TEntityId, TComponentValue1> callback
         )
         {
             if (callback == null)
@@ -148,19 +148,19 @@ namespace Theraot.ECS
         /// <summary>
         /// Executes a callback with references to components over all the entities in this instance.
         /// </summary>
-        /// <typeparam name="TComponent1">The actual type of the first component type.</typeparam>
-        /// <typeparam name="TComponent2">The actual type of the second component type.</typeparam>
+        /// <typeparam name="TComponentValue1">The type of the first component value.</typeparam>
+        /// <typeparam name="TComponentValue2">The type of the second component value.</typeparam>
         /// <param name="componentType1">The first component type to which to get a reference.</param>
         /// <param name="componentType2">The second component type to which to get a reference.</param>
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
         /// <exception cref="KeyNotFoundException">A component or component type was not found.</exception>
-        /// <exception cref="ArgumentException">A component type does not match the specified actual type.</exception>
-        public void ForEach<TComponent1, TComponent2>
+        /// <exception cref="ArgumentException">A component type does not match the type of its component value.</exception>
+        public void ForEach<TComponentValue1, TComponentValue2>
         (
             TComponentType componentType1,
             TComponentType componentType2,
-            ActionRef<TEntityId, TComponent1, TComponent2> callback
+            ActionRef<TEntityId, TComponentValue1, TComponentValue2> callback
         )
         {
             if (callback == null)
@@ -177,22 +177,22 @@ namespace Theraot.ECS
         /// <summary>
         /// Executes a callback with references to components over all the entities in this instance.
         /// </summary>
-        /// <typeparam name="TComponent1">The actual type of the first component type.</typeparam>
-        /// <typeparam name="TComponent2">The actual type of the second component type.</typeparam>
-        /// <typeparam name="TComponent3">The actual type of the third component type.</typeparam>
+        /// <typeparam name="TComponentValue1">The type of the first component value.</typeparam>
+        /// <typeparam name="TComponentValue2">The type of the second component value.</typeparam>
+        /// <typeparam name="TComponentValue3">The type of the third component value.</typeparam>
         /// <param name="componentType1">The first component type to which to get a reference.</param>
         /// <param name="componentType2">The second component type to which to get a reference.</param>
         /// <param name="componentType3">The third component type to which to get a reference.</param>
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
         /// <exception cref="KeyNotFoundException">A component or component type was not found.</exception>
-        /// <exception cref="ArgumentException">A component type does not match the specified actual type.</exception>
-        public void ForEach<TComponent1, TComponent2, TComponent3>
+        /// <exception cref="ArgumentException">A component type does not match the type of its component value.</exception>
+        public void ForEach<TComponentValue1, TComponentValue2, TComponentValue3>
         (
             TComponentType componentType1,
             TComponentType componentType2,
             TComponentType componentType3,
-            ActionRef<TEntityId, TComponent1, TComponent2, TComponent3> callback
+            ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3> callback
         )
         {
             if (callback == null)
@@ -209,10 +209,10 @@ namespace Theraot.ECS
         /// <summary>
         /// Executes a callback with references to components over all the entities in this instance.
         /// </summary>
-        /// <typeparam name="TComponent1">The actual type of the first component type.</typeparam>
-        /// <typeparam name="TComponent2">The actual type of the second component type.</typeparam>
-        /// <typeparam name="TComponent3">The actual type of the third component type.</typeparam>
-        /// <typeparam name="TComponent4">The actual type of the fourth component type.</typeparam>
+        /// <typeparam name="TComponentValue1">The type of the first component value.</typeparam>
+        /// <typeparam name="TComponentValue2">The type of the second component value.</typeparam>
+        /// <typeparam name="TComponentValue3">The type of the third component value.</typeparam>
+        /// <typeparam name="TComponentValue4">The type of the fourth component value.</typeparam>
         /// <param name="componentType1">The first component type to which to get a reference.</param>
         /// <param name="componentType2">The second component type to which to get a reference.</param>
         /// <param name="componentType3">The third component type to which to get a reference.</param>
@@ -220,14 +220,14 @@ namespace Theraot.ECS
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
         /// <exception cref="KeyNotFoundException">A component or component type was not found.</exception>
-        /// <exception cref="ArgumentException">A component type does not match the specified actual type.</exception>
-        public void ForEach<TComponent1, TComponent2, TComponent3, TComponent4>
+        /// <exception cref="ArgumentException">A component type does not match the type of its component value.</exception>
+        public void ForEach<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4>
         (
             TComponentType componentType1,
             TComponentType componentType2,
             TComponentType componentType3,
             TComponentType componentType4,
-            ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4> callback
+            ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4> callback
         )
         {
             if (callback == null)
@@ -244,11 +244,11 @@ namespace Theraot.ECS
         /// <summary>
         /// Executes a callback with references to components over all the entities in this instance.
         /// </summary>
-        /// <typeparam name="TComponent1">The actual type of the first component type.</typeparam>
-        /// <typeparam name="TComponent2">The actual type of the second component type.</typeparam>
-        /// <typeparam name="TComponent3">The actual type of the third component type.</typeparam>
-        /// <typeparam name="TComponent4">The actual type of the fourth component type.</typeparam>
-        /// <typeparam name="TComponent5">The actual type of the fifth component type.</typeparam>
+        /// <typeparam name="TComponentValue1">The type of the first component value.</typeparam>
+        /// <typeparam name="TComponentValue2">The type of the second component value.</typeparam>
+        /// <typeparam name="TComponentValue3">The type of the third component value.</typeparam>
+        /// <typeparam name="TComponentValue4">The type of the fourth component value.</typeparam>
+        /// <typeparam name="TComponentValue5">The type of the fifth component value.</typeparam>
         /// <param name="componentType1">The first component type to which to get a reference.</param>
         /// <param name="componentType2">The second component type to which to get a reference.</param>
         /// <param name="componentType3">The third component type to which to get a reference.</param>
@@ -257,15 +257,15 @@ namespace Theraot.ECS
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
         /// <exception cref="KeyNotFoundException">A component or component type was not found.</exception>
-        /// <exception cref="ArgumentException">A component type does not match the specified actual type.</exception>
-        public void ForEach<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>
+        /// <exception cref="ArgumentException">A component type does not match the type of its component value.</exception>
+        public void ForEach<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5>
         (
             TComponentType componentType1,
             TComponentType componentType2,
             TComponentType componentType3,
             TComponentType componentType4,
             TComponentType componentType5,
-            ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback
+            ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5> callback
         )
         {
             if (callback == null)

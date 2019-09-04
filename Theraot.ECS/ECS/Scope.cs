@@ -69,15 +69,15 @@ namespace Theraot.ECS
         /// <summary>
         /// Retrieves a component by its component type for an entity id.
         /// </summary>
-        /// <typeparam name="TComponent">The actual type of the component.</typeparam>
+        /// <typeparam name="TComponentValue">The type of the component value.</typeparam>
         /// <param name="entityId">The entity id for which to get the component.</param>
         /// <param name="componentType">The type of the component to retrieve.</param>
         /// <exception cref="KeyNotFoundException">The component was not found.</exception>
         /// <exception cref="ArgumentNullException">The component type is null.</exception>
-        /// <exception cref="ArgumentException">The the actual type of the component does not match.</exception>
-        public TComponent GetComponent<TComponent>(TEntityId entityId, TComponentType componentType)
+        /// <exception cref="ArgumentException">The the type of the component value does not match the component type.</exception>
+        public TComponentValue GetComponent<TComponentValue>(TEntityId entityId, TComponentType componentType)
         {
-            if (_componentStorage.TryGetComponent<TComponent>(entityId, componentType, out var component))
+            if (_componentStorage.TryGetComponent<TComponentValue>(entityId, componentType, out var component))
             {
                 return component;
             }
@@ -99,7 +99,7 @@ namespace Theraot.ECS
         }
 
         /// <summary>
-        /// Gets the actual type that is associated with a component type.
+        /// Gets the component value type that is associated with a component type.
         /// </summary>
         /// <param name="componentType">The component type to query.</param>
         /// <exception cref="KeyNotFoundException">The component type has not been registered.</exception>
@@ -126,13 +126,13 @@ namespace Theraot.ECS
         /// <summary>
         /// Sets a component by its component type associated for an entity id.
         /// </summary>
-        /// <typeparam name="TComponent">The actual type of the component.</typeparam>
+        /// <typeparam name="TComponentValue">The type of the component value.</typeparam>
         /// <param name="entityId">The entity id to set the component to.</param>
         /// <param name="type">The component type.</param>
         /// <param name="component">The component value.</param>
-        /// <exception cref="ArgumentException">The actual type does not match the component type.</exception>
-        /// <remarks>If the component type has not been registered, it is registered with the provided actual type and a default container.</remarks>
-        public void SetComponent<TComponent>(TEntityId entityId, TComponentType type, TComponent component)
+        /// <exception cref="ArgumentException">The type of the component value does not match the component type.</exception>
+        /// <remarks>If the component type has not been registered, it is registered with the provided type of component value and a default container.</remarks>
+        public void SetComponent<TComponentValue>(TEntityId entityId, TComponentType type, TComponentValue component)
         {
             _componentStorage.SetComponent(entityId, type, component);
         }
@@ -140,12 +140,12 @@ namespace Theraot.ECS
         /// <summary>
         /// Sets a components by their component type associated for an entity id.
         /// </summary>
-        /// <typeparam name="TComponent">The actual type of the component.</typeparam>
+        /// <typeparam name="TComponentValue">The type of the component value.</typeparam>
         /// <param name="entityId">The entity to set the component to.</param>
         /// <param name="components">A dictionary of component types and values.</param>
-        /// <exception cref="ArgumentException">The actual type does not match the component type.</exception>
-        /// <remarks>If a component type has not been registered, it is registered with the provided actual type and a default container.</remarks>
-        public void SetComponents<TComponent>(TEntityId entityId, Dictionary<TComponentType, TComponent> components)
+        /// <exception cref="ArgumentException">The type of the component value does not match the component type.</exception>
+        /// <remarks>If a component type has not been registered, it is registered with the provided type of component value and a default container.</remarks>
+        public void SetComponents<TComponentValue>(TEntityId entityId, Dictionary<TComponentType, TComponentValue> components)
         {
             if (components == null)
             {
@@ -158,15 +158,15 @@ namespace Theraot.ECS
         /// <summary>
         /// Sets a components by their component type associated for an entity id.
         /// </summary>
-        /// <typeparam name="TComponent">The actual type of the component.</typeparam>
+        /// <typeparam name="TComponentValue">The type of the component value.</typeparam>
         /// <param name="entityId">The entity id to set the component to.</param>
         /// <param name="componentTypes">The list of component types.</param>
         /// <param name="components">The list of component values.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="componentTypes"/> or <paramref name="components"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="componentTypes"/> and <paramref name="components"/> do not have the same number of elements.</exception>
-        /// <exception cref="ArgumentException">The actual type does not match the component type.</exception>
-        /// <remarks>The component types and values are taken in order. If a component type has not been registered, it is registered with the provided actual type and a default container.</remarks>
-        public void SetComponents<TComponent>(TEntityId entityId, IList<TComponentType> componentTypes, IList<TComponent> components)
+        /// <exception cref="ArgumentException">The type of the component value does not match the component type.</exception>
+        /// <remarks>The component types and values are taken in order. If a component type has not been registered, it is registered with the provided type of component value and a default container.</remarks>
+        public void SetComponents<TComponentValue>(TEntityId entityId, IList<TComponentType> componentTypes, IList<TComponentValue> components)
         {
             if (componentTypes == null)
             {
@@ -190,35 +190,35 @@ namespace Theraot.ECS
         /// <summary>
         /// Attempts to retrieve a component by its component type for an entity id.
         /// </summary>
-        /// <typeparam name="TComponent">The actual type of the component.</typeparam>
+        /// <typeparam name="TComponentValue">The type of the component value.</typeparam>
         /// <param name="entityId">The entity id for which to get the component.</param>
         /// <param name="componentType">The component type to retrieve.</param>
         /// <param name="component">The retrieved component value.</param>
         /// <returns>true if the component was retrieved; otherwise, false.</returns>
-        public bool TryGetComponent<TComponent>(TEntityId entityId, TComponentType componentType, out TComponent component)
+        public bool TryGetComponent<TComponentValue>(TEntityId entityId, TComponentType componentType, out TComponentValue component)
         {
             return _componentStorage.TryGetComponent(entityId, componentType, out component);
         }
 
         /// <summary>
-        /// Attempts to register the actual type for component type, and the default container.
+        /// Attempts to register the type of component value for a component type, and the default container.
         /// </summary>
-        /// <typeparam name="TComponent">The actual component type.</typeparam>
+        /// <typeparam name="TComponentValue">The type of the component value.</typeparam>
         /// <param name="componentType">The component type.</param>
         /// <returns>true if the component type was registered; otherwise, false.</returns>
-        public bool TryRegisterComponentType<TComponent>(TComponentType componentType)
+        public bool TryRegisterComponentType<TComponentValue>(TComponentType componentType)
         {
-            return _componentTypeRegistry.TryRegisterComponentType(componentType, new IntKeyCollection<TComponent>(16));
+            return _componentTypeRegistry.TryRegisterComponentType(componentType, new IntKeyCollection<TComponentValue>(16));
         }
 
         /// <summary>
-        /// Attempts to register the actual type for component type, and a custom container.
+        /// Attempts to register the type of component value for a component type, and a custom container.
         /// </summary>
-        /// <typeparam name="TComponent">The actual component type.</typeparam>
+        /// <typeparam name="TComponentValue">The type of the component value.</typeparam>
         /// <param name="componentType">The component type.</param>
         /// <param name="storage">The custom container.</param>
         /// <returns>true if the component type was registered; otherwise, false.</returns>
-        public bool TryRegisterComponentType<TComponent>(TComponentType componentType, IIntKeyCollection<TComponent> storage)
+        public bool TryRegisterComponentType<TComponentValue>(TComponentType componentType, IIntKeyCollection<TComponentValue> storage)
         {
             return _componentTypeRegistry.TryRegisterComponentType(componentType, storage);
         }
@@ -316,7 +316,7 @@ namespace Theraot.ECS
 
     public sealed partial class Scope<TEntityId, TComponentType>
     {
-        public void SetComponents<TComponent>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponent> componentSelector)
+        public void SetComponents<TComponentValue>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponentValue> componentSelector)
         {
             if (componentTypes == null)
             {
@@ -336,7 +336,7 @@ namespace Theraot.ECS
 
     public sealed partial class Scope<TEntityId, TComponentType>
     {
-        public void SetComponents<TComponent>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponent> componentSelector)
+        public void SetComponents<TComponentValue>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponentValue> componentSelector)
         {
             if (componentTypes == null)
             {

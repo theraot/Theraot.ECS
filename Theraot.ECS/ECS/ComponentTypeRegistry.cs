@@ -16,9 +16,9 @@ namespace Theraot.ECS
             _indexByActualType = new Dictionary<Type, IHasRemoveByIntKey>();
         }
 
-        public IIntKeyCollection<TComponent> GetOrCreateTypedStorage<TComponent>(TComponentType componentType)
+        public IIntKeyCollection<TComponentValue> GetOrCreateTypedStorage<TComponentValue>(TComponentType componentType)
         {
-            var actualType = typeof(TComponent);
+            var actualType = typeof(TComponentValue);
             if (_indexByComponentType.TryGetValue(componentType, out var type))
             {
                 if (type != actualType)
@@ -33,12 +33,12 @@ namespace Theraot.ECS
 
             if (_indexByActualType.TryGetValue(actualType, out var result))
             {
-                return (IIntKeyCollection<TComponent>)result;
+                return (IIntKeyCollection<TComponentValue>)result;
             }
 
-            result = new IntKeyCollection<TComponent>(16);
+            result = new IntKeyCollection<TComponentValue>(16);
             _indexByActualType[actualType] = result;
-            return (IIntKeyCollection<TComponent>)result;
+            return (IIntKeyCollection<TComponentValue>)result;
         }
 
         public Type GetRegisteredComponentType(TComponentType componentType)
@@ -46,9 +46,9 @@ namespace Theraot.ECS
             return _indexByComponentType[componentType];
         }
 
-        public IIntKeyCollection<TComponent> GetTypedStorage<TComponent>(TComponentType componentType)
+        public IIntKeyCollection<TComponentValue> GetTypedStorage<TComponentValue>(TComponentType componentType)
         {
-            var actualType = typeof(TComponent);
+            var actualType = typeof(TComponentValue);
             if (!_indexByComponentType.TryGetValue(componentType, out var type))
             {
                 throw new KeyNotFoundException("Component not stored");
@@ -61,7 +61,7 @@ namespace Theraot.ECS
 
             if (_indexByActualType.TryGetValue(actualType, out var result))
             {
-                return (IIntKeyCollection<TComponent>)result;
+                return (IIntKeyCollection<TComponentValue>)result;
             }
 
             throw new KeyNotFoundException("Component not stored");
@@ -74,9 +74,9 @@ namespace Theraot.ECS
                    && _indexByActualType.TryGetValue(type, out typedComponentStorage);
         }
 
-        public bool TryGetTypedStorage<TComponent>(TComponentType componentType, out IIntKeyCollection<TComponent> typedComponentStorage)
+        public bool TryGetTypedStorage<TComponentValue>(TComponentType componentType, out IIntKeyCollection<TComponentValue> typedComponentStorage)
         {
-            var actualType = typeof(TComponent);
+            var actualType = typeof(TComponentValue);
             if (!_indexByComponentType.TryGetValue(componentType, out var type))
             {
                 typedComponentStorage = default;
@@ -94,13 +94,13 @@ namespace Theraot.ECS
                 return false;
             }
 
-            typedComponentStorage = (IIntKeyCollection<TComponent>)result;
+            typedComponentStorage = (IIntKeyCollection<TComponentValue>)result;
             return true;
         }
 
-        public bool TryRegisterComponentType<TComponent>(TComponentType componentType, IIntKeyCollection<TComponent> storage)
+        public bool TryRegisterComponentType<TComponentValue>(TComponentType componentType, IIntKeyCollection<TComponentValue> storage)
         {
-            var actualType = typeof(TComponent);
+            var actualType = typeof(TComponentValue);
             if (_indexByComponentType.TryGetValue(componentType, out _))
             {
                 return false;

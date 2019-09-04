@@ -52,7 +52,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void SetComponent<TComponent>(TEntityId entityId, TComponentType componentType, TComponent component)
+        public void SetComponent<TComponentValue>(TEntityId entityId, TComponentType componentType, TComponentValue component)
         {
             if (BufferSetComponent(entityId, componentType, component))
             {
@@ -65,8 +65,8 @@ namespace Theraot.ECS
                 entityComponentStorage.Set
                 (
                     componentType,
-                    key => _componentTypeRegistry.GetOrCreateTypedStorage<TComponent>(key).Add(component),
-                    pair => _componentTypeRegistry.GetOrCreateTypedStorage<TComponent>(pair.Key).Update(pair.Value, component)
+                    key => _componentTypeRegistry.GetOrCreateTypedStorage<TComponentValue>(key).Add(component),
+                    pair => _componentTypeRegistry.GetOrCreateTypedStorage<TComponentValue>(pair.Key).Update(pair.Value, component)
                 )
             )
             {
@@ -74,12 +74,12 @@ namespace Theraot.ECS
             }
         }
 
-        public bool TryGetComponent<TComponent>(TEntityId entityId, TComponentType componentType, out TComponent component)
+        public bool TryGetComponent<TComponentValue>(TEntityId entityId, TComponentType componentType, out TComponentValue component)
         {
             component = default;
             return _componentsByEntity.TryGetValue(entityId, out var entityComponentStorage)
                    && entityComponentStorage.TryGetValue(componentType, out var componentId)
-                   && _componentTypeRegistry.TryGetTypedStorage<TComponent>(componentType, out var typedComponentStorage)
+                   && _componentTypeRegistry.TryGetTypedStorage<TComponentValue>(componentType, out var typedComponentStorage)
                    && typedComponentStorage.TryGetValue(componentId, out component);
         }
 
@@ -136,7 +136,7 @@ namespace Theraot.ECS
 
     internal partial class ComponentStorage<TEntityId, TComponentType> : IComponentReferenceAccess<TEntityId, TComponentType>
     {
-        public void With<TComponent1>(TEntityId entityId, TComponentType componentType1, ActionRef<TEntityId, TComponent1> callback)
+        public void With<TComponentValue1>(TEntityId entityId, TComponentType componentType1, ActionRef<TEntityId, TComponentValue1> callback)
         {
             if (!_componentsByEntity.TryGetValue(entityId, out var entityComponentStorage))
             {
@@ -153,7 +153,7 @@ namespace Theraot.ECS
             callback
             (
                 entityId,
-                ref _componentTypeRegistry.GetTypedStorage<TComponent1>(componentType1).GetRef(componentId)
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue1>(componentType1).GetRef(componentId)
             );
 
             if (created)
@@ -162,7 +162,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void With<TComponent1, TComponent2>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntityId, TComponent1, TComponent2> callback)
+        public void With<TComponentValue1, TComponentValue2>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntityId, TComponentValue1, TComponentValue2> callback)
         {
             if (!_componentsByEntity.TryGetValue(entityId, out var entityComponentStorage))
             {
@@ -183,8 +183,8 @@ namespace Theraot.ECS
             callback
             (
                 entityId,
-                ref _componentTypeRegistry.GetTypedStorage<TComponent1>(componentType1).GetRef(componentId1),
-                ref _componentTypeRegistry.GetTypedStorage<TComponent2>(componentType2).GetRef(componentId2)
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue1>(componentType1).GetRef(componentId1),
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue2>(componentType2).GetRef(componentId2)
             );
 
             if (created)
@@ -193,7 +193,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void With<TComponent1, TComponent2, TComponent3>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3> callback)
+        public void With<TComponentValue1, TComponentValue2, TComponentValue3>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3> callback)
         {
             if (!_componentsByEntity.TryGetValue(entityId, out var entityComponentStorage))
             {
@@ -215,9 +215,9 @@ namespace Theraot.ECS
             callback
             (
                 entityId,
-                ref _componentTypeRegistry.GetTypedStorage<TComponent1>(componentType1).GetRef(componentId1),
-                ref _componentTypeRegistry.GetTypedStorage<TComponent2>(componentType2).GetRef(componentId2),
-                ref _componentTypeRegistry.GetTypedStorage<TComponent3>(componentType3).GetRef(componentId3)
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue1>(componentType1).GetRef(componentId1),
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue2>(componentType2).GetRef(componentId2),
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue3>(componentType3).GetRef(componentId3)
             );
 
             if (created)
@@ -226,7 +226,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4> callback)
+        public void With<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4> callback)
         {
             if (!_componentsByEntity.TryGetValue(entityId, out var entityComponentStorage))
             {
@@ -249,10 +249,10 @@ namespace Theraot.ECS
             callback
             (
                 entityId,
-                ref _componentTypeRegistry.GetTypedStorage<TComponent1>(componentType1).GetRef(componentId1),
-                ref _componentTypeRegistry.GetTypedStorage<TComponent2>(componentType2).GetRef(componentId2),
-                ref _componentTypeRegistry.GetTypedStorage<TComponent3>(componentType3).GetRef(componentId3),
-                ref _componentTypeRegistry.GetTypedStorage<TComponent4>(componentType4).GetRef(componentId4)
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue1>(componentType1).GetRef(componentId1),
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue2>(componentType2).GetRef(componentId2),
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue3>(componentType3).GetRef(componentId3),
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue4>(componentType4).GetRef(componentId4)
             );
 
             if (created)
@@ -261,7 +261,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
+        public void With<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5> callback)
         {
             if (!_componentsByEntity.TryGetValue(entityId, out var entityComponentStorage))
             {
@@ -285,11 +285,11 @@ namespace Theraot.ECS
             callback
             (
                 entityId,
-                ref _componentTypeRegistry.GetTypedStorage<TComponent1>(componentType1).GetRef(componentId1),
-                ref _componentTypeRegistry.GetTypedStorage<TComponent2>(componentType2).GetRef(componentId2),
-                ref _componentTypeRegistry.GetTypedStorage<TComponent3>(componentType3).GetRef(componentId3),
-                ref _componentTypeRegistry.GetTypedStorage<TComponent4>(componentType4).GetRef(componentId4),
-                ref _componentTypeRegistry.GetTypedStorage<TComponent5>(componentType5).GetRef(componentId5)
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue1>(componentType1).GetRef(componentId1),
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue2>(componentType2).GetRef(componentId2),
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue3>(componentType3).GetRef(componentId3),
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue4>(componentType4).GetRef(componentId4),
+                ref _componentTypeRegistry.GetTypedStorage<TComponentValue5>(componentType5).GetRef(componentId5)
             );
 
             if (created)
@@ -303,7 +303,7 @@ namespace Theraot.ECS
     {
         private List<Action> _log;
 
-        public bool BufferSetComponent<TComponent>(TEntityId entityId, TComponentType componentType, TComponent component)
+        public bool BufferSetComponent<TComponentValue>(TEntityId entityId, TComponentType componentType, TComponentValue component)
         {
             if (_log == null)
             {
