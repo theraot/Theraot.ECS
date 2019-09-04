@@ -7,6 +7,9 @@ using System.Threading;
 
 namespace Theraot.Collections.Specialized
 {
+    /// <summary>
+    /// Represents a fixed capacity collection of binary flags.
+    /// </summary>
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11
 
     [Serializable]
@@ -17,6 +20,13 @@ namespace Theraot.Collections.Specialized
         private const int _sizeOfEntryLog2 = 5;
         private readonly int[] _entries;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FlagArray"/> class, with the flags at the provided indexes set.
+        /// </summary>
+        /// <param name="indexes">The collection of indexes of the flags to set.</param>
+        /// <exception cref="ArgumentNullException">The collection of indexes in null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The collection of indexes contains negatives.</exception>
+        /// <remarks>The indexes are zero based. The capacity of the flag array will be the least needed to contain the flags of the provided indexes.</remarks>
         public FlagArray(IEnumerable<int> indexes)
         {
             if (indexes == null)
@@ -48,11 +58,23 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FlagArray"/> class, with the specified capacity and the flags at the provided indexes set.
+        /// </summary>
+        /// <param name="capacity">The capacity of the flag array.</param>
+        /// <param name="indexes">The collection of indexes of the flags to set.</param>
+        /// <exception cref="ArgumentNullException">The collection of indexes in null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The capacity is negative, or the collection of indexes contains negatives or or indexes outside of the capacity.</exception>
+        /// <remarks>The indexes are zero based. For example, a capacity of 10 means that the valid indexes go from 0 to 9.</remarks>
         public FlagArray(int capacity, IEnumerable<int> indexes)
         {
             if (indexes == null)
             {
                 throw new ArgumentNullException(nameof(indexes), $"{nameof(indexes)} is null.");
+            }
+            if (capacity < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(capacity), $"{nameof(capacity)} < 0");
             }
             var indexesList = new List<int>();
             var max = 0;
@@ -62,16 +84,15 @@ namespace Theraot.Collections.Specialized
                 {
                     throw new ArgumentOutOfRangeException(nameof(indexes), "Negative index found");
                 }
+                if (index >= capacity)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(capacity));
+                }
                 if (index > max)
                 {
                     max = index;
                 }
                 indexesList.Add(index);
-            }
-
-            if (capacity < max + 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(capacity));
             }
 
             var length = GetLength(capacity);
@@ -83,6 +104,11 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FlagArray"/> class, with the specified capacity.
+        /// </summary>
+        /// <param name="capacity">The capacity of the flag array.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The capacity is negative.</exception>
         public FlagArray(int capacity)
         {
             if (capacity < 0)
@@ -106,8 +132,14 @@ namespace Theraot.Collections.Specialized
             prototype._entries.CopyTo(_entries, 0);
         }
 
+        /// <summary>
+        /// Gets the capacity of this instance.
+        /// </summary>
         public int Capacity { get; }
 
+        /// <summary>
+        /// Gets the number of flags that are set in this instance.
+        /// </summary>
         public int Count
         {
             get
@@ -121,6 +153,9 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        /// <summary>
+        /// Get a collection of the indexes of the flags that are set on this instance.
+        /// </summary>
         public IEnumerable<int> Flags
         {
             get
@@ -157,6 +192,10 @@ namespace Theraot.Collections.Specialized
 
         bool ICollection<bool>.IsReadOnly => false;
 
+        /// <summary>
+        /// Gets or sets a flag by the provided index.
+        /// </summary>
+        /// <param name="index">The index of the flag to get or set.</param>
         public bool this[int index]
         {
             get
@@ -195,16 +234,29 @@ namespace Theraot.Collections.Specialized
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Resets all flags.
+        /// </summary>
+        /// <remarks>All flags will be set to false.</remarks>
         public void Clear()
         {
             SetAll(false);
         }
 
+        /// <summary>
+        /// Returns a new <see cref="FlagArray"/> with the same flags sets as this instance.
+        /// </summary>
+        /// <returns></returns>
         public FlagArray Clone()
         {
             return new FlagArray(this);
         }
 
+        /// <summary>
+        /// Checks if this instance contains at least one flag that matches the provided item.
+        /// </summary>
+        /// <param name="item">The item to search for.</param>
+        /// <returns>true if a flag matching the item was found; otherwise, false.</returns>
         public bool Contains(bool item)
         {
             var nextBitIndex = 0;
@@ -232,6 +284,14 @@ namespace Theraot.Collections.Specialized
             return false;
         }
 
+        /// <summary>
+        /// Copies all the flags to an array of bool.
+        /// </summary>
+        /// <param name="array">The array to which to copy to.</param>
+        /// <param name="arrayIndex">The starting index for the copy.</param>
+        /// <exception cref="ArgumentNullException">When the provided array is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">When the starting index is negative.</exception>
+        /// <exception cref="ArgumentException">When there is not enough space to copy all the flags.</exception>
         public void CopyTo(bool[] array, int arrayIndex)
         {
             if (array == null)
@@ -261,6 +321,12 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        /// <summary>
+        /// Copies all the flags to an array of bool.
+        /// </summary>
+        /// <param name="array">The array to which to copy to.</param>
+        /// <exception cref="ArgumentNullException">When the provided array is null.</exception>
+        /// <exception cref="ArgumentException">When there is not enough space to copy all the flags.</exception>
         public void CopyTo(bool[] array)
         {
             if (array == null)
@@ -286,6 +352,15 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        /// <summary>
+        /// Copies a fraction of the flags to an array of bool.
+        /// </summary>
+        /// <param name="array">The array to which to copy to.</param>
+        /// <param name="arrayIndex">The starting index for the copy.</param>
+        /// <param name="countLimit">The number of flags to copy.</param>
+        /// <exception cref="ArgumentNullException">When the provided array is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">When either the starting index or the number of flags to copy are negative.</exception>
+        /// <exception cref="ArgumentException">When there is not enough space to copy the flags.</exception>
         public void CopyTo(bool[] array, int arrayIndex, int countLimit)
         {
             if (array == null)
@@ -320,6 +395,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        /// <inheritdoc />
         public IEnumerator<bool> GetEnumerator()
         {
             var index = 0;
@@ -342,6 +418,11 @@ namespace Theraot.Collections.Specialized
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// Recovers the index of the first flag that matches the provided item.
+        /// </summary>
+        /// <param name="item">The item to search for.</param>
+        /// <returns>the index of the found flag, if any; otherwise, -1.</returns>
         public int IndexOf(bool item)
         {
             var currentIndex = 0;
@@ -367,6 +448,10 @@ namespace Theraot.Collections.Specialized
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Returns a new <see cref="FlagArray"/> with all the flags negated.
+        /// </summary>
+        /// <remarks>The returned <see cref="FlagArray"/> is of the same capacity.</remarks>
         public FlagArray Not()
         {
             var result = new FlagArray(Capacity);
@@ -392,6 +477,9 @@ namespace Theraot.Collections.Specialized
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Sets all the flags to the specified value.
+        /// </summary>
         public void SetAll(bool value)
         {
             var entryValue = value ? unchecked((int)0xffffffff) : 0;
@@ -509,6 +597,11 @@ namespace Theraot.Collections.Specialized
 
     public sealed partial class FlagArray
     {
+        /// <summary>
+        /// Returns a new <see cref="FlagArray"/> resulting from a bitwise and operation (set intersection).
+        /// </summary>
+        /// <param name="other">The <see cref="FlagArray"/> to operate with.</param>
+        /// <remarks>The returned <see cref="FlagArray"/> is of the capacity of the shorter of the two.</remarks>
         public FlagArray And(FlagArray other)
         {
             if (other == null)
@@ -518,6 +611,10 @@ namespace Theraot.Collections.Specialized
             return Build(Operation(Paired(this, other, PairMode.Shorter, out var capacity), And), capacity);
         }
 
+        /// <summary>
+        /// Determines whether this instance is a proper subset of the specified <see cref="FlagArray"/>.
+        /// </summary>
+        /// <param name="other">The <see cref="FlagArray"/> to compare with.</param>
         public bool IsProperSubsetOf(FlagArray other)
         {
             if (other == null)
@@ -546,6 +643,10 @@ namespace Theraot.Collections.Specialized
             return !equals;
         }
 
+        /// <summary>
+        /// Determines whether this instance is a proper superset of the specified <see cref="FlagArray"/>.
+        /// </summary>
+        /// <param name="other">The <see cref="FlagArray"/> to compare with.</param>
         public bool IsProperSupersetOf(FlagArray other)
         {
             if (other == null)
@@ -574,6 +675,10 @@ namespace Theraot.Collections.Specialized
             return !equals;
         }
 
+        /// <summary>
+        /// Determines whether this instance is a subset of the specified <see cref="FlagArray"/>.
+        /// </summary>
+        /// <param name="other">The <see cref="FlagArray"/> to compare with.</param>
         public bool IsSubsetOf(FlagArray other)
         {
             if (other == null)
@@ -583,6 +688,10 @@ namespace Theraot.Collections.Specialized
             return IsEmpty(Operation(Paired(this, other, PairMode.Left, out _), Minus));
         }
 
+        /// <summary>
+        /// Determines whether this instance is a superset of the specified <see cref="FlagArray"/>.
+        /// </summary>
+        /// <param name="other">The <see cref="FlagArray"/> to compare with.</param>
         public bool IsSupersetOf(FlagArray other)
         {
             if (other == null)
@@ -592,6 +701,11 @@ namespace Theraot.Collections.Specialized
             return IsEmpty(Operation(Paired(other, this, PairMode.Left, out _), Minus));
         }
 
+        /// <summary>
+        /// Returns a new <see cref="FlagArray"/> with the set difference with another <see cref="FlagArray"/> (bitwise converse implication).
+        /// </summary>
+        /// <param name="other">The <see cref="FlagArray"/> to operate with.</param>
+        /// <remarks>The returned <see cref="FlagArray"/> is of the capacity of this instance.</remarks>
         public FlagArray Minus(FlagArray other)
         {
             if (other == null)
@@ -601,6 +715,11 @@ namespace Theraot.Collections.Specialized
             return Build(Operation(Paired(this, other, PairMode.Left, out var capacity), Minus), capacity);
         }
 
+        /// <summary>
+        /// Returns a new <see cref="FlagArray"/> resulting from a bitwise or operation (set union).
+        /// </summary>
+        /// <param name="other">The <see cref="FlagArray"/> to operate with.</param>
+        /// <remarks>The returned <see cref="FlagArray"/> is of the capacity of the longer of the two.</remarks>
         public FlagArray Or(FlagArray other)
         {
             if (other == null)
@@ -610,6 +729,10 @@ namespace Theraot.Collections.Specialized
             return Build(Operation(Paired(this, other, PairMode.Longer, out var capacity), Or), capacity);
         }
 
+        /// <summary>
+        /// Determines whether this instance overlaps the specified <see cref="FlagArray"/>.
+        /// </summary>
+        /// <param name="other">The <see cref="FlagArray"/> to compare with.</param>
         public bool Overlaps(FlagArray other)
         {
             if (other == null)
@@ -619,6 +742,10 @@ namespace Theraot.Collections.Specialized
             return !IsEmpty(Operation(Paired(this, other, PairMode.Shorter, out _), And));
         }
 
+        /// <summary>
+        /// Determines whether this instance is equivalent to the specified <see cref="FlagArray"/>.
+        /// </summary>
+        /// <param name="other">The <see cref="FlagArray"/> to compare with.</param>
         public bool SetEquals(FlagArray other)
         {
             if (other == null)
@@ -628,6 +755,11 @@ namespace Theraot.Collections.Specialized
             return IsEmpty(Operation(Paired(this, other, PairMode.Longer, out _), Xor));
         }
 
+        /// <summary>
+        /// Returns a new <see cref="FlagArray"/> resulting from a bitwise xor operation.
+        /// </summary>
+        /// <param name="other">The <see cref="FlagArray"/> to operate with.</param>
+        /// <remarks>The returned <see cref="FlagArray"/> is of the capacity of the longer of the two.</remarks>
         public FlagArray Xor(FlagArray other)
         {
             if (other == null)
@@ -863,16 +995,19 @@ namespace Theraot.Collections.Specialized
             return x.SetEquals(y);
         }
 
+        /// <inheritdoc />
         public bool Equals(FlagArray other)
         {
             return SetEquals(other);
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             return Equals(obj as FlagArray);
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             unchecked
