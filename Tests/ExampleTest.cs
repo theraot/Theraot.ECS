@@ -10,7 +10,8 @@ namespace Tests
         [Test]
         public static void Test()
         {
-            // Creates a new scope, the entity id type will be Guid, the component kind will be int, the component kind set is FlagArray
+            // Creates a new scope
+            // The entity id type will be Guid, the component kind will be int, the component kind set is FlagArray
             // The default containers of component values will be used
             // Only 2 component kinds are allowed
             var scope = Scope.CreateScope(EqualityComparer<Guid>.Default, new FlagArrayManager(2));
