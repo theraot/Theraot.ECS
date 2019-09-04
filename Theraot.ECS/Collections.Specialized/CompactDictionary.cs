@@ -13,6 +13,11 @@ using System.Diagnostics;
 
 namespace Theraot.Collections.Specialized
 {
+    /// <summary>
+    /// Represents a dictionary that keeps keys and values compact in memory.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the keys.</typeparam>
+    /// <typeparam name="TValue">The type of the values.</typeparam>
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public sealed partial class CompactDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
@@ -22,6 +27,11 @@ namespace Theraot.Collections.Specialized
         private ValueList _valueList;
         private TValue[] _values;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CompactDictionary{TKey, TValue}"/> class, with the indicated <see cref="IComparer{T}"/> <paramref name="comparer"/> and <paramref name="initialCapacity"/>.
+        /// </summary>
+        /// <param name="comparer">The <see cref="IComparer{T}"/> used to sort the keys.</param>
+        /// <param name="initialCapacity">The initial capacity of the dictionary.</param>
         public CompactDictionary(IComparer<TKey> comparer, int initialCapacity)
         {
             _comparer = comparer ?? Comparer<TKey>.Default;
@@ -30,6 +40,10 @@ namespace Theraot.Collections.Specialized
             _values = new TValue[initialCapacity];
         }
 
+        /// <summary>
+        /// Gets or sets the current capacity of the dictionary.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">When attempting to set a capacity smaller than the current number of elements in the dictionary.</exception>
         public int Capacity
         {
             get => _keys.Length;
@@ -67,14 +81,18 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        /// <inheritdoc />
         public int Count { get; private set; }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
+        /// <inheritdoc />
         public ICollection<TKey> Keys => GetKeyList();
 
+        /// <inheritdoc />
         public ICollection<TValue> Values => GetValueList();
 
+        /// <inheritdoc />
         public TValue this[TKey key]
         {
             get
@@ -104,6 +122,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        /// <inheritdoc />
         public void Add(TKey key, TValue value)
         {
             if (!TryAdd(key, value))
@@ -117,6 +136,7 @@ namespace Theraot.Collections.Specialized
             Add(item.Key, item.Value);
         }
 
+        /// <inheritdoc />
         public void Clear()
         {
             Array.Clear(_keys, 0, Count);
@@ -124,6 +144,9 @@ namespace Theraot.Collections.Specialized
             Count = 0;
         }
 
+        /// <summary>
+        /// Gets a new <see cref="CompactDictionary{TKey, TValue}"/> copy of this instance.
+        /// </summary>
         public CompactDictionary<TKey, TValue> Clone()
         {
             var clone = new CompactDictionary<TKey, TValue>(_comparer, Count);
@@ -139,11 +162,16 @@ namespace Theraot.Collections.Specialized
             return index >= 0 && EqualityComparer<TValue>.Default.Equals(_values[index], item.Value);
         }
 
+        /// <inheritdoc />
         public bool ContainsKey(TKey key)
         {
             return IndexOfKey(key) >= 0;
         }
 
+        /// <summary>
+        /// Determines whether the <see cref="CompactDictionary{TKey, TValue}"/> contains the specified value.
+        /// </summary>
+        /// <param name="value">The value to locate.</param>
         public bool ContainsValue(TValue value)
         {
             return IndexOfValue(value) >= 0;
@@ -177,6 +205,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        /// <inheritdoc />
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             for (var index = Count - 1; index >= 0; index--)
@@ -202,6 +231,12 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
+        /// <summary>
+        /// Removes the value with the specified key from the <see cref="CompactDictionary{TKey, TValue}"/>.
+        /// </summary>
+        /// <param name="key">The key of the element to remove.</param>
+        /// <param name="removedValue">The value that was removed</param>
+        /// <returns>true if the value was removed; otherwise, false.</returns>
         public bool Remove(TKey key, out TValue removedValue)
         {
             var index = IndexOfKey(key);
@@ -228,6 +263,14 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
+        /// <summary>
+        /// Removes the values with the specified keys from the <see cref="CompactDictionary{TKey, TValue}"/>.
+        /// </summary>
+        /// <param name="source">The collection of keys to remove.</param>
+        /// <param name="removedKeys">The list of keys that were removed.</param>
+        /// <param name="removedValues">The list of values that were removed.</param>
+        /// <returns>The number of removed elements.</returns>
+        /// <remarks>The keys in <paramref name="removedKeys"/> and the values in <paramref name="removedValues"/> are in the same order.</remarks>
         public int RemoveAll(IEnumerable<TKey> source, out List<TKey> removedKeys, out List<TValue> removedValues)
         {
             if (source == null)
@@ -253,6 +296,13 @@ namespace Theraot.Collections.Specialized
             return count;
         }
 
+        /// <summary>
+        /// Sets the value to be associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key of the value to set.</param>
+        /// <param name="value">The value associated with the specified key.</param>
+        /// <returns>true if key is new; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">When the provided key does not exist.</exception>
         public bool Set(TKey key, TValue value)
         {
             if (key == null)
@@ -271,6 +321,15 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
+        /// <summary>
+        /// Sets multiple values from a pair of lists of keys and values.
+        /// </summary>
+        /// <param name="keys">The list of keys to which to set.</param>
+        /// <param name="values">The list of values to set.</param>
+        /// <returns>A list containing the keys that were new.</returns>
+        /// <exception cref="ArgumentNullException">When <paramref name="keys"/> or <paramref name="values"/> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">When <paramref name="keys"/> and <paramref name="values"/> have different number of elements.</exception>
+        /// <remarks>The elements are paired in the order in which they are provided.</remarks>
         public List<TKey> SetAll(IList<TKey> keys, IList<TValue> values)
         {
             if (keys == null)
@@ -300,6 +359,12 @@ namespace Theraot.Collections.Specialized
             return result;
         }
 
+        /// <summary>
+        /// Sets multiple values from a list of <see cref="KeyValuePair{TKey, TValue}"/>.
+        /// </summary>
+        /// <param name="source">The list of <see cref="KeyValuePair{TKey, TValue}"/>.</param>
+        /// <returns>A list containing the keys that were new.</returns>
+        /// <exception cref="ArgumentNullException">When <paramref name="source"/> is null.</exception>
         public List<TKey> SetAll(IEnumerable<KeyValuePair<TKey, TValue>> source)
         {
             if (source == null)
@@ -321,11 +386,21 @@ namespace Theraot.Collections.Specialized
             return result;
         }
 
+        /// <summary>
+        /// Sets the capacity to the number of elements in this instance.
+        /// </summary>
         public void TrimToSize()
         {
             Capacity = Count;
         }
 
+        /// <summary>
+        /// Attempts to add the specified key and value.
+        /// </summary>
+        /// <param name="key">The key of the element to add.</param>
+        /// <param name="value">The value of the element to add.</param>
+        /// <returns>true if the element was added; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">When the specified key is null.</exception>
         public bool TryAdd(TKey key, TValue value)
         {
             if (key == null)
@@ -343,6 +418,12 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
+        /// <summary>
+        /// Attempts to retrieve the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key by which to find the value.</param>
+        /// <param name="value">The retrieved value.</param>
+        /// <returns>true if the key was found; otherwise, false.</returns>
         public bool TryGetValue(TKey key, out TValue value)
         {
             var index = IndexOfKey(key);
@@ -428,6 +509,7 @@ namespace Theraot.Collections.Specialized
             _values[Count] = default;
         }
 
+        /// <inheritdoc />
         private sealed class KeyList : IList<TKey>
         {
             private readonly CompactDictionary<TKey, TValue> _dictionary;
@@ -529,6 +611,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        /// <inheritdoc />
         private sealed class ValueList : IList<TValue>
         {
             private readonly CompactDictionary<TKey, TValue> _dictionary;
