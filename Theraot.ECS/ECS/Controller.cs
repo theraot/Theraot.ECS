@@ -57,7 +57,12 @@ namespace Theraot.ECS
 
         public void RegisterEntity(TEntityId entityId)
         {
+            if (_componentKindsByEntity.ContainsKey(entityId))
+            {
+                return;
+            }
             _componentKindsByEntity[entityId] = _componentKindManager.Create();
+            _allEntities?.Add(entityId);
         }
 
         public void SubscribeTo(EntityComponentEventDispatcher<TEntityId, TComponentKind> entityComponentEventDispatcher)
