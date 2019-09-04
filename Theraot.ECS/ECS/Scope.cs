@@ -260,7 +260,17 @@ namespace Theraot.ECS
 
     public sealed partial class Scope<TEntityId, TComponentKind>
     {
-        public void With<TComponent1>(TEntityId entityId, TComponentKind componentKind1, ActionRef<TEntityId, TComponent1> callback)
+        /// <summary>
+        /// Executes a callback with references to components of the specified entity in this instance.
+        /// </summary>
+        /// <typeparam name="TComponentValue1">The type of the first component value.</typeparam>
+        /// <param name="entityId">The id if the entity of which to get the components.</param>
+        /// <param name="componentKind1">The first component kind to which to get a reference.</param>
+        /// <param name="callback">The callback to execute.</param>
+        /// <exception cref="ArgumentNullException">The callback is null.</exception>
+        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
+        public void With<TComponentValue1>(TEntityId entityId, TComponentKind componentKind1, ActionRef<TEntityId, TComponentValue1> callback)
         {
             if (callback == null)
             {
@@ -270,7 +280,19 @@ namespace Theraot.ECS
             _componentStorage.With(entityId, componentKind1, callback);
         }
 
-        public void With<TComponent1, TComponent2>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, ActionRef<TEntityId, TComponent1, TComponent2> callback)
+        /// <summary>
+        /// Executes a callback with references to components of the specified entity in this instance.
+        /// </summary>
+        /// <typeparam name="TComponentValue1">The type of the first component value.</typeparam>
+        /// <typeparam name="TComponentValue2">The type of the second component value.</typeparam>
+        /// <param name="entityId">The id if the entity of which to get the components.</param>
+        /// <param name="componentKind1">The first component kind to which to get a reference.</param>
+        /// <param name="componentKind2">The second component kind to which to get a reference.</param>
+        /// <param name="callback">The callback to execute.</param>
+        /// <exception cref="ArgumentNullException">The callback is null.</exception>
+        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
+        public void With<TComponentValue1, TComponentValue2>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, ActionRef<TEntityId, TComponentValue1, TComponentValue2> callback)
         {
             if (callback == null)
             {
@@ -280,7 +302,21 @@ namespace Theraot.ECS
             _componentStorage.With(entityId, componentKind1, componentKind2, callback);
         }
 
-        public void With<TComponent1, TComponent2, TComponent3>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, TComponentKind componentKind3, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3> callback)
+        /// <summary>
+        /// Executes a callback with references to components of the specified entity in this instance.
+        /// </summary>
+        /// <typeparam name="TComponentValue1">The type of the first component value.</typeparam>
+        /// <typeparam name="TComponentValue2">The type of the second component value.</typeparam>
+        /// <typeparam name="TComponentValue3">The type of the third component value.</typeparam>
+        /// <param name="entityId">The id if the entity of which to get the components.</param>
+        /// <param name="componentKind1">The first component kind to which to get a reference.</param>
+        /// <param name="componentKind2">The second component kind to which to get a reference.</param>
+        /// <param name="componentKind3">The third component kind to which to get a reference.</param>
+        /// <param name="callback">The callback to execute.</param>
+        /// <exception cref="ArgumentNullException">The callback is null.</exception>
+        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
+        public void With<TComponentValue1, TComponentValue2, TComponentValue3>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, TComponentKind componentKind3, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3> callback)
         {
             if (callback == null)
             {
@@ -290,7 +326,23 @@ namespace Theraot.ECS
             _componentStorage.With(entityId, componentKind1, componentKind2, componentKind3, callback);
         }
 
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, TComponentKind componentKind3, TComponentKind componentKind4, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4> callback)
+        /// <summary>
+        /// Executes a callback with references to components of the specified entity in this instance.
+        /// </summary>
+        /// <typeparam name="TComponentValue1">The type of the first component value.</typeparam>
+        /// <typeparam name="TComponentValue2">The type of the second component value.</typeparam>
+        /// <typeparam name="TComponentValue3">The type of the third component value.</typeparam>
+        /// <typeparam name="TComponentValue4">The type of the fourth component value.</typeparam>
+        /// <param name="entityId">The id if the entity of which to get the components.</param>
+        /// <param name="componentKind1">The first component kind to which to get a reference.</param>
+        /// <param name="componentKind2">The second component kind to which to get a reference.</param>
+        /// <param name="componentKind3">The third component kind to which to get a reference.</param>
+        /// <param name="componentKind4">The fourth component kind to which to get a reference.</param>
+        /// <param name="callback">The callback to execute.</param>
+        /// <exception cref="ArgumentNullException">The callback is null.</exception>
+        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
+        public void With<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, TComponentKind componentKind3, TComponentKind componentKind4, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4> callback)
         {
             if (callback == null)
             {
@@ -300,7 +352,25 @@ namespace Theraot.ECS
             _componentStorage.With(entityId, componentKind1, componentKind2, componentKind3, componentKind4, callback);
         }
 
-        public void With<TComponent1, TComponent2, TComponent3, TComponent4, TComponent5>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, TComponentKind componentKind3, TComponentKind componentKind4, TComponentKind componentKind5, ActionRef<TEntityId, TComponent1, TComponent2, TComponent3, TComponent4, TComponent5> callback)
+        /// <summary>
+        /// Executes a callback with references to components of the specified entity in this instance.
+        /// </summary>
+        /// <typeparam name="TComponentValue1">The type of the first component value.</typeparam>
+        /// <typeparam name="TComponentValue2">The type of the second component value.</typeparam>
+        /// <typeparam name="TComponentValue3">The type of the third component value.</typeparam>
+        /// <typeparam name="TComponentValue4">The type of the fourth component value.</typeparam>
+        /// <typeparam name="TComponentValue5">The type of the fifth component value.</typeparam>
+        /// <param name="entityId">The id if the entity of which to get the components.</param>
+        /// <param name="componentKind1">The first component kind to which to get a reference.</param>
+        /// <param name="componentKind2">The second component kind to which to get a reference.</param>
+        /// <param name="componentKind3">The third component kind to which to get a reference.</param>
+        /// <param name="componentKind4">The fourth component kind to which to get a reference.</param>
+        /// <param name="componentKind5">The fifth component kind to which to get a reference.</param>
+        /// <param name="callback">The callback to execute.</param>
+        /// <exception cref="ArgumentNullException">The callback is null.</exception>
+        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
+        public void With<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, TComponentKind componentKind3, TComponentKind componentKind4, TComponentKind componentKind5, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5> callback)
         {
             if (callback == null)
             {
@@ -315,6 +385,16 @@ namespace Theraot.ECS
 
     public sealed partial class Scope<TEntityId, TComponentKind>
     {
+        /// <summary>
+        /// Sets a components by their component kind associated for an entity id.
+        /// </summary>
+        /// <typeparam name="TComponentValue">The type of the component value.</typeparam>
+        /// <param name="entityId">The entity id to set the component to.</param>
+        /// <param name="componentKinds">The list of component kinds.</param>
+        /// <param name="componentSelector">A function that returns a component value given a component kind.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="componentKinds"/> or <paramref name="componentSelector"/> is null.</exception>
+        /// <exception cref="ArgumentException">The type does not match the component kind.</exception>
+        /// <remarks>The component kinds and values are taken in order. If a component kind has not been registered, it is registered with the provided type and a default container.</remarks>
         public void SetComponents<TComponentValue>(TEntityId entityId, IEnumerable<TComponentKind> componentKinds, Converter<TComponentKind, TComponentValue> componentSelector)
         {
             if (componentKinds == null)
@@ -335,6 +415,16 @@ namespace Theraot.ECS
 
     public sealed partial class Scope<TEntityId, TComponentKind>
     {
+        /// <summary>
+        /// Sets a components by their component kind associated for an entity id.
+        /// </summary>
+        /// <typeparam name="TComponentValue">The type of the component value.</typeparam>
+        /// <param name="entityId">The entity id to set the component to.</param>
+        /// <param name="componentKinds">The list of component kinds.</param>
+        /// <param name="componentSelector">A function that returns a component value given a component kind.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="componentKinds"/> or <paramref name="componentSelector"/> is null.</exception>
+        /// <exception cref="ArgumentException">The type does not match the component kind.</exception>
+        /// <remarks>The component kinds and values are taken in order. If a component kind has not been registered, it is registered with the provided type and a default container.</remarks>
         public void SetComponents<TComponentValue>(TEntityId entityId, IEnumerable<TComponentKind> componentKinds, Func<TComponentKind, TComponentValue> componentSelector)
         {
             if (componentKinds == null)
