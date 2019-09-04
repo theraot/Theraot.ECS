@@ -127,13 +127,13 @@ namespace Theraot.ECS
         /// </summary>
         /// <typeparam name="TComponentValue">The type of the component value.</typeparam>
         /// <param name="entityId">The entity id to set the component to.</param>
-        /// <param name="type">The component kind.</param>
+        /// <param name="kind">The component kind.</param>
         /// <param name="component">The component value.</param>
         /// <exception cref="ArgumentException">The type does not match the component kind.</exception>
         /// <remarks>If the component kind has not been registered, it is registered with the provided type and a default container.</remarks>
-        public void SetComponent<TComponentValue>(TEntityId entityId, TComponentKind type, TComponentValue component)
+        public void SetComponent<TComponentValue>(TEntityId entityId, TComponentKind kind, TComponentValue component)
         {
-            _componentStorage.SetComponent(entityId, type, component);
+            _componentStorage.SetComponent(entityId, kind, component);
         }
 
         /// <summary>
