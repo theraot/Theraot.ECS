@@ -7,6 +7,9 @@ using ComponentTypeSet = Theraot.Collections.Specialized.FlagArray;
 
 namespace Theraot.ECS
 {
+    /// <summary>
+    /// Represents a manager of set of component types stored as a <see cref="Theraot.Collections.Specialized.FlagArray"/>
+    /// </summary>
     public sealed class FlagArrayManager : IComponentTypeManager<ComponentType, ComponentTypeSet>, IEqualityComparer<ComponentType>, IEqualityComparer<ComponentTypeSet>
     {
         private readonly int _capacity;

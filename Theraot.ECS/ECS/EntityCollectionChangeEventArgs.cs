@@ -1,4 +1,4 @@
-namespace Theraot.ECS
+﻿namespace Theraot.ECS
 {
     internal static class EntityCollectionChangeEventArgs
     {
@@ -13,6 +13,7 @@ namespace Theraot.ECS
         }
     }
 
+    /// <inheritdoc />
     public sealed class EntityCollectionChangeEventArgs<TEntity> : EntityCollectionChangeBaseEventArgs<TEntity>
     {
         internal EntityCollectionChangeEventArgs(CollectionChangeActionEx action, TEntity entity)

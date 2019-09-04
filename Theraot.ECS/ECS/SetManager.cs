@@ -14,6 +14,9 @@ using ComponentTypeSet = System.Collections.Generic.HashSet<string>;
 
 namespace Theraot.ECS
 {
+    /// <summary>
+    /// Represents a manager of set of component types stored as a hash based set.
+    /// </summary>
     public sealed partial class SetManager : IComponentTypeManager<ComponentType, ComponentTypeSet>, IEqualityComparer<ComponentType>, IEqualityComparer<ComponentTypeSet>
     {
         IEqualityComparer<string> IComponentTypeManager<string, ComponentTypeSet>.ComponentTypEqualityComparer => this;
