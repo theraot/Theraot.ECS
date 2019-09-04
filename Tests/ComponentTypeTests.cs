@@ -16,7 +16,7 @@ namespace Tests
             scope.RegisterEntity(entityA);
             scope.RegisterEntity(entityB);
             scope.SetComponent(entityA, "test", 1);
-            Assert.AreEqual(typeof(int), scope.GetRegisteredComponentType("test"));
+            Assert.AreEqual(typeof(int), scope.GetRegisteredType("test"));
             Assert.Throws<ArgumentException>(() => scope.SetComponent(entityB, "test", "hello"));
         }
 
@@ -24,10 +24,10 @@ namespace Tests
         public static void RegisterComponentType()
         {
             var scope = Scope.CreateScope(EqualityComparer<int>.Default, new SetManager());
-            scope.TryRegisterComponentType<int>("test");
+            scope.TryRegisterType<int>("test");
             const int entityA = 0;
             scope.RegisterEntity(entityA);
-            Assert.AreEqual(typeof(int), scope.GetRegisteredComponentType("test"));
+            Assert.AreEqual(typeof(int), scope.GetRegisteredType("test"));
             Assert.Throws<ArgumentException>(() => scope.SetComponent(entityA, "test", "hello"));
         }
 
