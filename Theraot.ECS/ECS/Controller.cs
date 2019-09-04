@@ -6,71 +6,71 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS
 {
-    internal sealed class Controller<TEntityId, TComponentType, TComponentTypeSet> : IController<TEntityId, TComponentType>
+    internal sealed class Controller<TEntityId, TComponentKind, TComponentKindSet> : IController<TEntityId, TComponentKind>
     {
-        private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
+        private readonly IComponentKindManager<TComponentKind, TComponentKindSet> _componentKindManager;
 
-        private readonly Dictionary<TEntityId, TComponentTypeSet> _componentTypesByEntity;
+        private readonly Dictionary<TEntityId, TComponentKindSet> _componentKindsByEntity;
 
-        private readonly Dictionary<QueryId, EntityCollection<TEntityId, TComponentType>> _entitiesByQueryId;
+        private readonly Dictionary<QueryId, EntityCollection<TEntityId, TComponentKind>> _entityIdsByQueryId;
 
         private readonly IEqualityComparer<TEntityId> _entityEqualityComparer;
 
-        private readonly Dictionary<TComponentType, HashSet<QueryId>> _queryIdsByComponentType;
+        private readonly Dictionary<TComponentKind, HashSet<QueryId>> _queryIdsByComponentKind;
 
-        private readonly QueryManager<TComponentType, TComponentTypeSet> _queryManager;
+        private readonly QueryManager<TComponentKind, TComponentKindSet> _queryManager;
 
-        internal Controller(IEqualityComparer<TEntityId> entityEqualityComparer, IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
+        internal Controller(IEqualityComparer<TEntityId> entityEqualityComparer, IComponentKindManager<TComponentKind, TComponentKindSet> componentKindManager)
         {
             _entityEqualityComparer = entityEqualityComparer;
-            _componentTypeManager = componentTypeManager;
-            var componentTypEqualityComparer = componentTypeManager.ComponentTypEqualityComparer;
-            _queryManager = new QueryManager<TComponentType, TComponentTypeSet>(componentTypeManager);
-            _entitiesByQueryId = new Dictionary<QueryId, EntityCollection<TEntityId, TComponentType>>();
-            _queryIdsByComponentType = new Dictionary<TComponentType, HashSet<QueryId>>(componentTypEqualityComparer);
-            _componentTypesByEntity = new Dictionary<TEntityId, TComponentTypeSet>(_entityEqualityComparer);
+            _componentKindManager = componentKindManager;
+            var componentKindEqualityComparer = componentKindManager.ComponentKindEqualityComparer;
+            _queryManager = new QueryManager<TComponentKind, TComponentKindSet>(componentKindManager);
+            _entityIdsByQueryId = new Dictionary<QueryId, EntityCollection<TEntityId, TComponentKind>>();
+            _queryIdsByComponentKind = new Dictionary<TComponentKind, HashSet<QueryId>>(componentKindEqualityComparer);
+            _componentKindsByEntity = new Dictionary<TEntityId, TComponentKindSet>(_entityEqualityComparer);
         }
 
-        public EntityCollection<TEntityId, TComponentType> GetEntityCollection(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none, IComponentReferenceAccess<TEntityId, TComponentType> componentReferenceAccess)
+        public EntityCollection<TEntityId, TComponentKind> GetEntityCollection(IEnumerable<TComponentKind> all, IEnumerable<TComponentKind> any, IEnumerable<TComponentKind> none, IComponentReferenceAccess<TEntityId, TComponentKind> componentReferenceAccess)
         {
             var allAsICollection = EnumerableHelper.AsICollection(all);
             var anyAsICollection = EnumerableHelper.AsICollection(any);
             var noneAsICollection = EnumerableHelper.AsICollection(none);
             var queryId = _queryManager.CreateQuery(allAsICollection, anyAsICollection, noneAsICollection);
-            return _entitiesByQueryId.TryGetValue(queryId, out var entityCollection)
+            return _entityIdsByQueryId.TryGetValue(queryId, out var entityCollection)
                 ? entityCollection
                 : CreateEntityCollection(EnumerableHelper.Concat(allAsICollection, anyAsICollection, noneAsICollection), queryId, componentReferenceAccess);
         }
 
         public void RegisterEntity(TEntityId entityId)
         {
-            _componentTypesByEntity[entityId] = _componentTypeManager.Create();
+            _componentKindsByEntity[entityId] = _componentKindManager.Create();
         }
 
-        public void SubscribeTo(EntityComponentEventDispatcher<TEntityId, TComponentType> entityComponentEventDispatcher)
+        public void SubscribeTo(EntityComponentEventDispatcher<TEntityId, TComponentKind> entityComponentEventDispatcher)
         {
             entityComponentEventDispatcher.AddedComponents += OnAddedComponents;
             entityComponentEventDispatcher.RemovedComponents += OnRemovedComponents;
         }
 
-        private EntityCollection<TEntityId, TComponentType> CreateEntityCollection(IEnumerable<TComponentType> componentTypes, int queryId, IComponentReferenceAccess<TEntityId, TComponentType> componentReferenceAccess)
+        private EntityCollection<TEntityId, TComponentKind> CreateEntityCollection(IEnumerable<TComponentKind> componentKinds, int queryId, IComponentReferenceAccess<TEntityId, TComponentKind> componentReferenceAccess)
         {
-            var entityCollection = _entitiesByQueryId[queryId] = new EntityCollection<TEntityId, TComponentType>(componentReferenceAccess, _entityEqualityComparer);
-            foreach (var componentType in componentTypes)
+            var entityCollection = _entityIdsByQueryId[queryId] = new EntityCollection<TEntityId, TComponentKind>(componentReferenceAccess, _entityEqualityComparer);
+            foreach (var componentKind in componentKinds)
             {
-                if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
+                if (!_queryIdsByComponentKind.TryGetValue(componentKind, out var queryIds))
                 {
                     queryIds = new HashSet<QueryId>();
-                    _queryIdsByComponentType[componentType] = queryIds;
+                    _queryIdsByComponentKind[componentKind] = queryIds;
                 }
 
                 queryIds.Add(queryId);
             }
 
-            foreach (var entityId in _componentTypesByEntity.Keys)
+            foreach (var entityId in _componentKindsByEntity.Keys)
             {
-                var allComponentTypes = _componentTypesByEntity[entityId];
-                if (_queryManager.QueryCheck(allComponentTypes, queryId) == QueryCheckResult.Add)
+                var allComponentKinds = _componentKindsByEntity[entityId];
+                if (_queryManager.QueryCheck(allComponentKinds, queryId) == QueryCheckResult.Add)
                 {
                     entityCollection.Add(entityId);
                 }
@@ -78,21 +78,21 @@ namespace Theraot.ECS
             return entityCollection;
         }
 
-        private IEnumerable<QueryId> GetQueriesByComponentType(TComponentType componentType)
+        private IEnumerable<QueryId> GetQueriesByComponentKind(TComponentKind componentKind)
         {
-            if (!_queryIdsByComponentType.TryGetValue(componentType, out var queryIds))
+            if (!_queryIdsByComponentKind.TryGetValue(componentKind, out var queryIds))
             {
                 return EmptyArray<QueryId>.Instance;
             }
             return queryIds;
         }
 
-        private IEnumerable<QueryId> GetQueriesByComponentTypes(IEnumerable<TComponentType> componentTypes)
+        private IEnumerable<QueryId> GetQueriesByComponentKinds(IEnumerable<TComponentKind> componentKinds)
         {
             var set = new HashSet<QueryId>();
-            foreach (var componentType in componentTypes)
+            foreach (var componentKind in componentKinds)
             {
-                foreach (var queryId in GetQueriesByComponentType(componentType))
+                foreach (var queryId in GetQueriesByComponentKind(componentKind))
                 {
                     set.Add(queryId);
                 }
@@ -101,28 +101,28 @@ namespace Theraot.ECS
             return set;
         }
 
-        private void OnAddedComponents(object sender, EntityComponentsChangeEventArgs<TEntityId, TComponentType> args)
+        private void OnAddedComponents(object sender, EntityComponentsChangeEventArgs<TEntityId, TComponentKind> args)
         {
             var _ = sender;
-            var allComponentTypes = _componentTypesByEntity[args.EntityId];
-            _componentTypeManager.Add(allComponentTypes, args.ComponentTypes);
-            UpdateEntitiesByQueryOnAddedComponents(args.EntityId, allComponentTypes, args.ComponentTypes);
+            var allComponentKinds = _componentKindsByEntity[args.EntityId];
+            _componentKindManager.Add(allComponentKinds, args.ComponentKinds);
+            UpdateEntitiesByQueryOnAddedComponents(args.EntityId, allComponentKinds, args.ComponentKinds);
         }
 
-        private void OnRemovedComponents(object sender, EntityComponentsChangeEventArgs<TEntityId, TComponentType> args)
+        private void OnRemovedComponents(object sender, EntityComponentsChangeEventArgs<TEntityId, TComponentKind> args)
         {
             var _ = sender;
-            var allComponentTypes = _componentTypesByEntity[args.EntityId];
-            _componentTypeManager.Remove(allComponentTypes, args.ComponentTypes);
-            UpdateEntitiesByQueryOnRemoveComponents(args.EntityId, allComponentTypes, args.ComponentTypes);
+            var allComponentKinds = _componentKindsByEntity[args.EntityId];
+            _componentKindManager.Remove(allComponentKinds, args.ComponentKinds);
+            UpdateEntitiesByQueryOnRemoveComponents(args.EntityId, allComponentKinds, args.ComponentKinds);
         }
 
-        private void UpdateEntitiesByQueryOnAddedComponents(TEntityId entityId, TComponentTypeSet allComponentsTypes, IList<TComponentType> addedComponentTypes)
+        private void UpdateEntitiesByQueryOnAddedComponents(TEntityId entityId, TComponentKindSet allComponentsKinds, IList<TComponentKind> addedComponentKinds)
         {
-            foreach (var queryId in GetQueriesByComponentTypes(addedComponentTypes))
+            foreach (var queryId in GetQueriesByComponentKinds(addedComponentKinds))
             {
-                var set = _entitiesByQueryId[queryId];
-                switch (_queryManager.QueryCheckOnAddedComponents(addedComponentTypes, allComponentsTypes, queryId))
+                var set = _entityIdsByQueryId[queryId];
+                switch (_queryManager.QueryCheckOnAddedComponents(addedComponentKinds, allComponentsKinds, queryId))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entityId);
@@ -141,12 +141,12 @@ namespace Theraot.ECS
             }
         }
 
-        private void UpdateEntitiesByQueryOnRemoveComponents(TEntityId entityId, TComponentTypeSet allComponentsTypes, IList<TComponentType> removedComponentTypes)
+        private void UpdateEntitiesByQueryOnRemoveComponents(TEntityId entityId, TComponentKindSet allComponentsKinds, IList<TComponentKind> removedComponentKinds)
         {
-            foreach (var queryId in GetQueriesByComponentTypes(removedComponentTypes))
+            foreach (var queryId in GetQueriesByComponentKinds(removedComponentKinds))
             {
-                var set = _entitiesByQueryId[queryId];
-                switch (_queryManager.QueryCheckOnRemovedComponents(removedComponentTypes, allComponentsTypes, queryId))
+                var set = _entityIdsByQueryId[queryId];
+                switch (_queryManager.QueryCheckOnRemovedComponents(removedComponentKinds, allComponentsKinds, queryId))
                 {
                     case QueryCheckResult.Remove:
                         set.Remove(entityId);

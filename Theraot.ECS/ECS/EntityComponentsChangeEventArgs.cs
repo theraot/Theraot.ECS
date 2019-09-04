@@ -3,21 +3,21 @@
 namespace Theraot.ECS
 {
     /// <summary>
-    /// Represent a change in the component types associated with an entity
+    /// Represent a change in the component kinds associated with an entity
     /// </summary>
     /// <typeparam name="TEntityId"></typeparam>
-    /// <typeparam name="TComponentType"></typeparam>
-    public class EntityComponentsChangeEventArgs<TEntityId, TComponentType> : EntityCollectionChangeBaseEventArgs<TEntityId>
+    /// <typeparam name="TComponentKind"></typeparam>
+    public class EntityComponentsChangeEventArgs<TEntityId, TComponentKind> : EntityCollectionChangeBaseEventArgs<TEntityId>
     {
-        internal EntityComponentsChangeEventArgs(CollectionChangeActionEx action, TEntityId entityId, IList<TComponentType> componentTypes)
+        internal EntityComponentsChangeEventArgs(CollectionChangeActionEx action, TEntityId entityId, IList<TComponentKind> componentKinds)
             : base(action, entityId)
         {
-            ComponentTypes = componentTypes;
+            ComponentKinds = componentKinds;
         }
 
         /// <summary>
-        /// Gets the collection of component types that changed.
+        /// Gets the collection of component kinds that changed.
         /// </summary>
-        public IList<TComponentType> ComponentTypes { get; }
+        public IList<TComponentKind> ComponentKinds { get; }
     }
 }

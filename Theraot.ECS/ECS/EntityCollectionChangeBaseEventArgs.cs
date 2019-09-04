@@ -1,7 +1,7 @@
 ﻿namespace Theraot.ECS
 {
     /// <summary>
-    /// Represents a change in a <see cref="EntityCollection{TEntityId, TComponentType}"/>
+    /// Represents a change in a <see cref="EntityCollection{TEntityId, TComponentKind}"/>
     /// </summary>
     /// <typeparam name="TEntityId"></typeparam>
     public class EntityCollectionChangeBaseEventArgs<TEntityId>

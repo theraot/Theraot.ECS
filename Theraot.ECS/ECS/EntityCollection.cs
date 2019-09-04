@@ -7,17 +7,17 @@ using System.Collections.Generic;
 namespace Theraot.ECS
 {
     /// <summary>
-    /// Represents a readonly view of entities from the <see cref="Scope{TEntityId, TComponentType}"/> from which it was created.
+    /// Represents a readonly view of entities from the <see cref="Scope{TEntityId, TComponentKind}"/> from which it was created.
     /// </summary>
-    /// <typeparam name="TEntityId">The type of the entities.</typeparam>
-    /// <typeparam name="TComponentType">The type uses to represent component types.</typeparam>
-    public sealed partial class EntityCollection<TEntityId, TComponentType> : ICollection<TEntityId>
+    /// <typeparam name="TEntityId">The type of the entity ids.</typeparam>
+    /// <typeparam name="TComponentKind">The type uses to represent component kinds.</typeparam>
+    public sealed partial class EntityCollection<TEntityId, TComponentKind> : ICollection<TEntityId>
     {
-        private readonly IComponentReferenceAccess<TEntityId, TComponentType> _componentReferenceAccess;
+        private readonly IComponentReferenceAccess<TEntityId, TComponentKind> _componentReferenceAccess;
 
         private readonly HashSet<TEntityId> _wrapped;
 
-        internal EntityCollection(IComponentReferenceAccess<TEntityId, TComponentType> componentReferenceAccess, IEqualityComparer<TEntityId> entityEqualityComparer)
+        internal EntityCollection(IComponentReferenceAccess<TEntityId, TComponentKind> componentReferenceAccess, IEqualityComparer<TEntityId> entityEqualityComparer)
         {
             _componentReferenceAccess = componentReferenceAccess;
             _wrapped = new HashSet<TEntityId>(entityEqualityComparer);
@@ -70,7 +70,7 @@ namespace Theraot.ECS
         }
     }
 
-    public sealed partial class EntityCollection<TEntityId, TComponentType>
+    public sealed partial class EntityCollection<TEntityId, TComponentKind>
     {
         /// <summary>
         /// Occurs when an entity is added.
@@ -93,7 +93,7 @@ namespace Theraot.ECS
         }
     }
 
-    public sealed partial class EntityCollection<TEntityId, TComponentType>
+    public sealed partial class EntityCollection<TEntityId, TComponentKind>
     {
         /// <summary>
         /// Executes a callback over all the entities in this instance.
@@ -123,14 +123,14 @@ namespace Theraot.ECS
         /// Executes a callback with references to components over all the entities in this instance.
         /// </summary>
         /// <typeparam name="TComponentValue1">The type of the component value.</typeparam>
-        /// <param name="componentType1">A component type to which to get a reference.</param>
+        /// <param name="componentKind1">A component kind to which to get a reference.</param>
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
-        /// <exception cref="KeyNotFoundException">A component or component type was not found.</exception>
-        /// <exception cref="ArgumentException">A component type does not match the type of the component value.</exception>
+        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
         public void ForEach<TComponentValue1>
         (
-            TComponentType componentType1,
+            TComponentKind componentKind1,
             ActionRef<TEntityId, TComponentValue1> callback
         )
         {
@@ -141,7 +141,7 @@ namespace Theraot.ECS
 
             foreach (var entityId in _wrapped)
             {
-                _componentReferenceAccess.With(entityId, componentType1, callback);
+                _componentReferenceAccess.With(entityId, componentKind1, callback);
             }
         }
 
@@ -150,16 +150,16 @@ namespace Theraot.ECS
         /// </summary>
         /// <typeparam name="TComponentValue1">The type of the first component value.</typeparam>
         /// <typeparam name="TComponentValue2">The type of the second component value.</typeparam>
-        /// <param name="componentType1">The first component type to which to get a reference.</param>
-        /// <param name="componentType2">The second component type to which to get a reference.</param>
+        /// <param name="componentKind1">The first component kind to which to get a reference.</param>
+        /// <param name="componentKind2">The second component kind to which to get a reference.</param>
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
-        /// <exception cref="KeyNotFoundException">A component or component type was not found.</exception>
-        /// <exception cref="ArgumentException">A component type does not match the type of its component value.</exception>
+        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
         public void ForEach<TComponentValue1, TComponentValue2>
         (
-            TComponentType componentType1,
-            TComponentType componentType2,
+            TComponentKind componentKind1,
+            TComponentKind componentKind2,
             ActionRef<TEntityId, TComponentValue1, TComponentValue2> callback
         )
         {
@@ -170,7 +170,7 @@ namespace Theraot.ECS
 
             foreach (var entityId in _wrapped)
             {
-                _componentReferenceAccess.With(entityId, componentType1, componentType2, callback);
+                _componentReferenceAccess.With(entityId, componentKind1, componentKind2, callback);
             }
         }
 
@@ -180,18 +180,18 @@ namespace Theraot.ECS
         /// <typeparam name="TComponentValue1">The type of the first component value.</typeparam>
         /// <typeparam name="TComponentValue2">The type of the second component value.</typeparam>
         /// <typeparam name="TComponentValue3">The type of the third component value.</typeparam>
-        /// <param name="componentType1">The first component type to which to get a reference.</param>
-        /// <param name="componentType2">The second component type to which to get a reference.</param>
-        /// <param name="componentType3">The third component type to which to get a reference.</param>
+        /// <param name="componentKind1">The first component kind to which to get a reference.</param>
+        /// <param name="componentKind2">The second component kind to which to get a reference.</param>
+        /// <param name="componentKind3">The third component kind to which to get a reference.</param>
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
-        /// <exception cref="KeyNotFoundException">A component or component type was not found.</exception>
-        /// <exception cref="ArgumentException">A component type does not match the type of its component value.</exception>
+        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
         public void ForEach<TComponentValue1, TComponentValue2, TComponentValue3>
         (
-            TComponentType componentType1,
-            TComponentType componentType2,
-            TComponentType componentType3,
+            TComponentKind componentKind1,
+            TComponentKind componentKind2,
+            TComponentKind componentKind3,
             ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3> callback
         )
         {
@@ -202,7 +202,7 @@ namespace Theraot.ECS
 
             foreach (var entityId in _wrapped)
             {
-                _componentReferenceAccess.With(entityId, componentType1, componentType2, componentType3, callback);
+                _componentReferenceAccess.With(entityId, componentKind1, componentKind2, componentKind3, callback);
             }
         }
 
@@ -213,20 +213,20 @@ namespace Theraot.ECS
         /// <typeparam name="TComponentValue2">The type of the second component value.</typeparam>
         /// <typeparam name="TComponentValue3">The type of the third component value.</typeparam>
         /// <typeparam name="TComponentValue4">The type of the fourth component value.</typeparam>
-        /// <param name="componentType1">The first component type to which to get a reference.</param>
-        /// <param name="componentType2">The second component type to which to get a reference.</param>
-        /// <param name="componentType3">The third component type to which to get a reference.</param>
-        /// <param name="componentType4">The fourth component type to which to get a reference.</param>
+        /// <param name="componentKind1">The first component kind to which to get a reference.</param>
+        /// <param name="componentKind2">The second component kind to which to get a reference.</param>
+        /// <param name="componentKind3">The third component kind to which to get a reference.</param>
+        /// <param name="componentKind4">The fourth component kind to which to get a reference.</param>
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
-        /// <exception cref="KeyNotFoundException">A component or component type was not found.</exception>
-        /// <exception cref="ArgumentException">A component type does not match the type of its component value.</exception>
+        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
         public void ForEach<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4>
         (
-            TComponentType componentType1,
-            TComponentType componentType2,
-            TComponentType componentType3,
-            TComponentType componentType4,
+            TComponentKind componentKind1,
+            TComponentKind componentKind2,
+            TComponentKind componentKind3,
+            TComponentKind componentKind4,
             ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4> callback
         )
         {
@@ -237,7 +237,7 @@ namespace Theraot.ECS
 
             foreach (var entityId in _wrapped)
             {
-                _componentReferenceAccess.With(entityId, componentType1, componentType2, componentType3, componentType4, callback);
+                _componentReferenceAccess.With(entityId, componentKind1, componentKind2, componentKind3, componentKind4, callback);
             }
         }
 
@@ -249,22 +249,22 @@ namespace Theraot.ECS
         /// <typeparam name="TComponentValue3">The type of the third component value.</typeparam>
         /// <typeparam name="TComponentValue4">The type of the fourth component value.</typeparam>
         /// <typeparam name="TComponentValue5">The type of the fifth component value.</typeparam>
-        /// <param name="componentType1">The first component type to which to get a reference.</param>
-        /// <param name="componentType2">The second component type to which to get a reference.</param>
-        /// <param name="componentType3">The third component type to which to get a reference.</param>
-        /// <param name="componentType4">The fourth component type to which to get a reference.</param>
-        /// <param name="componentType5">The fifth component type to which to get a reference.</param>
+        /// <param name="componentKind1">The first component kind to which to get a reference.</param>
+        /// <param name="componentKind2">The second component kind to which to get a reference.</param>
+        /// <param name="componentKind3">The third component kind to which to get a reference.</param>
+        /// <param name="componentKind4">The fourth component kind to which to get a reference.</param>
+        /// <param name="componentKind5">The fifth component kind to which to get a reference.</param>
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
-        /// <exception cref="KeyNotFoundException">A component or component type was not found.</exception>
-        /// <exception cref="ArgumentException">A component type does not match the type of its component value.</exception>
+        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
         public void ForEach<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5>
         (
-            TComponentType componentType1,
-            TComponentType componentType2,
-            TComponentType componentType3,
-            TComponentType componentType4,
-            TComponentType componentType5,
+            TComponentKind componentKind1,
+            TComponentKind componentKind2,
+            TComponentKind componentKind3,
+            TComponentKind componentKind4,
+            TComponentKind componentKind5,
             ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5> callback
         )
         {
@@ -275,12 +275,12 @@ namespace Theraot.ECS
 
             foreach (var entityId in _wrapped)
             {
-                _componentReferenceAccess.With(entityId, componentType1, componentType2, componentType3, componentType4, componentType5, callback);
+                _componentReferenceAccess.With(entityId, componentKind1, componentKind2, componentKind3, componentKind4, componentKind5, callback);
             }
         }
     }
 
-    public sealed partial class EntityCollection<TEntityId, TComponentType>
+    public sealed partial class EntityCollection<TEntityId, TComponentKind>
     {
         bool ICollection<TEntityId>.IsReadOnly => true;
 

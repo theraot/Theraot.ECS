@@ -1,18 +1,18 @@
 ﻿namespace Theraot.ECS.Queries
 {
-    internal sealed class Query<TComponentTypeSet>
+    internal sealed class Query<TComponentKindSet>
     {
-        public Query(TComponentTypeSet all, TComponentTypeSet any, TComponentTypeSet none)
+        public Query(TComponentKindSet all, TComponentKindSet any, TComponentKindSet none)
         {
             All = all;
             Any = any;
             None = none;
         }
 
-        public TComponentTypeSet All { get; }
+        public TComponentKindSet All { get; }
 
-        public TComponentTypeSet Any { get; }
+        public TComponentKindSet Any { get; }
 
-        public TComponentTypeSet None { get; }
+        public TComponentKindSet None { get; }
     }
 }

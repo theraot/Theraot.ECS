@@ -15,21 +15,21 @@ using Action = System.Threading.ThreadStart;
 
 namespace Theraot.ECS
 {
-    internal partial class ComponentStorage<TEntityId, TComponentType>
+    internal partial class ComponentStorage<TEntityId, TComponentKind>
     {
-        private readonly Dictionary<TEntityId, CompactDictionary<TComponentType, ComponentId>> _componentsByEntity;
+        private readonly Dictionary<TEntityId, CompactDictionary<TComponentKind, ComponentId>> _componentsByEntity;
 
-        private readonly IComparer<TComponentType> _componentTypeComparer;
+        private readonly IComparer<TComponentKind> _componentKindComparer;
 
-        private readonly ComponentTypeRegistry<TComponentType> _componentTypeRegistry;
+        private readonly ComponentKindRegistry<TComponentKind> _componentKindRegistry;
 
-        private readonly EntityComponentEventDispatcher<TEntityId, TComponentType> _entityComponentEventDispatcher;
+        private readonly EntityComponentEventDispatcher<TEntityId, TComponentKind> _entityComponentEventDispatcher;
 
-        public ComponentStorage(IEqualityComparer<TComponentType> componentTypeEqualityComparer, IEqualityComparer<TEntityId> entityEqualityComparer, ComponentTypeRegistry<TComponentType> componentTypeRegistry, EntityComponentEventDispatcher<TEntityId, TComponentType> entityComponentEventDispatcher)
+        public ComponentStorage(IEqualityComparer<TComponentKind> componentKindEqualityComparer, IEqualityComparer<TEntityId> entityEqualityComparer, ComponentKindRegistry<TComponentKind> componentKindRegistry, EntityComponentEventDispatcher<TEntityId, TComponentKind> entityComponentEventDispatcher)
         {
-            _componentTypeComparer = new ProxyComparer<TComponentType>(componentTypeEqualityComparer);
-            _componentsByEntity = new Dictionary<TEntityId, CompactDictionary<TComponentType, ComponentId>>(entityEqualityComparer);
-            _componentTypeRegistry = componentTypeRegistry;
+            _componentKindComparer = new ProxyComparer<TComponentKind>(componentKindEqualityComparer);
+            _componentsByEntity = new Dictionary<TEntityId, CompactDictionary<TComponentKind, ComponentId>>(entityEqualityComparer);
+            _componentKindRegistry = componentKindRegistry;
             _entityComponentEventDispatcher = entityComponentEventDispatcher;
         }
 
@@ -40,7 +40,7 @@ namespace Theraot.ECS
                 return false;
             }
 
-            var componentIndex = new CompactDictionary<TComponentType, ComponentId>(_componentTypeComparer, 16);
+            var componentIndex = new CompactDictionary<TComponentKind, ComponentId>(_componentKindComparer, 16);
             try
             {
                 _componentsByEntity.Add(entityId, componentIndex);
@@ -52,9 +52,9 @@ namespace Theraot.ECS
             }
         }
 
-        public void SetComponent<TComponentValue>(TEntityId entityId, TComponentType componentType, TComponentValue component)
+        public void SetComponent<TComponentValue>(TEntityId entityId, TComponentKind componentKind, TComponentValue component)
         {
-            if (BufferSetComponent(entityId, componentType, component))
+            if (BufferSetComponent(entityId, componentKind, component))
             {
                 return;
             }
@@ -64,88 +64,88 @@ namespace Theraot.ECS
             (
                 entityComponentStorage.Set
                 (
-                    componentType,
-                    key => _componentTypeRegistry.GetOrCreateTypedStorage<TComponentValue>(key).Add(component),
-                    pair => _componentTypeRegistry.GetOrCreateTypedStorage<TComponentValue>(pair.Key).Update(pair.Value, component)
+                    componentKind,
+                    key => _componentKindRegistry.GetOrCreateTypedContainer<TComponentValue>(key).Add(component),
+                    pair => _componentKindRegistry.GetOrCreateTypedContainer<TComponentValue>(pair.Key).Update(pair.Value, component)
                 )
             )
             {
-                _entityComponentEventDispatcher.NotifyAddedComponents(entityId, new[] { componentType });
+                _entityComponentEventDispatcher.NotifyAddedComponents(entityId, new[] { componentKind });
             }
         }
 
-        public bool TryGetComponent<TComponentValue>(TEntityId entityId, TComponentType componentType, out TComponentValue component)
+        public bool TryGetComponent<TComponentValue>(TEntityId entityId, TComponentKind componentKind, out TComponentValue component)
         {
             component = default;
             return _componentsByEntity.TryGetValue(entityId, out var entityComponentStorage)
-                   && entityComponentStorage.TryGetValue(componentType, out var componentId)
-                   && _componentTypeRegistry.TryGetTypedStorage<TComponentValue>(componentType, out var typedComponentStorage)
+                   && entityComponentStorage.TryGetValue(componentKind, out var componentId)
+                   && _componentKindRegistry.TryGetTypedContainer<TComponentValue>(componentKind, out var typedComponentStorage)
                    && typedComponentStorage.TryGetValue(componentId, out component);
         }
 
-        public void UnsetComponent(TEntityId entityId, TComponentType componentType)
+        public void UnsetComponent(TEntityId entityId, TComponentKind componentKind)
         {
-            if (BufferUnsetComponent(entityId, componentType))
+            if (BufferUnsetComponent(entityId, componentKind))
             {
                 return;
             }
 
             var entityComponentStorage = _componentsByEntity[entityId];
-            if (!entityComponentStorage.Remove(componentType, out var removedComponentId))
+            if (!entityComponentStorage.Remove(componentKind, out var removedComponentId))
             {
                 return;
             }
 
-            if (_componentTypeRegistry.TryGetStorage(componentType, out var componentStorage))
+            if (_componentKindRegistry.TryGetContainer(componentKind, out var componentStorage))
             {
                 componentStorage.Remove(removedComponentId);
             }
-            _entityComponentEventDispatcher.NotifyRemovedComponents(entityId, new[] { componentType });
+            _entityComponentEventDispatcher.NotifyRemovedComponents(entityId, new[] { componentKind });
         }
 
-        public void UnsetComponents(TEntityId entityId, IEnumerable<TComponentType> componentTypes)
+        public void UnsetComponents(TEntityId entityId, IEnumerable<TComponentKind> componentKinds)
         {
-            var componentTypeList = EnumerableHelper.AsIList(componentTypes);
-            if (BufferUnsetComponent(entityId, componentTypeList))
+            var componentKindList = EnumerableHelper.AsIList(componentKinds);
+            if (BufferUnsetComponent(entityId, componentKindList))
             {
                 return;
             }
 
-            var removedComponentTypes = new List<TComponentType>();
-            foreach (var componentType in componentTypeList)
+            var removedComponentKinds = new List<TComponentKind>();
+            foreach (var componentKind in componentKindList)
             {
                 var entityComponentStorage = _componentsByEntity[entityId];
-                if (!entityComponentStorage.Remove(componentType, out var removedComponentId))
+                if (!entityComponentStorage.Remove(componentKind, out var removedComponentId))
                 {
                     continue;
                 }
 
-                if (_componentTypeRegistry.TryGetStorage(componentType, out var componentStorage))
+                if (_componentKindRegistry.TryGetContainer(componentKind, out var componentStorage))
                 {
                     componentStorage.Remove(removedComponentId);
                 }
-                removedComponentTypes.Add(componentType);
+                removedComponentKinds.Add(componentKind);
             }
 
-            if (removedComponentTypes.Count > 0)
+            if (removedComponentKinds.Count > 0)
             {
-                _entityComponentEventDispatcher.NotifyRemovedComponents(entityId, removedComponentTypes);
+                _entityComponentEventDispatcher.NotifyRemovedComponents(entityId, removedComponentKinds);
             }
         }
     }
 
-    internal partial class ComponentStorage<TEntityId, TComponentType> : IComponentReferenceAccess<TEntityId, TComponentType>
+    internal partial class ComponentStorage<TEntityId, TComponentKind> : IComponentReferenceAccess<TEntityId, TComponentKind>
     {
-        public void With<TComponentValue1>(TEntityId entityId, TComponentType componentType1, ActionRef<TEntityId, TComponentValue1> callback)
+        public void With<TComponentValue1>(TEntityId entityId, TComponentKind componentKind1, ActionRef<TEntityId, TComponentValue1> callback)
         {
             if (!_componentsByEntity.TryGetValue(entityId, out var entityComponentStorage))
             {
                 throw new KeyNotFoundException("Entity not found");
             }
 
-            if (!entityComponentStorage.TryGetValue(componentType1, out var componentId))
+            if (!entityComponentStorage.TryGetValue(componentKind1, out var componentId))
             {
-                throw new KeyNotFoundException("Component type not found for the entity");
+                throw new KeyNotFoundException("Component kind not found for the entity");
             }
 
             var created = CreateBuffer();
@@ -153,7 +153,7 @@ namespace Theraot.ECS
             callback
             (
                 entityId,
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue1>(componentType1).GetRef(componentId)
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue1>(componentKind1).GetRef(componentId)
             );
 
             if (created)
@@ -162,7 +162,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void With<TComponentValue1, TComponentValue2>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, ActionRef<TEntityId, TComponentValue1, TComponentValue2> callback)
+        public void With<TComponentValue1, TComponentValue2>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, ActionRef<TEntityId, TComponentValue1, TComponentValue2> callback)
         {
             if (!_componentsByEntity.TryGetValue(entityId, out var entityComponentStorage))
             {
@@ -171,11 +171,11 @@ namespace Theraot.ECS
 
             if
             (
-                !entityComponentStorage.TryGetValue(componentType1, out var componentId1)
-                || !entityComponentStorage.TryGetValue(componentType2, out var componentId2)
+                !entityComponentStorage.TryGetValue(componentKind1, out var componentId1)
+                || !entityComponentStorage.TryGetValue(componentKind2, out var componentId2)
             )
             {
-                throw new KeyNotFoundException("Component type not found for the entity");
+                throw new KeyNotFoundException("Component kind not found for the entity");
             }
 
             var created = CreateBuffer();
@@ -183,8 +183,8 @@ namespace Theraot.ECS
             callback
             (
                 entityId,
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue1>(componentType1).GetRef(componentId1),
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue2>(componentType2).GetRef(componentId2)
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue1>(componentKind1).GetRef(componentId1),
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue2>(componentKind2).GetRef(componentId2)
             );
 
             if (created)
@@ -193,7 +193,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void With<TComponentValue1, TComponentValue2, TComponentValue3>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3> callback)
+        public void With<TComponentValue1, TComponentValue2, TComponentValue3>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, TComponentKind componentKind3, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3> callback)
         {
             if (!_componentsByEntity.TryGetValue(entityId, out var entityComponentStorage))
             {
@@ -202,12 +202,12 @@ namespace Theraot.ECS
 
             if
             (
-                !entityComponentStorage.TryGetValue(componentType1, out var componentId1)
-                || !entityComponentStorage.TryGetValue(componentType2, out var componentId2)
-                || !entityComponentStorage.TryGetValue(componentType3, out var componentId3)
+                !entityComponentStorage.TryGetValue(componentKind1, out var componentId1)
+                || !entityComponentStorage.TryGetValue(componentKind2, out var componentId2)
+                || !entityComponentStorage.TryGetValue(componentKind3, out var componentId3)
             )
             {
-                throw new KeyNotFoundException("Component type not found for the entity");
+                throw new KeyNotFoundException("Component kind not found for the entity");
             }
 
             var created = CreateBuffer();
@@ -215,9 +215,9 @@ namespace Theraot.ECS
             callback
             (
                 entityId,
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue1>(componentType1).GetRef(componentId1),
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue2>(componentType2).GetRef(componentId2),
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue3>(componentType3).GetRef(componentId3)
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue1>(componentKind1).GetRef(componentId1),
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue2>(componentKind2).GetRef(componentId2),
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue3>(componentKind3).GetRef(componentId3)
             );
 
             if (created)
@@ -226,7 +226,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void With<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4> callback)
+        public void With<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, TComponentKind componentKind3, TComponentKind componentKind4, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4> callback)
         {
             if (!_componentsByEntity.TryGetValue(entityId, out var entityComponentStorage))
             {
@@ -235,13 +235,13 @@ namespace Theraot.ECS
 
             if
             (
-                !entityComponentStorage.TryGetValue(componentType1, out var componentId1)
-                || !entityComponentStorage.TryGetValue(componentType2, out var componentId2)
-                || !entityComponentStorage.TryGetValue(componentType3, out var componentId3)
-                || !entityComponentStorage.TryGetValue(componentType4, out var componentId4)
+                !entityComponentStorage.TryGetValue(componentKind1, out var componentId1)
+                || !entityComponentStorage.TryGetValue(componentKind2, out var componentId2)
+                || !entityComponentStorage.TryGetValue(componentKind3, out var componentId3)
+                || !entityComponentStorage.TryGetValue(componentKind4, out var componentId4)
             )
             {
-                throw new KeyNotFoundException("Component type not found for the entity");
+                throw new KeyNotFoundException("Component kind not found for the entity");
             }
 
             var created = CreateBuffer();
@@ -249,10 +249,10 @@ namespace Theraot.ECS
             callback
             (
                 entityId,
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue1>(componentType1).GetRef(componentId1),
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue2>(componentType2).GetRef(componentId2),
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue3>(componentType3).GetRef(componentId3),
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue4>(componentType4).GetRef(componentId4)
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue1>(componentKind1).GetRef(componentId1),
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue2>(componentKind2).GetRef(componentId2),
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue3>(componentKind3).GetRef(componentId3),
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue4>(componentKind4).GetRef(componentId4)
             );
 
             if (created)
@@ -261,7 +261,7 @@ namespace Theraot.ECS
             }
         }
 
-        public void With<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5>(TEntityId entityId, TComponentType componentType1, TComponentType componentType2, TComponentType componentType3, TComponentType componentType4, TComponentType componentType5, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5> callback)
+        public void With<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, TComponentKind componentKind3, TComponentKind componentKind4, TComponentKind componentKind5, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5> callback)
         {
             if (!_componentsByEntity.TryGetValue(entityId, out var entityComponentStorage))
             {
@@ -270,14 +270,14 @@ namespace Theraot.ECS
 
             if
             (
-                !entityComponentStorage.TryGetValue(componentType1, out var componentId1)
-                || !entityComponentStorage.TryGetValue(componentType2, out var componentId2)
-                || !entityComponentStorage.TryGetValue(componentType3, out var componentId3)
-                || !entityComponentStorage.TryGetValue(componentType4, out var componentId4)
-                || !entityComponentStorage.TryGetValue(componentType5, out var componentId5)
+                !entityComponentStorage.TryGetValue(componentKind1, out var componentId1)
+                || !entityComponentStorage.TryGetValue(componentKind2, out var componentId2)
+                || !entityComponentStorage.TryGetValue(componentKind3, out var componentId3)
+                || !entityComponentStorage.TryGetValue(componentKind4, out var componentId4)
+                || !entityComponentStorage.TryGetValue(componentKind5, out var componentId5)
             )
             {
-                throw new KeyNotFoundException("Component type not found for the entity");
+                throw new KeyNotFoundException("Component kind not found for the entity");
             }
 
             var created = CreateBuffer();
@@ -285,11 +285,11 @@ namespace Theraot.ECS
             callback
             (
                 entityId,
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue1>(componentType1).GetRef(componentId1),
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue2>(componentType2).GetRef(componentId2),
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue3>(componentType3).GetRef(componentId3),
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue4>(componentType4).GetRef(componentId4),
-                ref _componentTypeRegistry.GetTypedStorage<TComponentValue5>(componentType5).GetRef(componentId5)
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue1>(componentKind1).GetRef(componentId1),
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue2>(componentKind2).GetRef(componentId2),
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue3>(componentKind3).GetRef(componentId3),
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue4>(componentKind4).GetRef(componentId4),
+                ref _componentKindRegistry.GetTypedContainer<TComponentValue5>(componentKind5).GetRef(componentId5)
             );
 
             if (created)
@@ -299,40 +299,40 @@ namespace Theraot.ECS
         }
     }
 
-    internal partial class ComponentStorage<TEntityId, TComponentType>
+    internal partial class ComponentStorage<TEntityId, TComponentKind>
     {
         private List<Action> _log;
 
-        public bool BufferSetComponent<TComponentValue>(TEntityId entityId, TComponentType componentType, TComponentValue component)
+        public bool BufferSetComponent<TComponentValue>(TEntityId entityId, TComponentKind componentKind, TComponentValue component)
         {
             if (_log == null)
             {
                 return false;
             }
 
-            _log.Add(() => SetComponent(entityId, componentType, component));
+            _log.Add(() => SetComponent(entityId, componentKind, component));
             return true;
         }
 
-        public bool BufferUnsetComponent(TEntityId entityId, IList<TComponentType> componentTypes)
+        public bool BufferUnsetComponent(TEntityId entityId, IList<TComponentKind> componentKinds)
         {
             if (_log == null)
             {
                 return false;
             }
 
-            _log.Add(() => UnsetComponents(entityId, componentTypes));
+            _log.Add(() => UnsetComponents(entityId, componentKinds));
             return true;
         }
 
-        public bool BufferUnsetComponent(TEntityId entityId, TComponentType componentType)
+        public bool BufferUnsetComponent(TEntityId entityId, TComponentKind componentKind)
         {
             if (_log == null)
             {
                 return false;
             }
 
-            _log.Add(() => UnsetComponent(entityId, componentType));
+            _log.Add(() => UnsetComponent(entityId, componentKind));
             return true;
         }
 

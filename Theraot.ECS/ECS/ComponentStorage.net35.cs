@@ -8,98 +8,98 @@ namespace Theraot.ECS
 {
 #if LESSTHAN_NET35
 
-    internal partial class ComponentStorage<TEntityId, TComponentType>
+    internal partial class ComponentStorage<TEntityId, TComponentKind>
     {
-        public bool BufferSetComponents<TComponentValue>(TEntityId entityId, IList<TComponentType> componentTypes, Converter<TComponentType, TComponentValue> componentSelector)
+        public bool BufferSetComponents<TComponentValue>(TEntityId entityId, IList<TComponentKind> componentKinds, Converter<TComponentKind, TComponentValue> componentSelector)
         {
             if (_log == null)
             {
                 return false;
             }
 
-            _log.Add(() => SetComponents(entityId, componentTypes, componentSelector));
+            _log.Add(() => SetComponents(entityId, componentKinds, componentSelector));
             return true;
         }
 
-        public void SetComponents<TComponentValue>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Converter<TComponentType, TComponentValue> componentSelector)
+        public void SetComponents<TComponentValue>(TEntityId entityId, IEnumerable<TComponentKind> componentKinds, Converter<TComponentKind, TComponentValue> componentSelector)
         {
-            var componentTypeList = EnumerableHelper.AsIList(componentTypes);
-            if (BufferSetComponents(entityId, componentTypeList, componentSelector))
+            var componentKindList = EnumerableHelper.AsIList(componentKinds);
+            if (BufferSetComponents(entityId, componentKindList, componentSelector))
             {
                 return;
             }
 
             var entityComponentStorage = _componentsByEntity[entityId];
 
-            var addedComponentTypes = new List<TComponentType>();
-            foreach (var componentType in componentTypeList)
+            var addedComponentKinds = new List<TComponentKind>();
+            foreach (var componentKind in componentKindList)
             {
                 if
                 (
                     entityComponentStorage.Set
                     (
-                        componentType,
-                        key => _componentTypeRegistry.GetOrCreateTypedStorage<TComponentValue>(key).Add(componentSelector(key)),
-                        pair => _componentTypeRegistry.GetOrCreateTypedStorage<TComponentValue>(pair.Key).Update(pair.Value, componentSelector(pair.Key))
+                        componentKind,
+                        key => _componentKindRegistry.GetOrCreateTypedContainer<TComponentValue>(key).Add(componentSelector(key)),
+                        pair => _componentKindRegistry.GetOrCreateTypedContainer<TComponentValue>(pair.Key).Update(pair.Value, componentSelector(pair.Key))
                     )
                 )
                 {
-                    addedComponentTypes.Add(componentType);
+                    addedComponentKinds.Add(componentKind);
                 }
             }
 
-            if (addedComponentTypes.Count > 0)
+            if (addedComponentKinds.Count > 0)
             {
-                _entityComponentEventDispatcher.NotifyAddedComponents(entityId, addedComponentTypes);
+                _entityComponentEventDispatcher.NotifyAddedComponents(entityId, addedComponentKinds);
             }
         }
     }
 
 #else
 
-    internal partial class ComponentStorage<TEntityId, TComponentType>
+    internal partial class ComponentStorage<TEntityId, TComponentKind>
     {
-        public bool BufferSetComponents<TComponentValue>(TEntityId entityId, IList<TComponentType> componentTypes, Func<TComponentType, TComponentValue> componentSelector)
+        public bool BufferSetComponents<TComponentValue>(TEntityId entityId, IList<TComponentKind> componentKinds, Func<TComponentKind, TComponentValue> componentSelector)
         {
             if (_log == null)
             {
                 return false;
             }
 
-            _log.Add(() => SetComponents(entityId, componentTypes, componentSelector));
+            _log.Add(() => SetComponents(entityId, componentKinds, componentSelector));
             return true;
         }
 
-        public void SetComponents<TComponentValue>(TEntityId entityId, IEnumerable<TComponentType> componentTypes, Func<TComponentType, TComponentValue> componentSelector)
+        public void SetComponents<TComponentValue>(TEntityId entityId, IEnumerable<TComponentKind> componentKinds, Func<TComponentKind, TComponentValue> componentSelector)
         {
-            var componentTypeList = EnumerableHelper.AsIList(componentTypes);
-            if (BufferSetComponents(entityId, componentTypeList, componentSelector))
+            var componentKindList = EnumerableHelper.AsIList(componentKinds);
+            if (BufferSetComponents(entityId, componentKindList, componentSelector))
             {
                 return;
             }
 
             var entityComponentStorage = _componentsByEntity[entityId];
 
-            var addedComponentTypes = new List<TComponentType>();
-            foreach (var componentType in componentTypeList)
+            var addedComponentKinds = new List<TComponentKind>();
+            foreach (var componentKind in componentKindList)
             {
                 if
                 (
                     entityComponentStorage.Set
                     (
-                        componentType,
-                        key => _componentTypeRegistry.GetOrCreateTypedStorage<TComponentValue>(key).Add(componentSelector(key)),
-                        pair => _componentTypeRegistry.GetOrCreateTypedStorage<TComponentValue>(pair.Key).Update(pair.Value, componentSelector(pair.Key))
+                        componentKind,
+                        key => _componentKindRegistry.GetOrCreateTypedContainer<TComponentValue>(key).Add(componentSelector(key)),
+                        pair => _componentKindRegistry.GetOrCreateTypedContainer<TComponentValue>(pair.Key).Update(pair.Value, componentSelector(pair.Key))
                     )
                 )
                 {
-                    addedComponentTypes.Add(componentType);
+                    addedComponentKinds.Add(componentKind);
                 }
             }
 
-            if (addedComponentTypes.Count > 0)
+            if (addedComponentKinds.Count > 0)
             {
-                _entityComponentEventDispatcher.NotifyAddedComponents(entityId, addedComponentTypes);
+                _entityComponentEventDispatcher.NotifyAddedComponents(entityId, addedComponentKinds);
             }
         }
     }

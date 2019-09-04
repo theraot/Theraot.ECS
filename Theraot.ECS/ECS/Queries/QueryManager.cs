@@ -7,28 +7,28 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS.Queries
 {
-    internal sealed class QueryManager<TComponentType, TComponentTypeSet> : IEqualityComparer<Query<TComponentTypeSet>>
+    internal sealed class QueryManager<TComponentKind, TComponentKindSet> : IEqualityComparer<Query<TComponentKindSet>>
     {
-        private readonly IComponentTypeManager<TComponentType, TComponentTypeSet> _componentTypeManager;
+        private readonly IComponentKindManager<TComponentKind, TComponentKindSet> _componentKindManager;
 
-        private readonly QueryStorage<TComponentTypeSet> _queryStorage;
+        private readonly QueryStorage<TComponentKindSet> _queryStorage;
 
-        public QueryManager(IComponentTypeManager<TComponentType, TComponentTypeSet> componentTypeManager)
+        public QueryManager(IComponentKindManager<TComponentKind, TComponentKindSet> componentKindManager)
         {
-            _componentTypeManager = componentTypeManager;
-            _queryStorage = new QueryStorage<TComponentTypeSet>(new ProxyComparer<Query<TComponentTypeSet>>(this));
+            _componentKindManager = componentKindManager;
+            _queryStorage = new QueryStorage<TComponentKindSet>(new ProxyComparer<Query<TComponentKindSet>>(this));
         }
 
-        public QueryId CreateQuery(IEnumerable<TComponentType> all, IEnumerable<TComponentType> any, IEnumerable<TComponentType> none)
+        public QueryId CreateQuery(IEnumerable<TComponentKind> all, IEnumerable<TComponentKind> any, IEnumerable<TComponentKind> none)
         {
-            var allSet = _componentTypeManager.Create();
-            _componentTypeManager.Add(allSet, all);
-            var anySet = _componentTypeManager.Create();
-            _componentTypeManager.Add(anySet, any);
-            var noneSet = _componentTypeManager.Create();
-            _componentTypeManager.Add(noneSet, none);
+            var allSet = _componentKindManager.Create();
+            _componentKindManager.Add(allSet, all);
+            var anySet = _componentKindManager.Create();
+            _componentKindManager.Add(anySet, any);
+            var noneSet = _componentKindManager.Create();
+            _componentKindManager.Add(noneSet, none);
             return _queryStorage.AddQuery(
-                new Query<TComponentTypeSet>
+                new Query<TComponentKindSet>
                 (
                     allSet,
                     anySet,
@@ -37,7 +37,7 @@ namespace Theraot.ECS.Queries
             );
         }
 
-        public bool Equals(Query<TComponentTypeSet> x, Query<TComponentTypeSet> y)
+        public bool Equals(Query<TComponentKindSet> x, Query<TComponentKindSet> y)
         {
             if (x == y)
             {
@@ -48,41 +48,41 @@ namespace Theraot.ECS.Queries
                 return false;
             }
 
-            var componentTypSetEqualityComparer = _componentTypeManager.ComponentTypSetEqualityComparer;
+            var componentKindSetEqualityComparer = _componentKindManager.ComponentKindSetEqualityComparer;
 
-            return componentTypSetEqualityComparer.Equals(x.All, y.All)
-                   && componentTypSetEqualityComparer.Equals(x.Any, y.Any)
-                   && componentTypSetEqualityComparer.Equals(x.None, y.None);
+            return componentKindSetEqualityComparer.Equals(x.All, y.All)
+                   && componentKindSetEqualityComparer.Equals(x.Any, y.Any)
+                   && componentKindSetEqualityComparer.Equals(x.None, y.None);
         }
 
-        public int GetHashCode(Query<TComponentTypeSet> obj)
+        public int GetHashCode(Query<TComponentKindSet> obj)
         {
             if (obj == null)
             {
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            var componentTypSetEqualityComparer = _componentTypeManager.ComponentTypSetEqualityComparer;
+            var componentKindSetEqualityComparer = _componentKindManager.ComponentKindSetEqualityComparer;
 
-            return componentTypSetEqualityComparer.GetHashCode(obj.All)
-                   ^ componentTypSetEqualityComparer.GetHashCode(obj.Any)
-                   ^ componentTypSetEqualityComparer.GetHashCode(obj.None);
+            return componentKindSetEqualityComparer.GetHashCode(obj.All)
+                   ^ componentKindSetEqualityComparer.GetHashCode(obj.Any)
+                   ^ componentKindSetEqualityComparer.GetHashCode(obj.None);
         }
 
-        public QueryCheckResult QueryCheck(TComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheck(TComponentKindSet allComponentsKinds, QueryId queryId)
         {
-            if (allComponentsTypes == null)
+            if (allComponentsKinds == null)
             {
-                throw new ArgumentNullException(nameof(allComponentsTypes));
+                throw new ArgumentNullException(nameof(allComponentsKinds));
             }
 
             var query = _queryStorage.GetQuery(queryId);
-            if (CheckNotNone(allComponentsTypes, query.None))
+            if (CheckNotNone(allComponentsKinds, query.None))
             {
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
-            if (CheckAll(allComponentsTypes, query.All) && CheckAny(allComponentsTypes, query.Any))
+            if (CheckAll(allComponentsKinds, query.All) && CheckAny(allComponentsKinds, query.Any))
             {
                 // The entity has all the required components for this queryId
                 // and at least one of the optional components (if any) for this queryId
@@ -91,20 +91,20 @@ namespace Theraot.ECS.Queries
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponent(TComponentType addedComponentType, TComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheckOnAddedComponent(TComponentKind addedComponentKind, TComponentKindSet allComponentsKinds, QueryId queryId)
         {
-            if (allComponentsTypes == null)
+            if (allComponentsKinds == null)
             {
-                throw new ArgumentNullException(nameof(allComponentsTypes));
+                throw new ArgumentNullException(nameof(allComponentsKinds));
             }
 
             var query = _queryStorage.GetQuery(queryId);
-            if (CheckNotNone(addedComponentType, query.None))
+            if (CheckNotNone(addedComponentKind, query.None))
             {
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
-            if (CheckAll(allComponentsTypes, query.All) && CheckAny(allComponentsTypes, query.Any))
+            if (CheckAll(allComponentsKinds, query.All) && CheckAny(allComponentsKinds, query.Any))
             {
                 // The entity has all the required components for this queryId
                 // and at least one of the optional components (if any) for this queryId
@@ -113,20 +113,20 @@ namespace Theraot.ECS.Queries
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<TComponentType> addedComponentTypes, TComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheckOnAddedComponents(IEnumerable<TComponentKind> addedComponentKinds, TComponentKindSet allComponentsKinds, QueryId queryId)
         {
-            if (allComponentsTypes == null)
+            if (allComponentsKinds == null)
             {
-                throw new ArgumentNullException(nameof(allComponentsTypes));
+                throw new ArgumentNullException(nameof(allComponentsKinds));
             }
 
             var query = _queryStorage.GetQuery(queryId);
-            if (CheckNotNone(addedComponentTypes, query.None))
+            if (CheckNotNone(addedComponentKinds, query.None))
             {
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
-            if (CheckAll(allComponentsTypes, query.All) && CheckAny(allComponentsTypes, query.Any))
+            if (CheckAll(allComponentsKinds, query.All) && CheckAny(allComponentsKinds, query.Any))
             {
                 // The entity has all the required components for this queryId
                 // and at least one of the optional components (if any) for this queryId
@@ -135,20 +135,20 @@ namespace Theraot.ECS.Queries
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnRemovedComponent(TComponentType removedComponentType, TComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheckOnRemovedComponent(TComponentKind removedComponentKind, TComponentKindSet allComponentsKinds, QueryId queryId)
         {
-            if (allComponentsTypes == null)
+            if (allComponentsKinds == null)
             {
-                throw new ArgumentNullException(nameof(allComponentsTypes));
+                throw new ArgumentNullException(nameof(allComponentsKinds));
             }
 
             var query = _queryStorage.GetQuery(queryId);
-            if (CheckNotAll(removedComponentType, query.All) || CheckNotAny(allComponentsTypes, query.Any))
+            if (CheckNotAll(removedComponentKind, query.All) || CheckNotAny(allComponentsKinds, query.Any))
             {
                 // The entity no longer has one of the components it should have for this queryId
                 return QueryCheckResult.Remove;
             }
-            if (CheckNone(allComponentsTypes, query.None) && CheckAny(allComponentsTypes, query.Any))
+            if (CheckNone(allComponentsKinds, query.None) && CheckAny(allComponentsKinds, query.Any))
             {
                 // The entity has none of the components it should not have for this queryId
                 // and at least one of the optional components (if any) for this queryId
@@ -157,20 +157,20 @@ namespace Theraot.ECS.Queries
             return QueryCheckResult.Noop;
         }
 
-        public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<TComponentType> removedComponentTypes, TComponentTypeSet allComponentsTypes, QueryId queryId)
+        public QueryCheckResult QueryCheckOnRemovedComponents(IEnumerable<TComponentKind> removedComponentKinds, TComponentKindSet allComponentsKinds, QueryId queryId)
         {
-            if (allComponentsTypes == null)
+            if (allComponentsKinds == null)
             {
-                throw new ArgumentNullException(nameof(allComponentsTypes));
+                throw new ArgumentNullException(nameof(allComponentsKinds));
             }
 
             var query = _queryStorage.GetQuery(queryId);
-            if (CheckNotAll(removedComponentTypes, query.All) || CheckNotAny(allComponentsTypes, query.Any))
+            if (CheckNotAll(removedComponentKinds, query.All) || CheckNotAny(allComponentsKinds, query.Any))
             {
                 // The entity no longer has one of the components it should have for this queryId
                 return QueryCheckResult.Remove;
             }
-            if (CheckNone(allComponentsTypes, query.None) && CheckAny(allComponentsTypes, query.Any))
+            if (CheckNone(allComponentsKinds, query.None) && CheckAny(allComponentsKinds, query.Any))
             {
                 // The entity has none of the components it should not have for this queryId
                 // and at least one of the optional components (if any) for this queryId
@@ -179,49 +179,49 @@ namespace Theraot.ECS.Queries
             return QueryCheckResult.Noop;
         }
 
-        private bool CheckAll(TComponentTypeSet allComponentsTypes, TComponentTypeSet all)
+        private bool CheckAll(TComponentKindSet allComponentsKinds, TComponentKindSet all)
         {
-            return _componentTypeManager.IsEmpty(all) || _componentTypeManager.ContainsAll(allComponentsTypes, all);
+            return _componentKindManager.IsEmpty(all) || _componentKindManager.ContainsAll(allComponentsKinds, all);
         }
 
-        private bool CheckAny(TComponentTypeSet allComponentsTypes, TComponentTypeSet any)
+        private bool CheckAny(TComponentKindSet allComponentsKinds, TComponentKindSet any)
         {
-            return _componentTypeManager.IsEmpty(any) || _componentTypeManager.Overlaps(any, allComponentsTypes);
+            return _componentKindManager.IsEmpty(any) || _componentKindManager.Overlaps(any, allComponentsKinds);
         }
 
-        private bool CheckNone(TComponentTypeSet allComponentsTypes, TComponentTypeSet none)
+        private bool CheckNone(TComponentKindSet allComponentsKinds, TComponentKindSet none)
         {
-            return _componentTypeManager.IsEmpty(none) || !_componentTypeManager.Overlaps(none, allComponentsTypes);
+            return _componentKindManager.IsEmpty(none) || !_componentKindManager.Overlaps(none, allComponentsKinds);
         }
 
-        private bool CheckNotAll(IEnumerable<TComponentType> removedComponentTypes, TComponentTypeSet all)
+        private bool CheckNotAll(IEnumerable<TComponentKind> removedComponentKinds, TComponentKindSet all)
         {
-            return _componentTypeManager.Overlaps(all, removedComponentTypes);
+            return _componentKindManager.Overlaps(all, removedComponentKinds);
         }
 
-        private bool CheckNotAll(TComponentType removedComponentType, TComponentTypeSet all)
+        private bool CheckNotAll(TComponentKind removedComponentKind, TComponentKindSet all)
         {
-            return _componentTypeManager.Contains(all, removedComponentType);
+            return _componentKindManager.Contains(all, removedComponentKind);
         }
 
-        private bool CheckNotAny(TComponentTypeSet allComponentsTypes, TComponentTypeSet any)
+        private bool CheckNotAny(TComponentKindSet allComponentsKinds, TComponentKindSet any)
         {
-            return !_componentTypeManager.IsEmpty(any) && !_componentTypeManager.Overlaps(any, allComponentsTypes);
+            return !_componentKindManager.IsEmpty(any) && !_componentKindManager.Overlaps(any, allComponentsKinds);
         }
 
-        private bool CheckNotNone(IEnumerable<TComponentType> addedComponentTypes, TComponentTypeSet none)
+        private bool CheckNotNone(IEnumerable<TComponentKind> addedComponentKinds, TComponentKindSet none)
         {
-            return _componentTypeManager.Overlaps(none, addedComponentTypes);
+            return _componentKindManager.Overlaps(none, addedComponentKinds);
         }
 
-        private bool CheckNotNone(TComponentType addedComponentType, TComponentTypeSet none)
+        private bool CheckNotNone(TComponentKind addedComponentKind, TComponentKindSet none)
         {
-            return _componentTypeManager.Contains(none, addedComponentType);
+            return _componentKindManager.Contains(none, addedComponentKind);
         }
 
-        private bool CheckNotNone(TComponentTypeSet allComponentsTypes, TComponentTypeSet none)
+        private bool CheckNotNone(TComponentKindSet allComponentsKinds, TComponentKindSet none)
         {
-            return _componentTypeManager.Overlaps(none, allComponentsTypes);
+            return _componentKindManager.Overlaps(none, allComponentsKinds);
         }
     }
 }

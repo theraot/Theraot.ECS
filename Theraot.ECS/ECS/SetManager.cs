@@ -1,69 +1,69 @@
 ﻿using System;
 using System.Collections.Generic;
-using ComponentType = System.String;
+using ComponentKind = System.String;
 
 #if LESSTHAN_NET35
 
-using ComponentTypeSet = Theraot.HashSet<string>;
+using ComponentKindSet = Theraot.HashSet<string>;
 
 #else
 
-using ComponentTypeSet = System.Collections.Generic.HashSet<string>;
+using ComponentKindSet = System.Collections.Generic.HashSet<string>;
 
 #endif
 
 namespace Theraot.ECS
 {
     /// <summary>
-    /// Represents a manager of set of component types stored as a hash based set.
+    /// Represents a manager of set of types stored as a hash based set.
     /// </summary>
-    public sealed partial class SetManager : IComponentTypeManager<ComponentType, ComponentTypeSet>, IEqualityComparer<ComponentType>, IEqualityComparer<ComponentTypeSet>
+    public sealed partial class SetManager : IComponentKindManager<ComponentKind, ComponentKindSet>, IEqualityComparer<ComponentKind>, IEqualityComparer<ComponentKindSet>
     {
-        IEqualityComparer<string> IComponentTypeManager<string, ComponentTypeSet>.ComponentTypEqualityComparer => this;
+        IEqualityComparer<string> IComponentKindManager<string, ComponentKindSet>.ComponentKindEqualityComparer => this;
 
-        IEqualityComparer<ComponentTypeSet> IComponentTypeManager<string, ComponentTypeSet>.ComponentTypSetEqualityComparer => this;
+        IEqualityComparer<ComponentKindSet> IComponentKindManager<string, ComponentKindSet>.ComponentKindSetEqualityComparer => this;
 
-        void IComponentTypeManager<string, ComponentTypeSet>.Add(ComponentTypeSet componentTypeSet, IEnumerable<ComponentType> componentTypes)
+        void IComponentKindManager<string, ComponentKindSet>.Add(ComponentKindSet componentKindSet, IEnumerable<ComponentKind> componentKinds)
         {
-            if (componentTypes == null)
+            if (componentKinds == null)
             {
-                throw new ArgumentNullException(nameof(componentTypes));
+                throw new ArgumentNullException(nameof(componentKinds));
             }
 
-            if (componentTypeSet == null)
+            if (componentKindSet == null)
             {
-                throw new ArgumentNullException(nameof(componentTypeSet));
+                throw new ArgumentNullException(nameof(componentKindSet));
             }
 
-            foreach (var componentType in componentTypes)
+            foreach (var componentKind in componentKinds)
             {
-                componentTypeSet.Add(componentType);
+                componentKindSet.Add(componentKind);
             }
         }
 
-        bool IComponentTypeManager<string, ComponentTypeSet>.Contains(ComponentTypeSet componentTypeSet, ComponentType componentType)
+        bool IComponentKindManager<string, ComponentKindSet>.Contains(ComponentKindSet componentKindSet, ComponentKind componentKind)
         {
-            if (componentTypeSet == null)
+            if (componentKindSet == null)
             {
-                throw new ArgumentNullException(nameof(componentTypeSet));
+                throw new ArgumentNullException(nameof(componentKindSet));
             }
 
-            return componentTypeSet.Count != 0 && componentTypeSet.Contains(componentType);
+            return componentKindSet.Count != 0 && componentKindSet.Contains(componentKind);
         }
 
-        bool IComponentTypeManager<string, ComponentTypeSet>.ContainsAll(ComponentTypeSet componentTypeSet, ComponentTypeSet other)
+        bool IComponentKindManager<string, ComponentKindSet>.ContainsAll(ComponentKindSet componentKindSet, ComponentKindSet other)
         {
-            if (componentTypeSet == null)
+            if (componentKindSet == null)
             {
-                throw new ArgumentNullException(nameof(componentTypeSet));
+                throw new ArgumentNullException(nameof(componentKindSet));
             }
 
-            return componentTypeSet.IsSupersetOf(other);
+            return componentKindSet.IsSupersetOf(other);
         }
 
-        ComponentTypeSet IComponentTypeManager<string, ComponentTypeSet>.Create()
+        ComponentKindSet IComponentKindManager<string, ComponentKindSet>.Create()
         {
-            return new HashSet<ComponentType>();
+            return new HashSet<ComponentKind>();
         }
 
         public bool Equals(string x, string y)
@@ -71,7 +71,7 @@ namespace Theraot.ECS
             return EqualityComparer<string>.Default.Equals(x, y);
         }
 
-        bool IEqualityComparer<ComponentTypeSet>.Equals(ComponentTypeSet x, ComponentTypeSet y)
+        bool IEqualityComparer<ComponentKindSet>.Equals(ComponentKindSet x, ComponentKindSet y)
         {
             if (x == y)
             {
@@ -86,7 +86,7 @@ namespace Theraot.ECS
             return x.SetEquals(y);
         }
 
-        int IEqualityComparer<ComponentTypeSet>.GetHashCode(ComponentTypeSet obj)
+        int IEqualityComparer<ComponentKindSet>.GetHashCode(ComponentKindSet obj)
         {
             if (obj == null)
             {
@@ -96,60 +96,60 @@ namespace Theraot.ECS
             return obj.GetHashCode();
         }
 
-        bool IComponentTypeManager<string, ComponentTypeSet>.IsEmpty(ComponentTypeSet componentTypeSet)
+        bool IComponentKindManager<string, ComponentKindSet>.IsEmpty(ComponentKindSet componentKindSet)
         {
-            if (componentTypeSet == null)
+            if (componentKindSet == null)
             {
-                throw new ArgumentNullException(nameof(componentTypeSet));
+                throw new ArgumentNullException(nameof(componentKindSet));
             }
 
-            return componentTypeSet.Count == 0;
+            return componentKindSet.Count == 0;
         }
 
-        bool IComponentTypeManager<string, ComponentTypeSet>.Overlaps(ComponentTypeSet componentTypeSet, IEnumerable<string> componentTypes)
+        bool IComponentKindManager<string, ComponentKindSet>.Overlaps(ComponentKindSet componentKindSet, IEnumerable<string> componentKinds)
         {
-            if (componentTypeSet == null)
+            if (componentKindSet == null)
             {
-                throw new ArgumentNullException(nameof(componentTypeSet));
+                throw new ArgumentNullException(nameof(componentKindSet));
             }
-            if (componentTypes == null)
+            if (componentKinds == null)
             {
-                throw new ArgumentNullException(nameof(componentTypes));
+                throw new ArgumentNullException(nameof(componentKinds));
             }
 
-            return componentTypeSet.Count != 0 && componentTypeSet.Overlaps(componentTypes);
+            return componentKindSet.Count != 0 && componentKindSet.Overlaps(componentKinds);
         }
 
-        bool IComponentTypeManager<string, ComponentTypeSet>.Overlaps(ComponentTypeSet componentTypeSetA, ComponentTypeSet componentTypeSetB)
+        bool IComponentKindManager<string, ComponentKindSet>.Overlaps(ComponentKindSet componentKindSetA, ComponentKindSet componentKindSetB)
         {
-            if (componentTypeSetA == null)
+            if (componentKindSetA == null)
             {
-                throw new ArgumentNullException(nameof(componentTypeSetA));
+                throw new ArgumentNullException(nameof(componentKindSetA));
             }
 
-            if (componentTypeSetB == null)
+            if (componentKindSetB == null)
             {
-                throw new ArgumentNullException(nameof(componentTypeSetA));
+                throw new ArgumentNullException(nameof(componentKindSetA));
             }
 
-            return componentTypeSetA.Count != 0 && (componentTypeSetA.Count > componentTypeSetB.Count ? componentTypeSetA.Overlaps(componentTypeSetB) : componentTypeSetB.Overlaps(componentTypeSetA));
+            return componentKindSetA.Count != 0 && (componentKindSetA.Count > componentKindSetB.Count ? componentKindSetA.Overlaps(componentKindSetB) : componentKindSetB.Overlaps(componentKindSetA));
         }
 
-        void IComponentTypeManager<string, ComponentTypeSet>.Remove(ComponentTypeSet componentTypeSet, IEnumerable<string> componentTypes)
+        void IComponentKindManager<string, ComponentKindSet>.Remove(ComponentKindSet componentKindSet, IEnumerable<string> componentKinds)
         {
-            if (componentTypeSet == null)
+            if (componentKindSet == null)
             {
-                throw new ArgumentNullException(nameof(componentTypeSet));
+                throw new ArgumentNullException(nameof(componentKindSet));
             }
 
-            if (componentTypes == null)
+            if (componentKinds == null)
             {
-                throw new ArgumentNullException(nameof(componentTypes));
+                throw new ArgumentNullException(nameof(componentKinds));
             }
 
-            foreach (var componentType in componentTypes)
+            foreach (var componentKind in componentKinds)
             {
-                componentTypeSet.Remove(componentType);
+                componentKindSet.Remove(componentKind);
             }
         }
     }

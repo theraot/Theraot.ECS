@@ -4,21 +4,21 @@ using QueryId = System.Int32;
 
 namespace Theraot.ECS.Queries
 {
-    internal sealed class QueryStorage<TComponentTypeSet>
+    internal sealed class QueryStorage<TComponentKindSet>
     {
-        private readonly Dictionary<QueryId, Query<TComponentTypeSet>> _queryByQueryId;
+        private readonly Dictionary<QueryId, Query<TComponentKindSet>> _queryByQueryId;
 
-        private readonly CompactDictionary<Query<TComponentTypeSet>, QueryId> _queryIdByQuery;
+        private readonly CompactDictionary<Query<TComponentKindSet>, QueryId> _queryIdByQuery;
 
         private int _queryId;
 
-        public QueryStorage(IComparer<Query<TComponentTypeSet>> queryComparer)
+        public QueryStorage(IComparer<Query<TComponentKindSet>> queryComparer)
         {
-            _queryByQueryId = new Dictionary<QueryId, Query<TComponentTypeSet>>();
-            _queryIdByQuery = new CompactDictionary<Query<TComponentTypeSet>, QueryId>(queryComparer, 16);
+            _queryByQueryId = new Dictionary<QueryId, Query<TComponentKindSet>>();
+            _queryIdByQuery = new CompactDictionary<Query<TComponentKindSet>, QueryId>(queryComparer, 16);
         }
 
-        public QueryId AddQuery(Query<TComponentTypeSet> query)
+        public QueryId AddQuery(Query<TComponentKindSet> query)
         {
             if (_queryIdByQuery.TryGetValue(query, out var found))
             {
@@ -31,7 +31,7 @@ namespace Theraot.ECS.Queries
             return queryId;
         }
 
-        public Query<TComponentTypeSet> GetQuery(QueryId queryId)
+        public Query<TComponentKindSet> GetQuery(QueryId queryId)
         {
             return _queryByQueryId[queryId];
         }
