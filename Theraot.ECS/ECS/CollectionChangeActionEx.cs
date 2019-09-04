@@ -1,6 +1,6 @@
 ﻿namespace Theraot.ECS
 {
-    public enum CollectionChangeActionEx
+    internal enum CollectionChangeActionEx
     {
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11
         Add = System.ComponentModel.CollectionChangeAction.Add,
