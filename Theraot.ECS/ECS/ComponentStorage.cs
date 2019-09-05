@@ -17,11 +17,11 @@ namespace Theraot.ECS
 {
     internal partial class ComponentStorage<TEntityId, TComponentKind>
     {
-        private readonly Dictionary<TEntityId, CompactDictionary<TComponentKind, ComponentId>> _componentsByEntity;
-
         private readonly IComparer<TComponentKind> _componentKindComparer;
 
         private readonly ComponentKindRegistry<TComponentKind> _componentKindRegistry;
+
+        private readonly Dictionary<TEntityId, CompactDictionary<TComponentKind, ComponentId>> _componentsByEntity;
 
         private readonly EntityComponentEventDispatcher<TEntityId, TComponentKind> _entityComponentEventDispatcher;
 
@@ -31,6 +31,11 @@ namespace Theraot.ECS
             _componentsByEntity = new Dictionary<TEntityId, CompactDictionary<TComponentKind, ComponentId>>(entityEqualityComparer);
             _componentKindRegistry = componentKindRegistry;
             _entityComponentEventDispatcher = entityComponentEventDispatcher;
+        }
+
+        public ICollection<TComponentKind> GetComponentKinds(TEntityId entityId)
+        {
+            return _componentsByEntity[entityId].Keys;
         }
 
         public bool RegisterEntity(TEntityId entityId)

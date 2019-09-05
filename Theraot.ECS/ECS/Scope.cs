@@ -93,6 +93,16 @@ namespace Theraot.ECS
         }
 
         /// <summary>
+        /// Retrieves a collection with the component kind associated with the entity
+        /// </summary>
+        /// <param name="entity">The entity id</param>
+        /// <remarks>This does not return a snapshot.</remarks>
+        public ICollection<TComponentKind> GetComponentKinds(TEntityId entity)
+        {
+            return _componentStorage.GetComponentKinds(entity);
+        }
+
+        /// <summary>
         /// Gets or creates a <see cref="EntityCollection{TEntityId, TComponentKind}"/> for all entities that contain all the component kinds in <paramref name="all"/> at least one component kind in <paramref name="any"/> and none of the component kinds in <paramref name="none"/>.
         /// </summary>
         /// <param name="all">The collection of the component kinds from which the entities must have all.</param>
