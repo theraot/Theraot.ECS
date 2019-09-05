@@ -125,9 +125,9 @@ namespace Theraot.ECS
             }
 
             var removedComponentKinds = new List<TComponentKind>();
+            var entityComponentStorage = _componentsByEntity[entityId];
             foreach (var componentKind in componentKindList)
             {
-                var entityComponentStorage = _componentsByEntity[entityId];
                 if (!entityComponentStorage.Remove(componentKind, out var removedComponentId))
                 {
                     continue;
