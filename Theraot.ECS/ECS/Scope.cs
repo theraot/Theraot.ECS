@@ -15,8 +15,8 @@ namespace Theraot.ECS
         /// <typeparam name="TEntityId">The type of the entity ids.</typeparam>
         /// <typeparam name="TComponentKind">The type used to represent component kinds.</typeparam>
         /// <typeparam name="TComponentKindSet">The type used to store sets of component kinds.</typeparam>
-        /// <param name="entityEqualityComparer"></param>
-        /// <param name="componentKindManager"></param>
+        /// <param name="entityEqualityComparer">The equality comparer used to compare entity ids.</param>
+        /// <param name="componentKindManager">The managers for component kinds and sets component kinds.</param>
         public static Scope<TEntityId, TComponentKind> CreateScope<TEntityId, TComponentKind, TComponentKindSet>(IEqualityComparer<TEntityId> entityEqualityComparer, IComponentKindManager<TComponentKind, TComponentKindSet> componentKindManager)
         {
             if (componentKindManager == null)
@@ -110,7 +110,7 @@ namespace Theraot.ECS
         /// <summary>
         /// Retrieves a collection with the component kind associated with the entity
         /// </summary>
-        /// <param name="entityId">The entity id</param>
+        /// <param name="entityId">The entity id.</param>
         /// <exception cref="KeyNotFoundException">The entity has not been registered.</exception>
         /// <remarks>This does not return a snapshot.</remarks>
         public ICollection<TComponentKind> GetComponentKinds(TEntityId entityId)
