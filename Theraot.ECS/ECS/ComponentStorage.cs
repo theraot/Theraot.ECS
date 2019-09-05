@@ -108,6 +108,14 @@ namespace Theraot.ECS
             _entityComponentEventDispatcher.NotifyRemovedComponents(entityId, new[] { componentKind });
         }
 
+        public void UnsetAllComponents(TEntityId entityId)
+        {
+            var componentKinds = GetComponentKinds(entityId);
+            var componentKindsArray = new TComponentKind[componentKinds.Count];
+            componentKinds.CopyTo(componentKindsArray, 0);
+            UnsetComponents(entityId, componentKindsArray);
+        }
+
         public void UnsetComponents(TEntityId entityId, IEnumerable<TComponentKind> componentKinds)
         {
             var componentKindList = EnumerableHelper.AsIList(componentKinds);

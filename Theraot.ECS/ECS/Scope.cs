@@ -246,10 +246,7 @@ namespace Theraot.ECS
         /// <param name="entityId">The entity id for which to remove the component.</param>
         public void UnsetAllComponents(TEntityId entityId)
         {
-            var componentKinds = _componentStorage.GetComponentKinds(entityId);
-            var componentKindsArray = new TComponentKind[componentKinds.Count];
-            componentKinds.CopyTo(componentKindsArray, 0);
-            _componentStorage.UnsetComponents(entityId, componentKindsArray);
+            _componentStorage.UnsetAllComponents(entityId);
         }
 
         /// <summary>
