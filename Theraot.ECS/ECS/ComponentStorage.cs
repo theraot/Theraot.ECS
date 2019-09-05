@@ -110,10 +110,34 @@ namespace Theraot.ECS
 
         public void UnsetAllComponents(TEntityId entityId)
         {
-            var componentKinds = GetComponentKinds(entityId);
+            var entityComponentStorage = _componentsByEntity[entityId];
+            var componentKinds = entityComponentStorage.Keys;
             var componentKindsArray = new TComponentKind[componentKinds.Count];
             componentKinds.CopyTo(componentKindsArray, 0);
-            UnsetComponents(entityId, componentKindsArray);
+            if (BufferUnsetComponent(entityId, componentKindsArray))
+            {
+                return;
+            }
+
+            var removedComponentKinds = new List<TComponentKind>();
+            foreach (var componentKind in componentKindsArray)
+            {
+                if (!entityComponentStorage.Remove(componentKind, out var removedComponentId))
+                {
+                    continue;
+                }
+
+                if (_componentKindRegistry.TryGetContainer(componentKind, out var componentStorage))
+                {
+                    componentStorage.Remove(removedComponentId);
+                }
+                removedComponentKinds.Add(componentKind);
+            }
+
+            if (removedComponentKinds.Count > 0)
+            {
+                _entityComponentEventDispatcher.NotifyRemovedComponents(entityId, removedComponentKinds);
+            }
         }
 
         public void UnsetComponents(TEntityId entityId, IEnumerable<TComponentKind> componentKinds)
