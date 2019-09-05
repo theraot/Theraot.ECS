@@ -95,11 +95,11 @@ namespace Theraot.ECS
         /// <summary>
         /// Retrieves a collection with the component kind associated with the entity
         /// </summary>
-        /// <param name="entity">The entity id</param>
+        /// <param name="entityId">The entity id</param>
         /// <remarks>This does not return a snapshot.</remarks>
-        public ICollection<TComponentKind> GetComponentKinds(TEntityId entity)
+        public ICollection<TComponentKind> GetComponentKinds(TEntityId entityId)
         {
-            return _componentStorage.GetComponentKinds(entity);
+            return _componentStorage.GetComponentKinds(entityId);
         }
 
         /// <summary>
