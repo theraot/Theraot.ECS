@@ -79,7 +79,7 @@ namespace Theraot.ECS
         /// <typeparam name="TComponentValue">The type of the component value.</typeparam>
         /// <param name="entityId">The entity id for which to get the component.</param>
         /// <param name="componentKind">The kind of the component to retrieve.</param>
-        /// <exception cref="KeyNotFoundException">The component was not found.</exception>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered or the component was not found.</exception>
         /// <exception cref="ArgumentNullException">The component kind is null.</exception>
         /// <exception cref="ArgumentException">The type does not match the component kind.</exception>
         public TComponentValue GetComponent<TComponentValue>(TEntityId entityId, TComponentKind componentKind)
@@ -96,6 +96,7 @@ namespace Theraot.ECS
         /// Retrieves a collection with the component kind associated with the entity
         /// </summary>
         /// <param name="entityId">The entity id</param>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered.</exception>
         /// <remarks>This does not return a snapshot.</remarks>
         public ICollection<TComponentKind> GetComponentKinds(TEntityId entityId)
         {
@@ -148,6 +149,7 @@ namespace Theraot.ECS
         /// <param name="kind">The component kind.</param>
         /// <param name="component">The component value.</param>
         /// <exception cref="ArgumentException">The type does not match the component kind.</exception>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered.</exception>
         /// <remarks>If the component kind has not been registered, it is registered with the provided type and a default container.</remarks>
         public void SetComponent<TComponentValue>(TEntityId entityId, TComponentKind kind, TComponentValue component)
         {
@@ -161,6 +163,7 @@ namespace Theraot.ECS
         /// <param name="entityId">The entity to set the component to.</param>
         /// <param name="components">A dictionary of component kinds and values.</param>
         /// <exception cref="ArgumentException">The type does not match the component kind.</exception>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered.</exception>
         /// <remarks>If a component kind has not been registered, it is registered with the provided type and a default container.</remarks>
         public void SetComponents<TComponentValue>(TEntityId entityId, Dictionary<TComponentKind, TComponentValue> components)
         {
@@ -182,6 +185,7 @@ namespace Theraot.ECS
         /// <exception cref="ArgumentNullException">Either <paramref name="componentKinds"/> or <paramref name="components"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="componentKinds"/> and <paramref name="components"/> do not have the same number of elements.</exception>
         /// <exception cref="ArgumentException">The type does not match the component kind.</exception>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered.</exception>
         /// <remarks>The component kinds and values are taken in order. If a component kind has not been registered, it is registered with the provided type and a default container.</remarks>
         public void SetComponents<TComponentValue>(TEntityId entityId, IList<TComponentKind> componentKinds, IList<TComponentValue> components)
         {
@@ -244,6 +248,7 @@ namespace Theraot.ECS
         /// Removes all components for an entity id.
         /// </summary>
         /// <param name="entityId">The entity id for which to remove the component.</param>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered.</exception>
         public void UnsetAllComponents(TEntityId entityId)
         {
             _componentStorage.UnsetAllComponents(entityId);
@@ -254,6 +259,7 @@ namespace Theraot.ECS
         /// </summary>
         /// <param name="entityId">The entity id for which to remove the component.</param>
         /// <param name="componentKind">The component kind to remove.</param>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered.</exception>
         public void UnsetComponent(TEntityId entityId, TComponentKind componentKind)
         {
             _componentStorage.UnsetComponent(entityId, componentKind);
@@ -264,6 +270,7 @@ namespace Theraot.ECS
         /// </summary>
         /// <param name="entityId">The entity id for which to remove the component.</param>
         /// <param name="componentKinds">The collection of component kinds to remove.</param>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered.</exception>
         public void UnsetComponents(TEntityId entityId, IEnumerable<TComponentKind> componentKinds)
         {
             if (componentKinds == null)
@@ -279,6 +286,7 @@ namespace Theraot.ECS
         /// </summary>
         /// <param name="entityId">The entity id for which to remove the component.</param>
         /// <param name="componentKinds">The collection of component kinds to remove.</param>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered.</exception>
         public void UnsetComponents(TEntityId entityId, params TComponentKind[] componentKinds)
         {
             _componentStorage.UnsetComponents(entityId, componentKinds);
@@ -295,7 +303,7 @@ namespace Theraot.ECS
         /// <param name="componentKind1">The first component kind to which to get a reference.</param>
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
-        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered, or a component kind was not found.</exception>
         /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
         public void With<TComponentValue1>(TEntityId entityId, TComponentKind componentKind1, ActionRef<TEntityId, TComponentValue1> callback)
         {
@@ -317,7 +325,7 @@ namespace Theraot.ECS
         /// <param name="componentKind2">The second component kind to which to get a reference.</param>
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
-        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered, or a component kind was not found.</exception>
         /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
         public void With<TComponentValue1, TComponentValue2>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, ActionRef<TEntityId, TComponentValue1, TComponentValue2> callback)
         {
@@ -341,7 +349,7 @@ namespace Theraot.ECS
         /// <param name="componentKind3">The third component kind to which to get a reference.</param>
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
-        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered, or a component kind was not found.</exception>
         /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
         public void With<TComponentValue1, TComponentValue2, TComponentValue3>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, TComponentKind componentKind3, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3> callback)
         {
@@ -367,7 +375,7 @@ namespace Theraot.ECS
         /// <param name="componentKind4">The fourth component kind to which to get a reference.</param>
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
-        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered, or a component kind was not found.</exception>
         /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
         public void With<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, TComponentKind componentKind3, TComponentKind componentKind4, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4> callback)
         {
@@ -395,7 +403,7 @@ namespace Theraot.ECS
         /// <param name="componentKind5">The fifth component kind to which to get a reference.</param>
         /// <param name="callback">The callback to execute.</param>
         /// <exception cref="ArgumentNullException">The callback is null.</exception>
-        /// <exception cref="KeyNotFoundException">A component kind was not found.</exception>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered, or a component kind was not found.</exception>
         /// <exception cref="ArgumentException">A type does not match the component kind.</exception>
         public void With<TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5>(TEntityId entityId, TComponentKind componentKind1, TComponentKind componentKind2, TComponentKind componentKind3, TComponentKind componentKind4, TComponentKind componentKind5, ActionRef<TEntityId, TComponentValue1, TComponentValue2, TComponentValue3, TComponentValue4, TComponentValue5> callback)
         {
@@ -421,6 +429,7 @@ namespace Theraot.ECS
         /// <param name="componentSelector">A function that returns a component value given a component kind.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="componentKinds"/> or <paramref name="componentSelector"/> is null.</exception>
         /// <exception cref="ArgumentException">The type does not match the component kind.</exception>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered.</exception>
         /// <remarks>The component kinds and values are taken in order. If a component kind has not been registered, it is registered with the provided type and a default container.</remarks>
         public void SetComponents<TComponentValue>(TEntityId entityId, IEnumerable<TComponentKind> componentKinds, Converter<TComponentKind, TComponentValue> componentSelector)
         {
@@ -451,6 +460,7 @@ namespace Theraot.ECS
         /// <param name="componentSelector">A function that returns a component value given a component kind.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="componentKinds"/> or <paramref name="componentSelector"/> is null.</exception>
         /// <exception cref="ArgumentException">The type does not match the component kind.</exception>
+        /// <exception cref="KeyNotFoundException">The entity has not been registered.</exception>
         /// <remarks>The component kinds and values are taken in order. If a component kind has not been registered, it is registered with the provided type and a default container.</remarks>
         public void SetComponents<TComponentValue>(TEntityId entityId, IEnumerable<TComponentKind> componentKinds, Func<TComponentKind, TComponentValue> componentSelector)
         {
