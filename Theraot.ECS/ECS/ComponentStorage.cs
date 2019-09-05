@@ -33,6 +33,12 @@ namespace Theraot.ECS
             _entityComponentEventDispatcher = entityComponentEventDispatcher;
         }
 
+        public bool DestroyEntity(TEntityId entityId)
+        {
+            UnsetAllComponents(entityId);
+            return _componentsByEntity.Remove(entityId);
+        }
+
         public ICollection<TComponentKind> GetComponentKinds(TEntityId entityId)
         {
             return _componentsByEntity[entityId].Keys;
@@ -88,26 +94,6 @@ namespace Theraot.ECS
                    && typedComponentStorage.TryGetValue(componentId, out component);
         }
 
-        public void UnsetComponent(TEntityId entityId, TComponentKind componentKind)
-        {
-            if (BufferUnsetComponent(entityId, componentKind))
-            {
-                return;
-            }
-
-            var entityComponentStorage = _componentsByEntity[entityId];
-            if (!entityComponentStorage.Remove(componentKind, out var removedComponentId))
-            {
-                return;
-            }
-
-            if (_componentKindRegistry.TryGetContainer(componentKind, out var componentStorage))
-            {
-                componentStorage.Remove(removedComponentId);
-            }
-            _entityComponentEventDispatcher.NotifyRemovedComponents(entityId, new[] { componentKind });
-        }
-
         public void UnsetAllComponents(TEntityId entityId)
         {
             var entityComponentStorage = _componentsByEntity[entityId];
@@ -138,6 +124,26 @@ namespace Theraot.ECS
             {
                 _entityComponentEventDispatcher.NotifyRemovedComponents(entityId, removedComponentKinds);
             }
+        }
+
+        public void UnsetComponent(TEntityId entityId, TComponentKind componentKind)
+        {
+            if (BufferUnsetComponent(entityId, componentKind))
+            {
+                return;
+            }
+
+            var entityComponentStorage = _componentsByEntity[entityId];
+            if (!entityComponentStorage.Remove(componentKind, out var removedComponentId))
+            {
+                return;
+            }
+
+            if (_componentKindRegistry.TryGetContainer(componentKind, out var componentStorage))
+            {
+                componentStorage.Remove(removedComponentId);
+            }
+            _entityComponentEventDispatcher.NotifyRemovedComponents(entityId, new[] { componentKind });
         }
 
         public void UnsetComponents(TEntityId entityId, IEnumerable<TComponentKind> componentKinds)

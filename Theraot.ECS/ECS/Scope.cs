@@ -66,6 +66,21 @@ namespace Theraot.ECS
         }
 
         /// <summary>
+        /// Removes all components for an entity id and unregisters it.
+        /// </summary>
+        /// <param name="entityId">The entity id.</param>
+        /// <returns>true if the entity id was registered; otherwise, false.</returns>
+        public bool DestroyEntity(TEntityId entityId)
+        {
+            if (!_componentStorage.DestroyEntity(entityId))
+            {
+                return false;
+            }
+            _controller.DestroyEntity(entityId);
+            return true;
+        }
+
+        /// <summary>
         /// Gets a <see cref="EntityCollection{TEntityId, TComponentKind}"/> with all the entities.
         /// </summary>
         public EntityCollection<TEntityId, TComponentKind> GetAllEntities()

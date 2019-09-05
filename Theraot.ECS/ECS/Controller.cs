@@ -33,6 +33,14 @@ namespace Theraot.ECS
             _componentKindsByEntity = new Dictionary<TEntityId, TComponentKindSet>(_entityEqualityComparer);
         }
 
+        public void DestroyEntity(TEntityId entityId)
+        {
+            if (_componentKindsByEntity.Remove(entityId))
+            {
+                _allEntities?.Remove(entityId);
+            }
+        }
+
         public EntityCollection<TEntityId, TComponentKind> GetAllEntities(IComponentReferenceAccess<TEntityId, TComponentKind> componentReferenceAccess)
         {
             if (_allEntities != null)
