@@ -6,20 +6,20 @@ namespace Theraot.ECS
 {
     internal sealed class ComponentKindRegistry<TComponentKind>
     {
-        private readonly Dictionary<Type, IHasRemoveByIntKey> _indexByType;
+        private readonly Dictionary<Type, IHasRemoveByIntKey> _containerByType;
 
-        private readonly Dictionary<TComponentKind, Type> _indexByComponentKind;
+        private readonly Dictionary<TComponentKind, Type> _typeByComponentKind;
 
         public ComponentKindRegistry(IEqualityComparer<TComponentKind> componentKindEqualityComparer)
         {
-            _indexByComponentKind = new Dictionary<TComponentKind, Type>(componentKindEqualityComparer);
-            _indexByType = new Dictionary<Type, IHasRemoveByIntKey>();
+            _typeByComponentKind = new Dictionary<TComponentKind, Type>(componentKindEqualityComparer);
+            _containerByType = new Dictionary<Type, IHasRemoveByIntKey>();
         }
 
         public IIntKeyCollection<TComponentValue> GetOrCreateTypedContainer<TComponentValue>(TComponentKind componentKind)
         {
             var requestedType = typeof(TComponentValue);
-            if (_indexByComponentKind.TryGetValue(componentKind, out var registeredType))
+            if (_typeByComponentKind.TryGetValue(componentKind, out var registeredType))
             {
                 if (registeredType != requestedType)
                 {
@@ -28,28 +28,28 @@ namespace Theraot.ECS
             }
             else
             {
-                _indexByComponentKind.Add(componentKind, requestedType);
+                _typeByComponentKind.Add(componentKind, requestedType);
             }
 
-            if (_indexByType.TryGetValue(requestedType, out var result))
+            if (_containerByType.TryGetValue(requestedType, out var result))
             {
                 return (IIntKeyCollection<TComponentValue>)result;
             }
 
             result = new IntKeyCollection<TComponentValue>(16);
-            _indexByType[requestedType] = result;
+            _containerByType[requestedType] = result;
             return (IIntKeyCollection<TComponentValue>)result;
         }
 
         public Type GetRegisteredType(TComponentKind componentKind)
         {
-            return _indexByComponentKind[componentKind];
+            return _typeByComponentKind[componentKind];
         }
 
         public IIntKeyCollection<TComponentValue> GetTypedContainer<TComponentValue>(TComponentKind componentKind)
         {
             var requestedType = typeof(TComponentValue);
-            if (!_indexByComponentKind.TryGetValue(componentKind, out var registeredType))
+            if (!_typeByComponentKind.TryGetValue(componentKind, out var registeredType))
             {
                 throw new KeyNotFoundException("Component not stored");
             }
@@ -59,7 +59,7 @@ namespace Theraot.ECS
                 throw new ArgumentException($"{requestedType} does not match {componentKind}");
             }
 
-            if (_indexByType.TryGetValue(requestedType, out var result))
+            if (_containerByType.TryGetValue(requestedType, out var result))
             {
                 return (IIntKeyCollection<TComponentValue>)result;
             }
@@ -70,14 +70,14 @@ namespace Theraot.ECS
         public bool TryGetContainer(TComponentKind componentKind, out IHasRemoveByIntKey typedComponentContainer)
         {
             typedComponentContainer = default;
-            return _indexByComponentKind.TryGetValue(componentKind, out var type)
-                   && _indexByType.TryGetValue(type, out typedComponentContainer);
+            return _typeByComponentKind.TryGetValue(componentKind, out var type)
+                   && _containerByType.TryGetValue(type, out typedComponentContainer);
         }
 
         public bool TryGetTypedContainer<TComponentValue>(TComponentKind componentKind, out IIntKeyCollection<TComponentValue> typedComponentContainer)
         {
             var requestedType = typeof(TComponentValue);
-            if (!_indexByComponentKind.TryGetValue(componentKind, out var registeredType))
+            if (!_typeByComponentKind.TryGetValue(componentKind, out var registeredType))
             {
                 typedComponentContainer = default;
                 return false;
@@ -88,7 +88,7 @@ namespace Theraot.ECS
                 throw new ArgumentException($"{requestedType} does not match {componentKind}");
             }
 
-            if (!_indexByType.TryGetValue(requestedType, out var result))
+            if (!_containerByType.TryGetValue(requestedType, out var result))
             {
                 typedComponentContainer = default;
                 return false;
@@ -101,19 +101,19 @@ namespace Theraot.ECS
         public bool TryRegisterType<TComponentValue>(TComponentKind componentKind, IIntKeyCollection<TComponentValue> container)
         {
             var requestedType = typeof(TComponentValue);
-            if (_indexByComponentKind.TryGetValue(componentKind, out _))
+            if (_typeByComponentKind.TryGetValue(componentKind, out _))
             {
                 return false;
             }
 
-            _indexByComponentKind.Add(componentKind, requestedType);
+            _typeByComponentKind.Add(componentKind, requestedType);
 
-            if (_indexByType.ContainsKey(requestedType))
+            if (_containerByType.ContainsKey(requestedType))
             {
                 return false;
             }
 
-            _indexByType[requestedType] = container;
+            _containerByType[requestedType] = container;
 
             return true;
         }

@@ -252,11 +252,11 @@ namespace Theraot.ECS
         /// </summary>
         /// <typeparam name="TComponentValue">The type of the component value.</typeparam>
         /// <param name="componentKind">The component kind.</param>
-        /// <param name="storage">The custom container.</param>
+        /// <param name="container">The custom container.</param>
         /// <returns>true if the type was registered; otherwise, false.</returns>
-        public bool TryRegisterType<TComponentValue>(TComponentKind componentKind, IIntKeyCollection<TComponentValue> storage)
+        public bool TryRegisterType<TComponentValue>(TComponentKind componentKind, IIntKeyCollection<TComponentValue> container)
         {
-            return _componentKindRegistry.TryRegisterType(componentKind, storage);
+            return _componentKindRegistry.TryRegisterType(componentKind, container);
         }
 
         /// <summary>
