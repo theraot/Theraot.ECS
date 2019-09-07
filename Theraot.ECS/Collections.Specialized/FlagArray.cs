@@ -480,6 +480,7 @@ namespace Theraot.Collections.Specialized
         /// <summary>
         /// Sets all the flags to the specified value.
         /// </summary>
+        /// <param name="value">The value to set all flags to.</param>
         public void SetAll(bool value)
         {
             var entryValue = value ? unchecked((int)0xffffffff) : 0;
