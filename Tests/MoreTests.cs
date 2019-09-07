@@ -18,7 +18,9 @@ namespace Tests
         {
             var scope = Scope.CreateScope(EqualityComparer<int>.Default, new SetManager());
             scope.RegisterEntity(0);
+            Assert.AreEqual(true, scope.GetAllEntities().Contains(0));
             scope.DestroyEntity(0);
+            Assert.AreEqual(false, scope.GetAllEntities().Contains(0));
         }
 
         [Test]
