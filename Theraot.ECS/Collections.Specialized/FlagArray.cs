@@ -122,10 +122,6 @@ namespace Theraot.Collections.Specialized
 
         private FlagArray(FlagArray prototype)
         {
-            if (prototype == null)
-            {
-                throw new ArgumentNullException(nameof(prototype), $"{nameof(prototype)} is null.");
-            }
             var length = prototype._entries.Length;
             _entries = new int[length];
             Capacity = prototype.Capacity;
@@ -976,12 +972,12 @@ namespace Theraot.Collections.Specialized
 
     public sealed partial class FlagArray : IEquatable<FlagArray>
     {
-        public static bool operator !=(FlagArray left, FlagArray right)
+        public static bool operator !=(FlagArray? left, FlagArray? right)
         {
             return !(left == right);
         }
 
-        public static bool operator ==(FlagArray x, FlagArray y)
+        public static bool operator ==(FlagArray? x, FlagArray? y)
         {
             if (ReferenceEquals(x, y))
             {
@@ -997,9 +993,9 @@ namespace Theraot.Collections.Specialized
         }
 
         /// <inheritdoc />
-        public bool Equals(FlagArray other)
+        public bool Equals(FlagArray? other)
         {
-            return SetEquals(other);
+            return other != null && SetEquals(other);
         }
 
         /// <inheritdoc />

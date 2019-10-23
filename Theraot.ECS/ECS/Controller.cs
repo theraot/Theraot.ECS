@@ -1,4 +1,4 @@
-#pragma warning disable RECS0096 // Type parameter is never used
+﻿#pragma warning disable RECS0096 // Type parameter is never used
 
 using System.Collections.Generic;
 using Theraot.ECS.Queries;
@@ -20,7 +20,7 @@ namespace Theraot.ECS
 
         private readonly QueryManager<TComponentKind, TComponentKindSet> _queryManager;
 
-        private EntityCollection<TEntityId, TComponentKind> _allEntities;
+        private EntityCollection<TEntityId, TComponentKind>? _allEntities;
 
         internal Controller(IEqualityComparer<TEntityId> entityEqualityComparer, IComponentKindManager<TComponentKind, TComponentKindSet> componentKindManager)
         {

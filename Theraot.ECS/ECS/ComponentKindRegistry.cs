@@ -69,7 +69,7 @@ namespace Theraot.ECS
 
         public bool TryGetContainer(TComponentKind componentKind, out IHasRemoveByIntKey typedComponentContainer)
         {
-            typedComponentContainer = default;
+            typedComponentContainer = default!;
             return _typeByComponentKind.TryGetValue(componentKind, out var type)
                    && _containerByType.TryGetValue(type, out typedComponentContainer);
         }
@@ -79,7 +79,7 @@ namespace Theraot.ECS
             var requestedType = typeof(TComponentValue);
             if (!_typeByComponentKind.TryGetValue(componentKind, out var registeredType))
             {
-                typedComponentContainer = default;
+                typedComponentContainer = default!;
                 return false;
             }
 
@@ -90,7 +90,7 @@ namespace Theraot.ECS
 
             if (!_containerByType.TryGetValue(requestedType, out var result))
             {
-                typedComponentContainer = default;
+                typedComponentContainer = default!;
                 return false;
             }
 

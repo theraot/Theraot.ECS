@@ -1,4 +1,4 @@
-#pragma warning disable CA1031 // Do not catch general exception types
+﻿#pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable RECS0096 // Type parameter is never used
 
@@ -87,7 +87,7 @@ namespace Theraot.ECS
 
         public bool TryGetComponent<TComponentValue>(TEntityId entityId, TComponentKind componentKind, out TComponentValue component)
         {
-            component = default;
+            component = default!;
             return _componentsByEntity.TryGetValue(entityId, out var entityComponentStorage)
                    && entityComponentStorage.TryGetValue(componentKind, out var componentId)
                    && _componentKindRegistry.TryGetTypedContainer<TComponentValue>(componentKind, out var typedComponentStorage)
@@ -344,7 +344,7 @@ namespace Theraot.ECS
 
     internal partial class ComponentStorage<TEntityId, TComponentKind>
     {
-        private List<Action> _log;
+        private List<Action>? _log;
 
         public bool BufferSetComponent<TComponentValue>(TEntityId entityId, TComponentKind componentKind, TComponentValue component)
         {
@@ -394,6 +394,11 @@ namespace Theraot.ECS
         {
             var log = _log;
             _log = null;
+            if (log == null)
+            {
+                return;
+            }
+
             foreach (var action in log)
             {
                 action();

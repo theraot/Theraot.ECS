@@ -22,9 +22,9 @@ namespace Theraot.Collections.Specialized
     public sealed partial class CompactDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private readonly IComparer<TKey> _comparer;
-        private KeyList _keyList;
+        private KeyList? _keyList;
         private TKey[] _keys;
-        private ValueList _valueList;
+        private ValueList? _valueList;
         private TValue[] _values;
 
         /// <summary>
@@ -242,7 +242,7 @@ namespace Theraot.Collections.Specialized
             var index = IndexOfKey(key);
             if (index < 0)
             {
-                removedValue = default;
+                removedValue = default!;
                 return false;
             }
 
@@ -433,7 +433,7 @@ namespace Theraot.Collections.Specialized
                 return true;
             }
 
-            value = default;
+            value = default!;
             return false;
         }
 
@@ -455,12 +455,12 @@ namespace Theraot.Collections.Specialized
 
         private IList<TKey> GetKeyList()
         {
-            return _keyList ?? (_keyList = new KeyList(this));
+            return _keyList ??= new KeyList(this);
         }
 
         private IList<TValue> GetValueList()
         {
-            return _valueList ?? (_valueList = new ValueList(this));
+            return _valueList ??= new ValueList(this);
         }
 
         private int IndexOfKey(TKey key)
@@ -505,8 +505,8 @@ namespace Theraot.Collections.Specialized
                 Array.Copy(_values, index + 1, _values, index, Count - index);
             }
 
-            _keys[Count] = default;
-            _values[Count] = default;
+            _keys[Count] = default!;
+            _values[Count] = default!;
         }
 
         /// <inheritdoc />

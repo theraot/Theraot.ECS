@@ -85,12 +85,12 @@ namespace Theraot.ECS
         /// <summary>
         /// Occurs when an entity is added.
         /// </summary>
-        public event EventHandler<EntityCollectionChangeEventArgs<TEntityId>> AddedEntity;
+        public event EventHandler<EntityCollectionChangeEventArgs<TEntityId>>? AddedEntity;
 
         /// <summary>
         /// Occurs when an entity is removed.
         /// </summary>
-        public event EventHandler<EntityCollectionChangeEventArgs<TEntityId>> RemovedEntity;
+        public event EventHandler<EntityCollectionChangeEventArgs<TEntityId>>? RemovedEntity;
 
         private void OnAddedEntity(TEntityId entityId)
         {

@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -287,7 +287,7 @@ namespace Theraot.Collections.Specialized
                 return true;
             }
 
-            value = default;
+            value = default!;
             return false;
         }
 
@@ -357,8 +357,8 @@ namespace Theraot.Collections.Specialized
                 Array.Copy(_values, index + 1, _values, index, Count - index);
             }
 
-            _keys[Count] = default;
-            _values[Count] = default;
+            _keys[Count] = default!;
+            _values[Count] = default!;
         }
     }
 

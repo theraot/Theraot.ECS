@@ -5,9 +5,9 @@ namespace Theraot.ECS
 {
     internal class EntityComponentEventDispatcher<TEntityId, TComponentKind>
     {
-        public event EventHandler<EntityComponentsChangeEventArgs<TEntityId, TComponentKind>> AddedComponents;
+        public event EventHandler<EntityComponentsChangeEventArgs<TEntityId, TComponentKind>>? AddedComponents;
 
-        public event EventHandler<EntityComponentsChangeEventArgs<TEntityId, TComponentKind>> RemovedComponents;
+        public event EventHandler<EntityComponentsChangeEventArgs<TEntityId, TComponentKind>>? RemovedComponents;
 
         internal void NotifyAddedComponents(TEntityId entityId, IList<TComponentKind> componentKinds)
         {
