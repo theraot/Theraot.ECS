@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 
@@ -18,6 +18,9 @@ namespace Theraot.ECS
         /// <param name="entityEqualityComparer">The equality comparer used to compare entity ids.</param>
         /// <param name="componentKindManager">The managers for component kinds and sets component kinds.</param>
         public static Scope<TEntityId, TComponentKind> CreateScope<TEntityId, TComponentKind, TComponentKindSet>(IEqualityComparer<TEntityId> entityEqualityComparer, IComponentKindManager<TComponentKind, TComponentKindSet> componentKindManager)
+            where TEntityId : notnull
+            where TComponentKind : notnull
+            where TComponentKindSet : notnull
         {
             if (componentKindManager == null)
             {
@@ -43,6 +46,8 @@ namespace Theraot.ECS
     /// <typeparam name="TEntityId">The type of the entity ids.</typeparam>
     /// <typeparam name="TComponentKind">The type used to represent component kinds.</typeparam>
     public sealed partial class Scope<TEntityId, TComponentKind>
+        where TEntityId : notnull
+        where TComponentKind : notnull
     {
         private readonly ComponentKindRegistry<TComponentKind> _componentKindRegistry;
 

@@ -8,6 +8,7 @@ using QueryId = System.Int32;
 namespace Theraot.ECS.Queries
 {
     internal sealed class QueryManager<TComponentKind, TComponentKindSet> : IEqualityComparer<Query<TComponentKindSet>>
+        where TComponentKindSet : notnull
     {
         private readonly IComponentKindManager<TComponentKind, TComponentKindSet> _componentKindManager;
 

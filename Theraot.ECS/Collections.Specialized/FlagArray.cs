@@ -1,5 +1,7 @@
 ﻿#pragma warning disable CA1710 // Los identificadores deben tener un sufijo correcto
 #pragma warning disable CC0031 // Check for null before calling a delegate
+#pragma warning disable IDE0056 // Indexing can be simplified
+// ReSharper disable UseIndexFromEndExpression
 
 using System;
 using System.Collections.Generic;
@@ -999,7 +1001,7 @@ namespace Theraot.Collections.Specialized
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return Equals(obj as FlagArray);
         }

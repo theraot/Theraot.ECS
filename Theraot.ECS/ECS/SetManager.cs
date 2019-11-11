@@ -154,7 +154,7 @@ namespace Theraot.ECS
         }
     }
 
-#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
+#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
 
     public sealed partial class SetManager
     {

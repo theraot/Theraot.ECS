@@ -20,6 +20,7 @@ namespace Theraot.Collections.Specialized
     /// <typeparam name="TValue">The type of the values.</typeparam>
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public sealed partial class CompactDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+        where TKey : notnull
     {
         private readonly IComparer<TKey> _comparer;
         private KeyList? _keyList;
@@ -544,6 +545,7 @@ namespace Theraot.Collections.Specialized
 
             void ICollection<TKey>.Add(TKey item)
             {
+                _ = item;
                 throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
@@ -597,11 +599,14 @@ namespace Theraot.Collections.Specialized
 
             void IList<TKey>.Insert(int index, TKey item)
             {
+                _ = index;
+                _ = item;
                 throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
             public bool Remove(TKey item)
             {
+                _ = item;
                 throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
@@ -646,6 +651,7 @@ namespace Theraot.Collections.Specialized
 
             void ICollection<TValue>.Add(TValue value)
             {
+                _ = value;
                 throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
@@ -656,6 +662,7 @@ namespace Theraot.Collections.Specialized
 
             public bool Contains(TValue value)
             {
+                _ = value;
                 return _dictionary.ContainsValue(value);
             }
 
@@ -684,16 +691,20 @@ namespace Theraot.Collections.Specialized
 
             public void Insert(int index, TValue value)
             {
+                _ = index;
+                _ = value;
                 throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
             public bool Remove(TValue value)
             {
+                _ = value;
                 throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
             public void RemoveAt(int index)
             {
+                _ = index;
                 throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
         }

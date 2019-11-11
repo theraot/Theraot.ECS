@@ -296,6 +296,7 @@ namespace Theraot.ECS
 
         void ICollection<TEntityId>.Add(TEntityId item)
         {
+            _ = item;
             throw new NotSupportedException();
         }
 
@@ -311,6 +312,7 @@ namespace Theraot.ECS
 
         bool ICollection<TEntityId>.Remove(TEntityId item)
         {
+            _ = item;
             throw new NotSupportedException();
         }
     }

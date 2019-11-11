@@ -7,6 +7,9 @@ using QueryId = System.Int32;
 namespace Theraot.ECS
 {
     internal sealed class Controller<TEntityId, TComponentKind, TComponentKindSet> : IController<TEntityId, TComponentKind>
+        where TEntityId : notnull
+        where TComponentKind : notnull
+        where TComponentKindSet : notnull
     {
         private readonly IComponentKindManager<TComponentKind, TComponentKindSet> _componentKindManager;
 
@@ -128,7 +131,7 @@ namespace Theraot.ECS
             return set;
         }
 
-        private void OnAddedComponents(object sender, EntityComponentsChangeEventArgs<TEntityId, TComponentKind> args)
+        private void OnAddedComponents(object? sender, EntityComponentsChangeEventArgs<TEntityId, TComponentKind> args)
         {
             var _ = sender;
             var allComponentKinds = _componentKindsByEntity[args.EntityId];
@@ -136,7 +139,7 @@ namespace Theraot.ECS
             UpdateEntitiesByQueryOnAddedComponents(args.EntityId, allComponentKinds, args.ComponentKinds);
         }
 
-        private void OnRemovedComponents(object sender, EntityComponentsChangeEventArgs<TEntityId, TComponentKind> args)
+        private void OnRemovedComponents(object? sender, EntityComponentsChangeEventArgs<TEntityId, TComponentKind> args)
         {
             var _ = sender;
             var allComponentKinds = _componentKindsByEntity[args.EntityId];

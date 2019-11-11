@@ -11,17 +11,17 @@ namespace Theraot
 {
     internal class HashSet<T> : ICollection<T>
     {
-        private readonly Dictionary<T, object> _dictionary;
+        private readonly Dictionary<T, object?> _dictionary;
         private bool _containsNull;
 
         public HashSet(IEqualityComparer<T> equalityComparer)
         {
-            _dictionary = new Dictionary<T, object>(equalityComparer ?? EqualityComparer<T>.Default);
+            _dictionary = new Dictionary<T, object?>(equalityComparer ?? EqualityComparer<T>.Default);
         }
 
         public HashSet()
         {
-            _dictionary = new Dictionary<T, object>(EqualityComparer<T>.Default);
+            _dictionary = new Dictionary<T, object?>(EqualityComparer<T>.Default);
         }
 
         public int Count => _dictionary.Count + (_containsNull ? 0 : 1);
@@ -75,7 +75,7 @@ namespace Theraot
         {
             if (_containsNull)
             {
-                array[arrayIndex] = default;
+                array[arrayIndex] = default!;
                 _dictionary.Keys.CopyTo(array, arrayIndex + 1);
             }
             else
@@ -88,7 +88,7 @@ namespace Theraot
         {
             if (_containsNull)
             {
-                yield return default;
+                yield return default!;
             }
             foreach (var entry in _dictionary.Keys)
             {

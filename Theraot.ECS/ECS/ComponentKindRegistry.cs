@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 
+#if NETCOREAPP30 || NETSTANDARD21
+using System.Diagnostics.CodeAnalysis;
+#endif
+
 namespace Theraot.ECS
 {
     internal sealed class ComponentKindRegistry<TComponentKind>
+        where TComponentKind : notnull
     {
         private readonly Dictionary<Type, IHasRemoveByIntKey> _containerByType;
 
@@ -67,7 +72,14 @@ namespace Theraot.ECS
             throw new KeyNotFoundException("Component not stored");
         }
 
-        public bool TryGetContainer(TComponentKind componentKind, out IHasRemoveByIntKey typedComponentContainer)
+        public bool TryGetContainer
+        (
+            TComponentKind componentKind,
+#if NETCOREAPP30 || NETSTANDARD21
+            [NotNullWhen(true)]
+#endif
+            out IHasRemoveByIntKey? typedComponentContainer
+        )
         {
             typedComponentContainer = default!;
             return _typeByComponentKind.TryGetValue(componentKind, out var type)

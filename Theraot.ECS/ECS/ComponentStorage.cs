@@ -16,6 +16,8 @@ using Action = System.Threading.ThreadStart;
 namespace Theraot.ECS
 {
     internal partial class ComponentStorage<TEntityId, TComponentKind>
+        where TEntityId : notnull
+        where TComponentKind : notnull
     {
         private readonly IComparer<TComponentKind> _componentKindComparer;
 
@@ -115,7 +117,7 @@ namespace Theraot.ECS
 
                 if (_componentKindRegistry.TryGetContainer(componentKind, out var componentStorage))
                 {
-                    componentStorage.Remove(removedComponentId);
+                    componentStorage!.Remove(removedComponentId);
                 }
                 removedComponentKinds.Add(componentKind);
             }
@@ -141,7 +143,7 @@ namespace Theraot.ECS
 
             if (_componentKindRegistry.TryGetContainer(componentKind, out var componentStorage))
             {
-                componentStorage.Remove(removedComponentId);
+                componentStorage!.Remove(removedComponentId);
             }
             _entityComponentEventDispatcher.NotifyRemovedComponents(entityId, new[] { componentKind });
         }
@@ -165,7 +167,7 @@ namespace Theraot.ECS
 
                 if (_componentKindRegistry.TryGetContainer(componentKind, out var componentStorage))
                 {
-                    componentStorage.Remove(removedComponentId);
+                    componentStorage!.Remove(removedComponentId);
                 }
                 removedComponentKinds.Add(componentKind);
             }
