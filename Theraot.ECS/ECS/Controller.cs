@@ -7,9 +7,6 @@ using QueryId = System.Int32;
 namespace Theraot.ECS
 {
     internal sealed class Controller<TEntityId, TComponentKind, TComponentKindSet> : IController<TEntityId, TComponentKind>
-        where TEntityId : notnull
-        where TComponentKind : notnull
-        where TComponentKindSet : notnull
     {
         private readonly IComponentKindManager<TComponentKind, TComponentKindSet> _componentKindManager;
 

@@ -9,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 namespace Theraot.ECS
 {
     internal sealed class ComponentKindRegistry<TComponentKind>
-        where TComponentKind : notnull
     {
         private readonly Dictionary<Type, IHasRemoveByIntKey> _containerByType;
 

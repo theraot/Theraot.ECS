@@ -5,7 +5,6 @@ using QueryId = System.Int32;
 namespace Theraot.ECS.Queries
 {
     internal sealed class QueryStorage<TComponentKindSet>
-        where TComponentKindSet : notnull
     {
         private readonly Dictionary<QueryId, Query<TComponentKindSet>> _queryByQueryId;
 

@@ -20,7 +20,6 @@ namespace Theraot.Collections.Specialized
     /// <typeparam name="TValue">The type of the values.</typeparam>
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public sealed partial class CompactDictionary<TKey, TValue> : IDictionary<TKey, TValue>
-        where TKey : notnull
     {
         private readonly IComparer<TKey> _comparer;
         private KeyList? _keyList;

@@ -16,8 +16,6 @@ using Action = System.Threading.ThreadStart;
 namespace Theraot.ECS
 {
     internal partial class ComponentStorage<TEntityId, TComponentKind>
-        where TEntityId : notnull
-        where TComponentKind : notnull
     {
         private readonly IComparer<TComponentKind> _componentKindComparer;
 
