@@ -117,6 +117,7 @@ namespace Theraot.ECS
                 {
                     componentStorage!.Remove(removedComponentId);
                 }
+
                 removedComponentKinds.Add(componentKind);
             }
 
@@ -143,6 +144,7 @@ namespace Theraot.ECS
             {
                 componentStorage!.Remove(removedComponentId);
             }
+
             _entityComponentEventDispatcher.NotifyRemovedComponents(entityId, new[] { componentKind });
         }
 
@@ -167,6 +169,7 @@ namespace Theraot.ECS
                 {
                     componentStorage!.Remove(removedComponentId);
                 }
+
                 removedComponentKinds.Add(componentKind);
             }
 

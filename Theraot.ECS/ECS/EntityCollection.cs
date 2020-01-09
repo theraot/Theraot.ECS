@@ -1,4 +1,5 @@
 ﻿#pragma warning disable RECS0096 // Type parameter is never used
+#pragma warning disable S4144 // Methods should not have identical implementations
 
 using System;
 using System.Collections;
@@ -51,6 +52,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             _wrapped.CopyTo(array, arrayIndex);
         }
 

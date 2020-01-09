@@ -4,7 +4,9 @@
 
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
 #pragma warning disable RECS0096 // Type parameter is never used
+#pragma warning disable S4144 // Methods should not have identical implementations
 // ReSharper disable MemberCanBePrivate.Local
+// ReSharper disable UseDeconstructionOnParameter
 
 using System;
 using System.Collections;
@@ -68,6 +70,7 @@ namespace Theraot.Collections.Specialized
                         Array.Copy(_keys, 0, newKeys, 0, Count);
                         Array.Copy(_values, 0, newValues, 0, Count);
                     }
+
                     _keys = newKeys;
                     _values = newValues;
                 }
@@ -118,6 +121,7 @@ namespace Theraot.Collections.Specialized
                     _values[index] = value;
                     return;
                 }
+
                 Insert(~index, key, value);
             }
         }
@@ -336,10 +340,12 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(keys));
             }
+
             if (values == null)
             {
                 throw new ArgumentNullException(nameof(values));
             }
+
             if (values.Count != keys.Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(values), "Count does not match");
@@ -491,6 +497,7 @@ namespace Theraot.Collections.Specialized
                 Array.Copy(_keys, index, _keys, index + 1, Count - index);
                 Array.Copy(_values, index, _values, index + 1, Count - index);
             }
+
             _keys[index] = key;
             _values[index] = value;
             Count++;
@@ -559,6 +566,7 @@ namespace Theraot.Collections.Specialized
                 {
                     throw new ArgumentNullException(nameof(item));
                 }
+
                 return _dictionary.ContainsKey(item);
             }
 
@@ -648,9 +656,9 @@ namespace Theraot.Collections.Specialized
                 set => throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
-            void ICollection<TValue>.Add(TValue value)
+            void ICollection<TValue>.Add(TValue item)
             {
-                _ = value;
+                _ = item;
                 throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
@@ -659,10 +667,10 @@ namespace Theraot.Collections.Specialized
                 throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
-            public bool Contains(TValue value)
+            public bool Contains(TValue item)
             {
-                _ = value;
-                return _dictionary.ContainsValue(value);
+                _ = item;
+                return _dictionary.ContainsValue(item);
             }
 
             public void CopyTo(TValue[] array, int arrayIndex)
@@ -683,21 +691,21 @@ namespace Theraot.Collections.Specialized
                 }
             }
 
-            public int IndexOf(TValue value)
+            public int IndexOf(TValue item)
             {
-                return Array.IndexOf(_dictionary._values, value, 0, _dictionary.Count);
+                return Array.IndexOf(_dictionary._values, item, 0, _dictionary.Count);
             }
 
-            public void Insert(int index, TValue value)
+            public void Insert(int index, TValue item)
             {
                 _ = index;
-                _ = value;
+                _ = item;
                 throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
-            public bool Remove(TValue value)
+            public bool Remove(TValue item)
             {
-                _ = value;
+                _ = item;
                 throw new NotSupportedException("This operation is not supported on CompactDictionary nested types because they require modifying the original CompactDictionary.");
             }
 
@@ -719,10 +727,12 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(key), "Key cannot be null.");
             }
+
             if (addValueFactory == null)
             {
                 throw new ArgumentNullException(nameof(addValueFactory));
             }
+
             if (updateValueFactory == null)
             {
                 throw new ArgumentNullException(nameof(updateValueFactory));
@@ -745,10 +755,12 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(keys));
             }
+
             if (addValueFactory == null)
             {
                 throw new ArgumentNullException(nameof(addValueFactory));
             }
+
             if (updateValueFactory == null)
             {
                 throw new ArgumentNullException(nameof(updateValueFactory));
@@ -777,10 +789,12 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(key), "Key cannot be null.");
             }
+
             if (addValueFactory == null)
             {
                 throw new ArgumentNullException(nameof(addValueFactory));
             }
+
             if (updateValueFactory == null)
             {
                 throw new ArgumentNullException(nameof(updateValueFactory));
@@ -803,10 +817,12 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(keys));
             }
+
             if (addValueFactory == null)
             {
                 throw new ArgumentNullException(nameof(addValueFactory));
             }
+
             if (updateValueFactory == null)
             {
                 throw new ArgumentNullException(nameof(updateValueFactory));

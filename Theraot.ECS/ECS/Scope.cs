@@ -23,6 +23,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentKindManager));
             }
+
             if (entityEqualityComparer == null)
             {
                 entityEqualityComparer = EqualityComparer<TEntityId>.Default;
@@ -76,6 +77,7 @@ namespace Theraot.ECS
             {
                 return false;
             }
+
             _controller.DestroyEntity(entityId);
             return true;
         }
@@ -152,6 +154,7 @@ namespace Theraot.ECS
             {
                 return false;
             }
+
             _controller.RegisterEntity(entityId);
             return true;
         }

@@ -1,5 +1,4 @@
-﻿#pragma warning disable CA1710 // Los identificadores deben tener un sufijo correcto
-#pragma warning disable CC0031 // Check for null before calling a delegate
+﻿#pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable IDE0056 // Indexing can be simplified
 // ReSharper disable UseIndexFromEndExpression
 
@@ -35,6 +34,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(indexes), $"{nameof(indexes)} is null.");
             }
+
             var indexesList = new List<int>();
             var max = 0;
             foreach (var index in indexes)
@@ -43,10 +43,12 @@ namespace Theraot.Collections.Specialized
                 {
                     throw new ArgumentOutOfRangeException(nameof(indexes), "Negative index found");
                 }
+
                 if (index > max)
                 {
                     max = index;
                 }
+
                 indexesList.Add(index);
             }
 
@@ -74,10 +76,12 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(indexes), $"{nameof(indexes)} is null.");
             }
+
             if (capacity < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(capacity), $"{nameof(capacity)} < 0");
             }
+
             var indexesList = new List<int>();
             var max = 0;
             foreach (var index in indexes)
@@ -86,14 +90,17 @@ namespace Theraot.Collections.Specialized
                 {
                     throw new ArgumentOutOfRangeException(nameof(indexes), "Negative index found");
                 }
+
                 if (index >= capacity)
                 {
                     throw new ArgumentOutOfRangeException(nameof(capacity));
                 }
+
                 if (index > max)
                 {
                     max = index;
                 }
+
                 indexesList.Add(index);
             }
 
@@ -117,6 +124,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentOutOfRangeException(nameof(capacity), $"{nameof(capacity)} < 0");
             }
+
             var length = GetLength(capacity);
             _entries = new int[length];
             Capacity = capacity;
@@ -147,6 +155,7 @@ namespace Theraot.Collections.Specialized
                 {
                     count += PopulationCount(entry);
                 }
+
                 return count;
             }
         }
@@ -177,6 +186,7 @@ namespace Theraot.Collections.Specialized
                             {
                                 yield return bitIndex;
                             }
+
                             bitIndex++;
                             if (bitIndex == Capacity)
                             {
@@ -202,6 +212,7 @@ namespace Theraot.Collections.Specialized
                 {
                     throw new ArgumentOutOfRangeException(nameof(index));
                 }
+
                 var entryIndex = index >> _sizeOfEntryLog2;
                 var bitIndex = index & (_sizeOfEntry - 1);
                 var bitMask = 1 << bitIndex;
@@ -213,6 +224,7 @@ namespace Theraot.Collections.Specialized
                 {
                     throw new ArgumentOutOfRangeException(nameof(index));
                 }
+
                 var entryIndex = index >> _sizeOfEntryLog2;
                 var bitIndex = index & (_sizeOfEntry - 1);
                 var bitMask = 1 << bitIndex;
@@ -276,9 +288,11 @@ namespace Theraot.Collections.Specialized
                     {
                         return true;
                     }
+
                     break;
                 }
             }
+
             return false;
         }
 
@@ -296,14 +310,17 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             if (arrayIndex < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
+
             if (Capacity > array.Length - arrayIndex)
             {
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
+
             try
             {
                 var index = arrayIndex;
@@ -331,10 +348,12 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             if (Capacity > array.Length)
             {
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
+
             try
             {
                 var index = 0;
@@ -365,18 +384,22 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             if (arrayIndex < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
+
             if (countLimit < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(countLimit), "Non-negative number is required.");
             }
+
             if (countLimit > array.Length - arrayIndex)
             {
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
+
             var source = EnumerableHelper.Take(this, countLimit);
             try
             {
@@ -402,6 +425,7 @@ namespace Theraot.Collections.Specialized
                 foreach (var bit in BitsBinary(BinaryReverse(entry)))
                 {
                     yield return bit == 1;
+
                     index++;
                     if (index == Capacity)
                     {
@@ -457,11 +481,13 @@ namespace Theraot.Collections.Specialized
             {
                 result._entries[index] = ~_entries[index];
             }
+
             var mask = GetMask(Capacity);
             if (mask != 0)
             {
                 result._entries[result._entries.Length - 1] &= mask;
             }
+
             return result;
         }
 
@@ -486,6 +512,7 @@ namespace Theraot.Collections.Specialized
             {
                 _entries[index] = entryValue;
             }
+
             var mask = GetMask(Capacity);
             if (mask != 0)
             {
@@ -607,6 +634,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             return Build(Operation(Paired(this, other, PairMode.Shorter, out var capacity), And), capacity);
         }
 
@@ -684,6 +712,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             return IsEmpty(Operation(Paired(this, other, PairMode.Left, out _), Minus));
         }
 
@@ -697,6 +726,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             return IsEmpty(Operation(Paired(other, this, PairMode.Left, out _), Minus));
         }
 
@@ -711,6 +741,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             return Build(Operation(Paired(this, other, PairMode.Left, out var capacity), Minus), capacity);
         }
 
@@ -725,6 +756,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             return Build(Operation(Paired(this, other, PairMode.Longer, out var capacity), Or), capacity);
         }
 
@@ -738,6 +770,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             return !IsEmpty(Operation(Paired(this, other, PairMode.Shorter, out _), And));
         }
 
@@ -751,6 +784,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             return IsEmpty(Operation(Paired(this, other, PairMode.Longer, out _), Xor));
         }
 
@@ -765,6 +799,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             return Build(Operation(Paired(this, other, PairMode.Longer, out var capacity), Xor), capacity);
         }
 
@@ -849,6 +884,7 @@ namespace Theraot.Collections.Specialized
             {
                 yield return new Pair(leftEntries[index], rightEntries[index]);
             }
+
             for (var index = shorterLength; index < longerLength; index++)
             {
                 yield return new Pair(leftEntries[index], 0);
@@ -861,6 +897,7 @@ namespace Theraot.Collections.Specialized
             {
                 yield return new Pair(leftEntries[index], rightEntries[index]);
             }
+
             for (var index = shorterLength; index < longerLength; index++)
             {
                 yield return new Pair(0, rightEntries[index]);
@@ -1016,6 +1053,7 @@ namespace Theraot.Collections.Specialized
                 {
                     hash = (hash * 31) + element;
                 }
+
                 return hash;
             }
         }

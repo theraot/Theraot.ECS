@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable CA1031 // Do not catch general exception types
-#pragma warning disable IDE0041 // Usar comprobación "is null"
 
 using System;
 using System.Collections;
@@ -90,6 +89,7 @@ namespace Theraot
             {
                 yield return default!;
             }
+
             foreach (var entry in _dictionary.Keys)
             {
                 yield return entry;
@@ -133,10 +133,12 @@ namespace Theraot
             {
                 return _dictionary.Remove(item);
             }
+
             if (!_containsNull)
             {
                 return false;
             }
+
             _containsNull = false;
             return true;
         }
@@ -160,6 +162,7 @@ namespace Theraot
                     return false;
                 }
             }
+
             foreach (var entry in _dictionary.Keys)
             {
                 if (!other.Contains(entry))

@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#pragma warning disable S2699 // Tests should include assertions
+
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,13 +113,6 @@ namespace Tests
         {
             QueryNoneUpdateOnRemovedComponents(Scope.CreateScope(EqualityComparer<Guid>.Default, new FlagArrayManager(2)), 0, 1, Guid.NewGuid());
             QueryNoneUpdateOnRemovedComponents(Scope.CreateScope(EqualityComparer<int>.Default, new SetManager()), "a", "b", 0);
-        }
-
-        [Test]
-        public static void RecoverObject()
-        {
-            RecoverObject(Scope.CreateScope(EqualityComparer<Guid>.Default, new FlagArrayManager(1)), 0, Guid.NewGuid());
-            RecoverObject(Scope.CreateScope(EqualityComparer<int>.Default, new SetManager()), "a", 0);
         }
 
         [Test]
@@ -407,14 +402,6 @@ namespace Tests
             Assert.AreEqual(entityA, entitiesC[0]);
         }
 
-        private static void RecoverObject<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType type, TEntity entityA)
-        {
-            scope.RegisterEntity(entityA);
-            var obj = new object();
-            scope.SetComponent(entityA, type, obj);
-            Assert.AreEqual(obj, scope.GetComponent<object>(entityA, type));
-        }
-
         private static void RecoverValueType<TEntity, TComponentType>(Scope<TEntity, TComponentType> scope, TComponentType type, TEntity entityA)
         {
             scope.RegisterEntity(entityA);
@@ -428,11 +415,11 @@ namespace Tests
             var objA = new object();
             var objB = new object();
             scope.SetComponents
-                (
-                    entityA,
-                    new[] { componentTypeA, componentTypeB },
-                    new[] { objA, objB }
-                );
+            (
+                entityA,
+                new[] { componentTypeA, componentTypeB },
+                new[] { objA, objB }
+            );
             Assert.IsTrue(scope.TryGetComponent<object>(entityA, componentTypeA, out var componentA));
             Assert.AreEqual(objA, componentA);
             Assert.IsTrue(scope.TryGetComponent<object>(entityA, componentTypeB, out var componentB));

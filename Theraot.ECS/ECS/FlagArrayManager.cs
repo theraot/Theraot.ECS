@@ -8,7 +8,7 @@ using ComponentKindSet = Theraot.Collections.Specialized.FlagArray;
 namespace Theraot.ECS
 {
     /// <summary>
-    /// Represents a manager of set of component kinds stored as a <see cref="Theraot.Collections.Specialized.FlagArray"/>
+    /// Represents a manager of set of component kinds stored as a <see cref="Collections.Specialized.FlagArray"/>
     /// </summary>
     public sealed class FlagArrayManager : IComponentKindManager<ComponentKind, ComponentKindSet>, IEqualityComparer<ComponentKind>, IEqualityComparer<ComponentKindSet>
     {
@@ -29,10 +29,12 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentKinds));
             }
+
             if (componentKindSet == null)
             {
                 throw new ArgumentNullException(nameof(componentKindSet));
             }
+
             foreach (var componentKind in componentKinds)
             {
                 componentKindSet[componentKind] = true;
@@ -45,6 +47,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentKindSet));
             }
+
             return componentKindSet[componentKind];
         }
 
@@ -54,6 +57,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentKindSet));
             }
+
             return componentKindSet.IsSupersetOf(other);
         }
 
@@ -93,6 +97,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentKindSet));
             }
+
             return !componentKindSet.Contains(true);
         }
 
@@ -102,10 +107,12 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentKindSet));
             }
+
             if (componentKinds == null)
             {
                 throw new ArgumentNullException(nameof(componentKinds));
             }
+
             return EnumerableHelper.Any(componentKinds, index => componentKindSet[index]);
         }
 
@@ -115,6 +122,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentKindSetA));
             }
+
             return componentKindSetA.Overlaps(componentKindSetB);
         }
 
@@ -124,6 +132,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentKindSet));
             }
+
             if (componentKinds == null)
             {
                 throw new ArgumentNullException(nameof(componentKinds));

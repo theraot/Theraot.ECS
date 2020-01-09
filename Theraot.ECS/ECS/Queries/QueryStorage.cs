@@ -24,6 +24,7 @@ namespace Theraot.ECS.Queries
             {
                 return found;
             }
+
             var queryId = _queryId;
             _queryIdByQuery.Add(query, queryId);
             _queryByQueryId[queryId] = query;

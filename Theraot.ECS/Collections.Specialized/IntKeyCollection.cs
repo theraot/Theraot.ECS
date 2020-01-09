@@ -18,9 +18,9 @@ namespace Theraot.Collections.Specialized
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public sealed
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-    partial
+        partial
 #endif
-    class IntKeyCollection<TValue> : ICollection<TValue>, IIntKeyCollection<TValue>
+        class IntKeyCollection<TValue> : ICollection<TValue>, IIntKeyCollection<TValue>
     {
         private int _key;
         private int[] _keys;
@@ -65,6 +65,7 @@ namespace Theraot.Collections.Specialized
                         Array.Copy(_keys, 0, newKeys, 0, Count);
                         Array.Copy(_values, 0, newValues, 0, Count);
                     }
+
                     _keys = newKeys;
                     _values = newValues;
                 }
@@ -102,9 +103,9 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        void ICollection<TValue>.Add(TValue value)
+        void ICollection<TValue>.Add(TValue item)
         {
-            Add(value);
+            Add(item);
         }
 
         /// <inheritdoc />
@@ -343,6 +344,7 @@ namespace Theraot.Collections.Specialized
                 Array.Copy(_keys, index, _keys, index + 1, Count - index);
                 Array.Copy(_values, index, _values, index + 1, Count - index);
             }
+
             _keys[index] = key;
             _values[index] = value;
             Count++;

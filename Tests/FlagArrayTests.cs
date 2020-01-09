@@ -1,4 +1,4 @@
-// ReSharper disable AssignmentIsFullyDiscarded
+﻿// ReSharper disable AssignmentIsFullyDiscarded
 
 using NUnit.Framework;
 using System;
@@ -14,9 +14,21 @@ namespace Tests
         public static void And()
         {
             var a = new FlagArray(6)
-            { [0] = false, [1] = false, [2] = true, [3] = true, [4] = false, [5] = true };
+            {
+                [0] = false,
+                [1] = false,
+                [2] = true,
+                [3] = true,
+                [4] = false,
+                [5] = true
+            };
             var b = new FlagArray(4)
-            { [0] = false, [1] = true, [2] = false, [3] = true };
+            {
+                [0] = false,
+                [1] = true,
+                [2] = false,
+                [3] = true
+            };
             var c = a.And(b);
             Assert.AreEqual(false, c[0]);
             Assert.AreEqual(false, c[1]);
@@ -188,9 +200,21 @@ namespace Tests
         public static void MinusLonger()
         {
             var a = new FlagArray(4)
-            { [0] = false, [1] = true, [2] = false, [3] = true };
+            {
+                [0] = false,
+                [1] = true,
+                [2] = false,
+                [3] = true
+            };
             var b = new FlagArray(6)
-            { [0] = false, [1] = false, [2] = true, [3] = true, [4] = false, [5] = true };
+            {
+                [0] = false,
+                [1] = false,
+                [2] = true,
+                [3] = true,
+                [4] = false,
+                [5] = true
+            };
             var c = a.Minus(b);
             Assert.AreEqual(false, c[0]);
             Assert.AreEqual(true, c[1]);
@@ -204,9 +228,21 @@ namespace Tests
         public static void MinusShorter()
         {
             var a = new FlagArray(6)
-            { [0] = false, [1] = false, [2] = true, [3] = true, [4] = false, [5] = true };
+            {
+                [0] = false,
+                [1] = false,
+                [2] = true,
+                [3] = true,
+                [4] = false,
+                [5] = true
+            };
             var b = new FlagArray(4)
-            { [0] = false, [1] = true, [2] = false, [3] = true };
+            {
+                [0] = false,
+                [1] = true,
+                [2] = false,
+                [3] = true
+            };
             var c = a.Minus(b);
             Assert.AreEqual(false, c[0]);
             Assert.AreEqual(false, c[1]);
@@ -222,7 +258,12 @@ namespace Tests
         public static void Not()
         {
             var b = new FlagArray(4)
-            { [0] = false, [1] = true, [2] = false, [3] = true };
+            {
+                [0] = false,
+                [1] = true,
+                [2] = false,
+                [3] = true
+            };
             var c = b.Not();
             Assert.AreEqual(true, c[0]);
             Assert.AreEqual(false, c[1]);
@@ -236,9 +277,21 @@ namespace Tests
         public static void Or()
         {
             var a = new FlagArray(6)
-            { [0] = false, [1] = false, [2] = true, [3] = true, [4] = false, [5] = true };
+            {
+                [0] = false,
+                [1] = false,
+                [2] = true,
+                [3] = true,
+                [4] = false,
+                [5] = true
+            };
             var b = new FlagArray(4)
-            { [0] = false, [1] = true, [2] = false, [3] = true };
+            {
+                [0] = false,
+                [1] = true,
+                [2] = false,
+                [3] = true
+            };
             var c = a.Or(b);
             Assert.AreEqual(false, c[0]);
             Assert.AreEqual(true, c[1]);
@@ -309,9 +362,21 @@ namespace Tests
         public static void Xor()
         {
             var a = new FlagArray(6)
-            { [0] = false, [1] = false, [2] = true, [3] = true, [4] = false, [5] = true };
+            {
+                [0] = false,
+                [1] = false,
+                [2] = true,
+                [3] = true,
+                [4] = false,
+                [5] = true
+            };
             var b = new FlagArray(4)
-            { [0] = false, [1] = true, [2] = false, [3] = true };
+            {
+                [0] = false,
+                [1] = true,
+                [2] = false,
+                [3] = true
+            };
             var c = a.Xor(b);
             Assert.AreEqual(false, c[0]);
             Assert.AreEqual(true, c[1]);
@@ -326,15 +391,15 @@ namespace Tests
         private static void BuildSetsAndFlagArrays(out List<HashSet<int>> sets, out List<FlagArray> flagArrays)
         {
             var arrays = new[]
-                        {
+            {
                 new[] { 2, 3, 5 },
                 new[] { 1, 3 },
                 Array.Empty<int>(),
                 Array.Empty<int>(),
-                new [] { 1, 2, 3, 4, 5 },
-                new [] { 0, 1, 2, 3 },
-                new [] { 0, 1, 2, 3 },
-                new [] { 1, 3, 120 }
+                new[] { 1, 2, 3, 4, 5 },
+                new[] { 0, 1, 2, 3 },
+                new[] { 0, 1, 2, 3 },
+                new[] { 1, 3, 120 }
             };
             var capacities = new[] { 6, 4, 6, 4, 6, 4, 128, 128 };
             sets = (from array in arrays select new HashSet<int>(array)).ToList();

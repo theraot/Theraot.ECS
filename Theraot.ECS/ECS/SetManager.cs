@@ -112,6 +112,7 @@ namespace Theraot.ECS
             {
                 throw new ArgumentNullException(nameof(componentKindSet));
             }
+
             if (componentKinds == null)
             {
                 throw new ArgumentNullException(nameof(componentKinds));

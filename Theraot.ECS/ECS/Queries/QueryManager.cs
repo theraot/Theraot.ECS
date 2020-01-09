@@ -43,6 +43,7 @@ namespace Theraot.ECS.Queries
             {
                 return true;
             }
+
             if (x == null || y == null)
             {
                 return false;
@@ -82,12 +83,14 @@ namespace Theraot.ECS.Queries
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
+
             if (CheckAll(allComponentsKinds, query.All) && CheckAny(allComponentsKinds, query.Any))
             {
                 // The entity has all the required components for this queryId
                 // and at least one of the optional components (if any) for this queryId
                 return QueryCheckResult.Add;
             }
+
             return QueryCheckResult.Noop;
         }
 
@@ -104,12 +107,14 @@ namespace Theraot.ECS.Queries
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
+
             if (CheckAll(allComponentsKinds, query.All) && CheckAny(allComponentsKinds, query.Any))
             {
                 // The entity has all the required components for this queryId
                 // and at least one of the optional components (if any) for this queryId
                 return QueryCheckResult.Add;
             }
+
             return QueryCheckResult.Noop;
         }
 
@@ -126,12 +131,14 @@ namespace Theraot.ECS.Queries
                 // The entity has one of the components it should not have for this queryId
                 return QueryCheckResult.Remove;
             }
+
             if (CheckAll(allComponentsKinds, query.All) && CheckAny(allComponentsKinds, query.Any))
             {
                 // The entity has all the required components for this queryId
                 // and at least one of the optional components (if any) for this queryId
                 return QueryCheckResult.Add;
             }
+
             return QueryCheckResult.Noop;
         }
 
@@ -148,12 +155,14 @@ namespace Theraot.ECS.Queries
                 // The entity no longer has one of the components it should have for this queryId
                 return QueryCheckResult.Remove;
             }
+
             if (CheckNone(allComponentsKinds, query.None) && CheckAny(allComponentsKinds, query.Any))
             {
                 // The entity has none of the components it should not have for this queryId
                 // and at least one of the optional components (if any) for this queryId
                 return QueryCheckResult.Add;
             }
+
             return QueryCheckResult.Noop;
         }
 
@@ -170,12 +179,14 @@ namespace Theraot.ECS.Queries
                 // The entity no longer has one of the components it should have for this queryId
                 return QueryCheckResult.Remove;
             }
+
             if (CheckNone(allComponentsKinds, query.None) && CheckAny(allComponentsKinds, query.Any))
             {
                 // The entity has none of the components it should not have for this queryId
                 // and at least one of the optional components (if any) for this queryId
                 return QueryCheckResult.Add;
             }
+
             return QueryCheckResult.Noop;
         }
 

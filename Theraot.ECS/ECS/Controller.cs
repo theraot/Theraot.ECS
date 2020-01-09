@@ -69,6 +69,7 @@ namespace Theraot.ECS
             {
                 return;
             }
+
             _componentKindsByEntity[entityId] = _componentKindManager.Create();
             _allEntities?.Add(entityId);
         }
@@ -102,6 +103,7 @@ namespace Theraot.ECS
                     entityCollection.Add(entityId);
                 }
             }
+
             return entityCollection;
         }
 
@@ -111,6 +113,7 @@ namespace Theraot.ECS
             {
                 return EmptyArray<QueryId>.Instance;
             }
+
             return queryIds;
         }
 
@@ -130,7 +133,7 @@ namespace Theraot.ECS
 
         private void OnAddedComponents(object? sender, EntityComponentsChangeEventArgs<TEntityId, TComponentKind> args)
         {
-            var _ = sender;
+            _ = sender;
             var allComponentKinds = _componentKindsByEntity[args.EntityId];
             _componentKindManager.Add(allComponentKinds, args.ComponentKinds);
             UpdateEntitiesByQueryOnAddedComponents(args.EntityId, allComponentKinds, args.ComponentKinds);
@@ -138,7 +141,7 @@ namespace Theraot.ECS
 
         private void OnRemovedComponents(object? sender, EntityComponentsChangeEventArgs<TEntityId, TComponentKind> args)
         {
-            var _ = sender;
+            _ = sender;
             var allComponentKinds = _componentKindsByEntity[args.EntityId];
             _componentKindManager.Remove(allComponentKinds, args.ComponentKinds);
             UpdateEntitiesByQueryOnRemoveComponents(args.EntityId, allComponentKinds, args.ComponentKinds);

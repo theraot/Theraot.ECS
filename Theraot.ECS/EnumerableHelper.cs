@@ -68,6 +68,7 @@ namespace Theraot
             foreach (var item in source)
             {
                 yield return item;
+
                 if (--count == 0)
                 {
                     break;

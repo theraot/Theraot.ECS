@@ -16,12 +16,12 @@ namespace Theraot.ECS
 #endif
     {
         /// <summary>
-        /// Retrieves an <see cref="System.Collections.Generic.IEqualityComparer{TComponentKind}"/>, useful to compare component kinds.
+        /// Retrieves an <see cref="IEqualityComparer{TComponentKind}"/>, useful to compare component kinds.
         /// </summary>
         IEqualityComparer<TComponentKind> ComponentKindEqualityComparer { get; }
 
         /// <summary>
-        /// Retrieves an <see cref="System.Collections.Generic.IEqualityComparer{TComponentKindSet}"/>, useful to compare sets of component kinds.
+        /// Retrieves an <see cref="IEqualityComparer{TComponentKindSet}"/>, useful to compare sets of component kinds.
         /// </summary>
         IEqualityComparer<TComponentKindSet> ComponentKindSetEqualityComparer { get; }
 

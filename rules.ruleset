@@ -2,9 +2,13 @@
 <RuleSet Name="rules" Description=" " ToolsVersion="16.0">
   <Rules AnalyzerId="CodeCracker.CSharp" RuleNamespace="CodeCracker.CSharp">
     <Rule Id="CC0001" Action="Hidden" />
+    <Rule Id="CC0014" Action="Hidden" />
     <Rule Id="CC0026" Action="None" />
+    <Rule Id="CC0031" Action="Hidden" />
     <Rule Id="CC0037" Action="None" />
+    <Rule Id="CC0061" Action="Hidden" />
     <Rule Id="CC0068" Action="Error" />
+    <Rule Id="CC0072" Action="Hidden" />
   </Rules>
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1000" Action="Hidden" />
@@ -663,8 +667,10 @@
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
     <Rule Id="AD0001" Action="Hidden" />
     <Rule Id="CS8714" Action="Hidden" />
+    <Rule Id="CS8717" Action="Hidden" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
+    <Rule Id="IDE0001" Action="Warning" />
     <Rule Id="IDE0005" Action="Warning" />
     <Rule Id="IDE0011" Action="Warning" />
     <Rule Id="IDE0011WithoutSuggestion" Action="Warning" />
@@ -678,6 +684,7 @@
     <Rule Id="CA1010" Action="Hidden" />
     <Rule Id="CA1031" Action="Hidden" />
     <Rule Id="CA1062" Action="Warning" />
+    <Rule Id="CA1508" Action="Hidden" />
     <Rule Id="CA1710" Action="Hidden" />
     <Rule Id="CA1720" Action="Hidden" />
   </Rules>
@@ -686,6 +693,7 @@
   </Rules>
   <Rules AnalyzerId="Microsoft.NetCore.Analyzers" RuleNamespace="Microsoft.NetCore.Analyzers">
     <Rule Id="CA1303" Action="Hidden" />
+    <Rule Id="CA2213" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="RefactoringEssentials" RuleNamespace="RefactoringEssentials">
     <Rule Id="RECS0029" Action="None" />
@@ -697,5 +705,11 @@
     <Rule Id="RCS1196" Action="None" />
     <Rule Id="RCS1211" Action="Warning" />
     <Rule Id="RCS1213" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
+    <Rule Id="S101" Action="Hidden" />
+    <Rule Id="S1123" Action="Hidden" />
+    <Rule Id="S1135" Action="Hidden" />
+    <Rule Id="S3925" Action="Hidden" />
   </Rules>
 </RuleSet>
